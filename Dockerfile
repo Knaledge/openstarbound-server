@@ -25,8 +25,8 @@ RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/plainsofpain /usr/local
     && sed -i '/imklog/s/^/#/' /etc/rsyslog.conf \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY ../supervisord.conf /etc/supervisor/supervisord.conf
-COPY --chmod=755 ../scripts/default/* /usr/local/etc/plainsofpain/
+COPY ./supervisord.conf /etc/supervisor/supervisord.conf
+COPY --chmod=755 ./scripts/default/* /usr/local/etc/plainsofpain/
 
 WORKDIR /usr/local/etc/plainsofpain
 CMD ["/usr/local/etc/plainsofpain/bootstrap"]
