@@ -124,8 +124,6 @@ docker run -d --name plainsofpain \
 ### Docker Compose
 
 ```yaml
-version: "3.8"
-
 services:
   plainsofpain:
     image: ghcr.io/traxo-xx/plainsofpain-server:latest
@@ -157,8 +155,6 @@ services:
 location (eg. /var/lib/docker) you can use the following compose file:
 
 ```yaml
-version: "3.8"
-
 services:
   plainsofpain:
     image: ghcr.io/traxo-xx/plainsofpain-server:latest

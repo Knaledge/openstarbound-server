@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   plainsofpain:
     image: ghcr.io/traxo-xx/plainsofpain-server:latest
