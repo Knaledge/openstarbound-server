@@ -30,26 +30,11 @@ Windows and then copied to the docker host.**
 | `SERVER_NAME`                     |          | `Plains of Pain Server` | string                | The name of the server                                                                                             |  ️  |
 | `SERVER_PASSWORD`                 |          |                     | string                | The password for the server                                                                                        |     |
 | `SERVER_SEED`                 |          | `40377`                    | integer                | The server's map seed                                                                                        |     |
-| `SERVER_WORLD_ID`                 |          |                     | integer                | The server's world ID                                                                                        |     |
-| `SERVER_DIFFICULTY`               |          | `2`                 | integer                | The server's difficulty setting.
-0 = Tourist
-1 = Rookies
-2 = True
-Wastelander
-3 = Veteran
-4 = Overlord                                                                                             |  ️  |
-| `SERVER_MAP_ID`                     |          | `0` | integer                | ID of the map that should be used
-0 = Wasteland
-v0.4
-1 = Dunes v0.4
-2 = Dunes v0.5                                                                                             |  ️  |
-| `SERVER_WORLD_SIZE`                     |          | `5` | integer                | Size of the server's map
-3 = S
-5 = M
-7 = L
-9 = XL
-11 = XXL                                                                                             |  ️  |
-| `SERVER_SLOT_COUNT`               |          | `10`                | integer (1-16)        | Max allowed concurrent players                                                                                     |     |
+| `SERVER_WORLD_ID`                 |          | `0`                    | integer                | The server's world ID                                                                                        |     |
+| `SERVER_DIFFICULTY`               |          | `2`                 | integer                | The server's difficulty setting. (0 = Tourist, 1 = Rookies, 2 = True Wastelander, 3 = Veteran, 4 = Overlord)                                                                                             |  ️  |
+| `SERVER_MAP_ID`                     |          | `0` | integer                | ID of the map that should be used (0 = Wasteland v0.4, 1 = Dunes v0.4, 2 = Dunes v0.5)                                                                                             |  ️  |
+| `SERVER_WORLD_SIZE`                     |          | `5` | integer                | Size of the server's map (3 = S, 5 = M, 7 = L, 9 = XL, 11 = XXL)                                                                                             |  ️  |
+| `SERVER_SLOT_COUNT`               |          | `10`                | integer (1-200)        | Max allowed concurrent players                                                                                     |     |
 | `SERVER_QUERYPORT`                |          | `27016`             | integer               | The steam query port for the server                                                                                |     |
 | `PUID`                            |          | `4711`              | integer               | The UID to run server as (file permission)                                                                         |     |
 | `PGID`                            |          | `4711`              | integer               | The GID to run server as (file permission)                                                                         |     |
@@ -123,6 +108,12 @@ docker run -d --name plainsofpain \
   -p 27016:27016/udp \
   -v ./game:/opt/plainsofpain \
   -e SERVER_NAME="Plains of Pain Server" \
+  -e SERVER_SEED=40377 \
+  -e SERVER_WORLD_ID=0 \
+  -e SERVER_DIFFICULTY=2 \
+  -e SERVER_MAP_ID=0 \
+  -e SERVER_WORLD_SIZE=5 \
+  -e SERVER_SLOT_COUNT=10 \
   -e SERVER_PASSWORD="secret" \
   -e UPDATE_CRON="*/30 * * * *" \
   -e PUID=4711 \
@@ -150,6 +141,12 @@ services:
       - ./worldfiles:/home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain
     environment:
       - SERVER_NAME=Plains of Pain Server
+      - SERVER_SEED=40377
+      - SERVER_WORLD_ID=0
+      - SERVER_DIFFICULTY=2
+      - SERVER_MAP_ID=0
+      - SERVER_WORLD_SIZE=5
+      - SERVER_SLOT_COUNT=10
       - SERVER_PASSWORD=secret
       - UPDATE_CRON=*/30 * * * *
       - PUID=4711
@@ -177,6 +174,12 @@ services:
       - worldfiles:/home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain
     environment:
       - SERVER_NAME=Plains of Pain Server
+      - SERVER_SEED=40377
+      - SERVER_WORLD_ID=0
+      - SERVER_DIFFICULTY=2
+      - SERVER_MAP_ID=0
+      - SERVER_WORLD_SIZE=5
+      - SERVER_SLOT_COUNT=10
       - SERVER_PASSWORD=secret
       - UPDATE_CRON=*/30 * * * *
       - PUID=4711

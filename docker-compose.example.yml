@@ -14,6 +14,12 @@ services:
       - ./worldfiles:/home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain
     environment:
       - SERVER_NAME=PlainsOfPainTest
+      - SERVER_SEED=
+      - SERVER_WORLD_ID=
+      - SERVER_DIFFICULTY=
+      - SERVER_MAP_ID=
+      - SERVER_WORLD_SIZE=
+      - SERVER_SLOT_COUNT=10
       - PUID=4711
       - PGID=4711
       - UPDATE_CRON=*/30 * * * *
