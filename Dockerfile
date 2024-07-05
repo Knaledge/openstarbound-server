@@ -19,7 +19,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # MISC
-RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/plainsofpain /usr/local/etc/supervisor/conf.d/ /opt/plainsofpain /home/plainsofpain/.steam /home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain \
+RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/plainsofpain /usr/local/etc/supervisor/conf.d/ /opt/plainsofpain /home/plainsofpain/.steam/sdk32 /home/plainsofpain/.steam/sdk64 /home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain \
     && groupadd -g "${PGID:-4711}" -o plainsofpain \
     && useradd -g "${PGID:-4711}" -u "${PUID:-4711}" -o --create-home plainsofpain \
     && ln -f /root/.steam/sdk32/steamclient.so /home/plainsofpain/.steam/sdk32/steamclient.so \
