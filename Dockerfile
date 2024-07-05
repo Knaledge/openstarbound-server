@@ -22,6 +22,8 @@ RUN apt-get update \
 RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/plainsofpain /usr/local/etc/supervisor/conf.d/ /opt/plainsofpain /home/plainsofpain/.steam /home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain \
     && groupadd -g "${PGID:-4711}" -o plainsofpain \
     && useradd -g "${PGID:-4711}" -u "${PUID:-4711}" -o --create-home plainsofpain \
+    && ln -f /root/.steam/sdk32/steamclient.so /home/plainsofpain/.steam/sdk32/steamclient.so \
+    && ln -f /root/.steam/sdk64/steamclient.so /home/plainsofpain/.steam/sdk64/steamclient.so \
     && sed -i '/imklog/s/^/#/' /etc/rsyslog.conf \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
