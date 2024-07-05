@@ -1,0 +1,16 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+main() {
+  info "Stopping plainsofpain server"
+  supervisorctl stop plainsofpain-server
+
+  info "Reset plainsofpain server roles"
+  echo "$(jq 'del(.userGroups)' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+
+  info "Stop container for a clean start"
+  kill -INT $(cat /var/run/supervisord.pid)
+}
+
+main

@@ -1,5 +1,5 @@
 FROM steamcmd/steamcmd:ubuntu-24@sha256:748e3db77cccc188276640bf1849c8c10325d7ff264a5ba8399362bd54d48f5a
-LABEL maintainer="docker@mornedhels.de"
+LABEL maintainer="get.to.the.gone@gmail.com"
 
 # Install prerequisites
 RUN apt-get update \
@@ -18,31 +18,16 @@ RUN apt-get update \
     && apt autoremove --purge && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install wine
-ARG WINE_BRANCH=stable
-RUN dpkg --add-architecture i386 \
-    && mkdir -pm755 /etc/apt/keyrings \
-    && curl -o /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key \
-    && curl -O --output-dir /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/$(grep VERSION_CODENAME= /etc/os-release | cut -d= -f2)/winehq-$(grep VERSION_CODENAME= /etc/os-release | cut -d= -f2).sources \
-    && apt update && DEBIAN_FRONTEND="noninteractive" apt -y --install-recommends install wine-${WINE_BRANCH} \
-    && apt autoremove --purge && apt clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Install winetricks (unused)
-RUN curl -o /tmp/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks \
-    && chmod +x /tmp/winetricks && install -m 755 /tmp/winetricks /usr/local/bin/winetricks \
-    && rm -rf /tmp/*
-
 # MISC
-RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/enshrouded /usr/local/etc/supervisor/conf.d/ /opt/enshrouded /home/enshrouded/.steam \
-    && groupadd -g "${PGID:-4711}" -o enshrouded \
-    && useradd -g "${PGID:-4711}" -u "${PUID:-4711}" -o --create-home enshrouded \
+RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/plainsofpain /usr/local/etc/supervisor/conf.d/ /opt/plainsofpain /home/plainsofpain/.steam /home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain \
+    && groupadd -g "${PGID:-4711}" -o plainsofpain \
+    && useradd -g "${PGID:-4711}" -u "${PUID:-4711}" -o --create-home plainsofpain \
     && sed -i '/imklog/s/^/#/' /etc/rsyslog.conf \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY ../supervisord.conf /etc/supervisor/supervisord.conf
-COPY --chmod=755 ../scripts/default/* ../scripts/wine/* /usr/local/etc/enshrouded/
+COPY --chmod=755 ../scripts/default/* /usr/local/etc/plainsofpain/
 
-WORKDIR /usr/local/etc/enshrouded
-CMD ["/usr/local/etc/enshrouded/bootstrap"]
+WORKDIR /usr/local/etc/plainsofpain
+CMD ["/usr/local/etc/plainsofpain/bootstrap"]
 ENTRYPOINT []

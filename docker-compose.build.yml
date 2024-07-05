@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  plainsofpain:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+    image: ghcr.io/traxo-xx/plainsofpain-server:dev
+    container_name: plainsofpain
+    hostname: plainsofpain
+    restart: unless-stopped
+    stop_grace_period: 90s
+    ports:
+      - "15637:15637/udp"
+    volumes:
+      - ./game:/opt/plainsofpain
+      - ./worldfiles:/home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain
+    environment:
+      - SERVER_NAME=PlainsOfPainTest
+      - PUID=4711
+      - PGID=4711
+      - UPDATE_CRON=*/30 * * * *
+      - log_level=50

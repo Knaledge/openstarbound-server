@@ -1,19 +1,17 @@
 #!/bin/bash
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
-. "$(dirname "$0")/enshrouded-bootstrap-shared"
+. "$(dirname "$0")/plainsofpain-bootstrap-shared"
 
 main() {
-  info "Running enshrouded-bootstrap"
+  info "Running plainsofpain-bootstrap"
   prepareEnshroudedAppFolders
   updateOrCreateEnshroudedServerConfig
   prepareSteamA2sPythonLibrary
   bootstrapHook
 
-  # no proton bootstrap needed
-
   initCrontab
-  supervisorctl start enshrouded-updater
+  supervisorctl start plainsofpain-updater
   info "Bootstrap complete"
 }
 

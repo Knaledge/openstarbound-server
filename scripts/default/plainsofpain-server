@@ -1,0 +1,82 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+plainsofpain_server_pid=-1
+timeout=60
+kill_signal=TERM
+
+cd "$install_path" || fatal "Could not cd $install_path"
+plainsofpain_server="$install_path/$plainsofpain_binary_path"
+
+main() {
+  waitForServerDownload
+  runServer
+}
+
+waitForServerDownload() {
+  while :; do
+    if [ -f "$plainsofpain_server" ]; then
+      break
+    else
+      debug "plainsofpain Server is not yet downloaded - waiting"
+      sleep 7
+    fi
+  done
+}
+
+runServer() {
+  info "Running plainsofpain-server"
+  debug "Server config ServerName:$SERVER_NAME - ServerPort:${SERVER_PORT:-7777} - ServerQueryPort:${SERVER_QUERYPORT:-27016}"
+
+  export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/plainsofpain/.steam/steam"
+  export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
+
+  chmod +x "$plainsofpain_server"
+  $plainsofpain_server -nographics -batchmode -localhost -startServer -ignorecompilererrors -overrideTerrainData -config "${install_path}/plainsofpain_server.json" &
+  plainsofpain_server_pid=$!
+  echo $plainsofpain_server_pid >"$plainsofpain_server_pidfile"
+
+  wait $plainsofpain_server_pid
+  debug "plainsofpain-server with PID $plainsofpain_server_pid stopped"
+
+  cleanup
+  info "Shutdown complete"
+  exit 0
+}
+
+cleanup() {
+  debug "cleanup pid file"
+  clearLock "$plainsofpain_server_pidfile"
+}
+
+shutdown() {
+  debug "Received signal to shut down plainsofpain-server"
+  if [ $plainsofpain_server_pid -eq -1 ]; then
+    debug "plainsofpain server is not running yet - aborting startup"
+    exit
+  fi
+  info "Shutting down plainsofpain server with PID $plainsofpain_server_pid"
+  kill -TERM $plainsofpain_server_pid
+  shutdown_timeout=$(($(date +%s) + timeout))
+  while [ -d "/proc/$plainsofpain_server_pid" ]; do
+    if [ "$(date +%s)" -gt $shutdown_timeout ]; then
+      shutdown_timeout=$(($(date +%s) + timeout))
+      warn "Timeout while waiting for server to shut down - sending SIG$kill_signal to PID $plainsofpain_server_pid"
+      kill -$kill_signal $plainsofpain_server_pid
+      case "$kill_signal" in
+      INT)
+        kill_signal=TERM
+        ;;
+      *)
+        kill_signal=KILL
+        ;;
+      esac
+    fi
+    debug "Waiting for plainsofpain Server with PID $plainsofpain_server_pid to shut down"
+    sleep 6
+  done
+}
+
+trap shutdown SIGINT SIGTERM
+main

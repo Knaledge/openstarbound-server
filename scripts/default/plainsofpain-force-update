@@ -3,9 +3,9 @@
 . "$(dirname "$0")/defaults"
 
 main() {
-  info "Force Enshrouded update"
+  info "Force Plains of Pain update"
   rm $version_file_path
-  supervisorctl start enshrouded-updater
+  supervisorctl start plainsofpain-updater
 }
 
 main

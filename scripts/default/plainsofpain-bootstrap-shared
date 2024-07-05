@@ -1,0 +1,84 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+preparePlainsofPainAppFolders() {
+  mkdir -p "$install_path"
+}
+
+initCrontab() {
+  crontab=$(mktemp)
+
+  if [ -n "$UPDATE_CRON" ]; then
+    debug "creating cron for update checks (schedule: $UPDATE_CRON)"
+    echo "$UPDATE_CRON supervisorctl start plainsofpain-updater >/dev/null 2>&1" >>"$crontab"
+  fi
+
+  # if [ -n "$BACKUP_CRON" ]; then
+  #   debug "creating cron for backups (schedule: $BACKUP_CRON)"
+  #   echo "$BACKUP_CRON supervisorctl start plainsofpain-backup >/dev/null 2>&1" >>"$crontab"
+  # fi
+
+  crontab "$crontab"
+  rm -f "$crontab"
+}
+
+prepareSteamA2sPythonLibrary() {
+  pip3 install python-a2s==1.3.0 --break-system-packages
+}
+
+bootstrapHook() {
+  if [ -n "$BOOTSTRAP_HOOK" ]; then
+    info "Running bootstrap hook: $BOOTSTRAP_HOOK"
+    eval "$BOOTSTRAP_HOOK"
+  fi
+}
+
+updateOrCreatePlainsofPainServerConfig() {
+  if [[ ! -e ${install_path}/plainsofpain_server.json ]]; then
+    mkdir -p ${install_path}
+    touch ${install_path}/plainsofpain_server.json
+
+    # write json to file ${install_path}/plainsofpain_server.json
+
+    cat >${install_path}/plainsofpain_server.json << EOF
+{  
+  "serverName":"PlainsofPain Server",
+  "password": "",
+  "worldId":0,
+  "mapId":0,
+  "seed":40377,
+  "difficulty":2,
+  "worldSize":5,
+  "port":7777,
+  "queryPort":27016,
+  "maxPlayers":10
+}
+EOF
+  fi
+
+  if [[ -n "$SERVER_NAME" ]]; then
+    echo "$(jq --arg name "$SERVER_NAME" '.name = $name' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
+  if [[ -n "$SERVER_PASSWORD" ]]; then
+    echo "$(jq --arg password "$SERVER_PASSWORD" '.password = $password' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
+  if [[ -n "$SERVER_SAVE_DIR" ]]; then
+    echo "$(jq --arg saveDirectory "$SERVER_SAVE_DIR" '.saveDirectory = $saveDirectory' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
+  if [[ -n "$SERVER_IP" ]]; then
+    echo "$(jq --arg ip "$SERVER_IP" '.ip = $ip' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
+  if [[ -n "$SERVER_QUERYPORT" ]]; then
+    echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
+  if [[ -n "$SERVER_SLOT_COUNT" ]]; then
+    echo "$(jq --argjson maxPlayers "$SERVER_SLOT_COUNT" '.maxPlayers = $maxPlayers' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
+}

@@ -1,14 +1,16 @@
 #!/bin/bash
 
 # Server Settings
-SERVER_NAME=${SERVER_NAME} # defaults to Enshrouded Server
+SERVER_NAME=${SERVER_NAME} # defaults to Plains of Pain Server
 SERVER_PASSWORD=${SERVER_PASSWORD}
-SERVER_SLOT_COUNT=${SERVER_SLOT_COUNT} # defaults to 16
-SERVER_PORT=${SERVER_PORT} # defaults to 15636
-SERVER_QUERYPORT=${SERVER_QUERYPORT} # defaults to 15637
-SERVER_IP=${SERVER_IP} # defaults to 0.0.0.0
-SERVER_SAVE_DIR=${SERVER_SAVE_DIR} # defaults to ./savegame
-SERVER_LOG_DIR=${SERVER_LOG_DIR} # defaults to ./logs
+SERVER_SEED=${SERVER_SEED} # defaults to 40337
+SERVER_WORLD_ID=${SERVER_WORLD_ID} # defaults to 0
+SERVER_MAP_ID=${SERVER_MAP_ID} # defaults to 0
+SERVER_DIFFICULTY=${SERVER_DIFFICULTY} # defaults to 2
+SERVER_WORLD_SIZE=${SERVER_WORLD_SIZE} # defaults to 40337
+SERVER_SLOT_COUNT=${SERVER_SLOT_COUNT} # defaults to 10
+SERVER_PORT=${SERVER_PORT} # defaults to 7777
+SERVER_QUERYPORT=${SERVER_QUERYPORT} # defaults to 27016
 
 # Steam Settings
 GAME_BRANCH=${GAME_BRANCH:-public}
@@ -33,8 +35,5 @@ BACKUP_POST_HOOK=${BACKUP_POST_HOOK:-}
 # MISC
 PUID=${PUID:-4711}
 PGID=${PGID:-4711}
-
-# WINE
-WINEDEBUG=${WINEDEBUG:-fixme-all}
 
 
