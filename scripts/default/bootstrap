@@ -91,7 +91,7 @@ verifyVariables() {
   fi
 
   if [[ -n "$SERVER_WORLD_SIZE" ]]; then
-    if [[ "$plainsofpain_world_sizes" =~ (^| )"$SERVER_WORLD_SIZE"($| ) ]]; then
+    if ! [[ "$plainsofpain_world_sizes" =~ (^| )"$SERVER_WORLD_SIZE"($| ) ]]; then
       error "SERVER_WORLD_SIZE must be one of these values: $plainsofpain_world_sizes (actual: $SERVER_WORLD_SIZE)"
       exit 1
     fi
