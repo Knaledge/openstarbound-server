@@ -2,7 +2,7 @@
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
 
-pidfile=$enshrouded_updater_pidfile
+pidfile=$plainsofpain_updater_pidfile
 latest_version=-1
 
 update() {
@@ -12,37 +12,37 @@ update() {
   fi
   trap shutdown SIGINT SIGTERM
   if ! checkForUpdates; then
-    if ! checkRunning "enshrouded-server"; then
-      info "Enshrouded server is not running - starting"
-      supervisorctl start enshrouded-server
+    if ! checkRunning "plainsofpain-server"; then
+      info "Plains of Pain server is not running - starting"
+      supervisorctl start plainsofpain-server
     fi
     return
   fi
   if ! checkServerEmpty; then
-    warn "Enshrouded server is not empty - update will not be performed"
+    warn "Plains of Pain server is not empty - update will not be performed"
     return
   fi
 
   doUpdate &
-  enshrouded_updater_pid=$!
-  echo $enshrouded_updater_pid >"$pidfile"
-  wait $enshrouded_updater_pid
+  plainsofpain_updater_pid=$!
+  echo $plainsofpain_updater_pid >"$pidfile"
+  wait $plainsofpain_updater_pid
 }
 
 doUpdate() {
   updatePreHook
-  if checkRunning "enshrouded-server"; then
-    supervisorctl stop enshrouded-server
+  if checkRunning "plainsofpain-server"; then
+    supervisorctl stop plainsofpain-server
   fi
   verifyCpuMhz
-  if ! downloadEnshrouded; then
-    warn "Download of Enshrouded server failed - aborting update"
-    supervisorctl start enshrouded-server
+  if ! downloadPlainsofPain; then
+    warn "Download of Plains of Pain server failed - aborting update"
+    supervisorctl start plainsofpain-server
     clearLock "$pidfile"
     return
   fi
   setCurrentVersion
-  supervisorctl start enshrouded-server
+  supervisorctl start plainsofpain-server
   updatePostHook
 
   clearLock "$pidfile"
@@ -65,13 +65,8 @@ verifyCpuMhz() {
 
 checkServerEmpty() {
   local connected_players
-
-  if [ -n "$STEAM_API_PUBLIC_IP" ] && [ -n "$STEAM_API_KEY" ]; then
-    warn "STEAM_API_PUBLIC_IP and STEAM_API_KEY are deprecated and will be removed in a future release"
-  else
-    if [ "$UPDATE_CHECK_PLAYERS" == "false" ]; then
-      return 0
-    fi
+  if [ "$UPDATE_CHECK_PLAYERS" == "false" ]; then
+    return 0
   fi
 
   connected_players=$(python3 -c "
@@ -115,6 +110,6 @@ updatePostHook() {
 }
 
 shutdown() {
-  debug "Received signal to shut down enshrouded-updater"
+  debug "Received signal to shut down plainsofpain-updater"
   clearLock "$pidfile"
 }

@@ -2,14 +2,14 @@
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
 
-pidfile=$enshrouded_backup_pidfile
+pidfile=$plainsofpain_backup_pidfile
 save_dir=""
 backup_dir=""
 
 main() {
-  info "Running enshrouded-backup"
+  info "Running plainsofpain-backup"
   prepareBackup
-  info "enshrouded-backup complete"
+  info "plainsofpain-backup complete"
 }
 
 prepareBackup() {
@@ -29,9 +29,9 @@ prepareBackup() {
   trap shutdown SIGINT SIGTERM
 
   backupAndCleanup &
-  enshrouded_backup_pid=$!
-  echo $enshrouded_backup_pid >"$pidfile"
-  wait $enshrouded_backup_pid
+  plainsofpain_backup_pid=$!
+  echo $plainsofpain_backup_pid >"$pidfile"
+  wait $plainsofpain_backup_pid
 }
 
 backupAndCleanup() {
@@ -95,7 +95,7 @@ cleanup() {
 
 getSaveDir() {
   if [ -z "$SERVER_SAVE_DIR" ]; then
-    SERVER_SAVE_DIR=$(jq -r '.saveDirectory' ${install_path}/enshrouded_server.json)
+    SERVER_SAVE_DIR=$(jq -r '.saveDirectory' ${install_path}/plainsofpain_server.json)
   fi
   if [[ "$SERVER_SAVE_DIR" == /* ]]; then
     save_dir="$SERVER_SAVE_DIR"
@@ -127,7 +127,7 @@ backupPostHook() {
 }
 
 shutdown() {
-  debug "Received signal to shut down enshrouded-backup"
+  debug "Received signal to shut down plainsofpain-backup"
   clearLock "$pidfile"
 }
 

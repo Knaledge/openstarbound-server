@@ -1,5 +1,5 @@
 name: 🚀 Feature request
-description: Suggest an idea for enshrouded-server
+description: Suggest an idea for plainsofpain-server
 labels: [ "feature-request 🚀" ]
 body:
   - type: checkboxes

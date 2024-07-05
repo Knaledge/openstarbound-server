@@ -1,56 +1,70 @@
-# Enshrouded-Dedicated-Server
+# Plains-of-Pain-Dedicated-Server
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/mornedhels/enshrouded-server.svg)](https://hub.docker.com/r/mornedhels/enshrouded-server)
-[![Docker Stars](https://img.shields.io/docker/stars/mornedhels/enshrouded-server.svg)](https://hub.docker.com/r/mornedhels/enshrouded-server)
-[![Docker Image Size (tag)](https://img.shields.io/docker/image-size/mornedhels/enshrouded-server/latest)](https://hub.docker.com/r/mornedhels/enshrouded-server)
-[![GitHub](https://img.shields.io/github/license/mornedhels/enshrouded-server)](https://github.com/mornedhels/enshrouded-server/blob/main/LICENSE)
+[![GitHub](https://img.shields.io/github/license/traxo-xx/plainsofpain-server)](https://github.com/traxo-xx/plainsofpain-server/blob/main/LICENSE)
 
-[![GitHub](https://img.shields.io/badge/Repository-mornedhels/enshrouded--server-blue?logo=github)](https://github.com/mornedhels/enshrouded-server)
+[![GitHub](https://img.shields.io/badge/Repository-traxo-xx/plainsofpain--server-blue?logo=github)](https://github.com/traxo-xx/plainsofpain-server)
 
-Docker image for the game Enshrouded. The image is based on
-the [steamcmd](https://hub.docker.com/r/cm2network/steamcmd/) image and uses supervisor to handle startup, automatic
-updates and cleanup.
+Docker image for the game Plains of Pain. The repo is based on the [enshrouded-server](https://github.com/mornedhels/enshrouded-server) repo made by [mornedhels](https://github.com/mornedhels) and uses supervisor to handle startup, automatic updates and cleanup.
+
+## Creating world files on Windows
+
+**Linux generates slightly different worlds, so they are not perfectly 1:1 same with those
+generated on Windows. Because of that, world data has to be generated on
+Windows and then copied to the docker host.**
+
+* Run the game (or Windows Dedicated Server) with the CLI argument `-cacheTerrainData`
+* Create a new world with desired size, seed and map
+* Play the single player (let game generate the world), if you are in the world with character, you can safely leave/quit the game
+* This process creates files name like:
+    * `td_<seed>_<worldSize>_<mapId>.terraindata`
+        * example (default): `td_40377_5_0.terraindata`
+    * `tmp_wcstrg_localhost_<seed>_<worldSize>_<mapId>_<worldId>.dat`
+        * example (default): `tmp_wcstrg_localhost_40377_5_0_0.dat`
+* Copy those 2 files into the path where that mount as the folder for the world/map files (`./worldfiles` in the examples further down)
+* You can now run the docker container
 
 ## Environment Variables
 
 | Variable                          | Required | Default             | Contraints            | Description                                                                                                        | WIP | 
 |-----------------------------------|:--------:|---------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------|:---:|
-| `SERVER_NAME`                     |          | `Enshrouded Server` | string                | The name of the server                                                                                             |  ️  |
+| `SERVER_NAME`                     |          | `Plains of Pain Server` | string                | The name of the server                                                                                             |  ️  |
 | `SERVER_PASSWORD`                 |          |                     | string                | The password for the server                                                                                        |     |
-| `SERVER_SLOT_COUNT`               |          | `16`                | integer (1-16)        | Max allowed concurrent players                                                                                     |     |
-| `SERVER_QUERYPORT`                |          | `15637`             | integer               | The steam query port for the server                                                                                |     |
-| `SERVER_IP`                       |          | `0.0.0.0`           | string (ipv4)         | Server IP for internal network configuration                                                                       |     |
-| `SERVER_SAVE_DIR`                 |          | `./savegame`        | string                | Folder for savegames (relative and absolute paths are supported)                                                   |     |
-| `SERVER_LOG_DIR`                  |          | `./logs`            | string                | Folder for logs (relative and absolute paths are supported)                                                        |     |
+| `SERVER_SEED`                 |          | `40377`                    | integer                | The server's map seed                                                                                        |     |
+| `SERVER_WORLD_ID`                 |          |                     | integer                | The server's world ID                                                                                        |     |
+| `SERVER_DIFFICULTY`               |          | `2`                 | integer                | The server's difficulty setting.
+0 = Tourist
+1 = Rookies
+2 = True
+Wastelander
+3 = Veteran
+4 = Overlord                                                                                             |  ️  |
+| `SERVER_MAP_ID`                     |          | `0` | integer                | ID of the map that should be used
+0 = Wasteland
+v0.4
+1 = Dunes v0.4
+2 = Dunes v0.5                                                                                             |  ️  |
+| `SERVER_WORLD_SIZE`                     |          | `5` | integer                | Size of the server's map
+3 = S
+5 = M
+7 = L
+9 = XL
+11 = XXL                                                                                             |  ️  |
+| `SERVER_SLOT_COUNT`               |          | `10`                | integer (1-16)        | Max allowed concurrent players                                                                                     |     |
+| `SERVER_QUERYPORT`                |          | `27016`             | integer               | The steam query port for the server                                                                                |     |
 | `PUID`                            |          | `4711`              | integer               | The UID to run server as (file permission)                                                                         |     |
 | `PGID`                            |          | `4711`              | integer               | The GID to run server as (file permission)                                                                         |     |
 | `UPDATE_CRON`                     |          |                     | string (cron format)  | Update game server files cron (eg. `*/30 * * * *` check for updates every 30 minutes)                              |     |
 | `UPDATE_CHECK_PLAYERS`            |          | `false`             | boolean (true, false) | Should the update check if someone is connected                                                                    |     |
-| `BACKUP_CRON`                     |          |                     | string (cron format)  | Backup game server files cron (eg. `*/15 * * * *` backup saves every 15 minutes) - don't set cron under 10 minutes |     |
-| `BACKUP_DIR`                      |          | `./backup`          | string                | Folder for backups (relative and absolute paths are supported)                                                     |     |
-| `BACKUP_MAX_COUNT`                |          | `0`                 | integer               | Number of backups to keep (0 means infinite)                                                                       |     |
-| `GAME_BRANCH`                     |          | `public`            | string                | Steam branch (eg. testing) of the Enshrouded server                                                                |     |
+| `GAME_BRANCH`                     |          | `public`            | string                | Steam branch (eg. testing) of the Plains of Pain server                                                                |     |
 | `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
-| **[Server Roles](#server-roles)** |          |                     |                       | prefix with `SERVER_ROLE_<index>_` e.g. `SERVER_ROLE_0_NAME`                                                       | ⚠️  |
-|   `NAME`                          |          | `Default`           | string                | The name of the server role on index (starting with 0)                                                             | ⚠️  |
-|   `PASSWORD`                      |          | `""`                | string                | The password for the server role                                                                                   | ⚠️  |
-|   `CAN_KICK_BAN`                  |          | `false`             | boolean (true, false) | Permission to kick and ban players                                                                                 | ⚠️  |
-|   `CAN_ACCESS_INVENTORIES`        |          | `false`             | boolean (true, false) | Permission to access inventories                                                                                   | ⚠️  |
-|   `CAN_EDIT_BASE`                 |          | `false`             | boolean (true, false) | Permission to edit the base                                                                                        | ⚠️  |
-|   `CAN_EXTEND_BASE`               |          | `false`             | boolean (true, false) | Permission to extend the base                                                                                      | ⚠️  |
-|   `RESERVED_SLOTS`                |          | `0`                 | integer               | Number of reserved slots for the server role                                                                       | ⚠️  |
 
-All environment Variables prefixed with SERVER, are the available enshrouded_server.json options
-(see [Enshrouded Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055441447709-Dedicated-Server-Configuration))
+All environment Variables prefixed with SERVER, are the available config.json options
 
 ⚠️: Work in Progress
 
 ### Additional Information
 
 * During the update process, the container temporarily requires more disk space (up to 2x the game size).
-* Server role configuration can be done via the `enshrouded_server.json` file directly or the `SERVER_ROLE_<index>_XYZ`
-  environment vars. The file is located in the `game/server` folder. More information can be found in
-  the [official documentation](https://enshrouded.zendesk.com/hc/en-us/articles/19191581489309-Server-Roles-Configuration).
 
 ### Hooks
 
@@ -68,75 +82,74 @@ The scripts will wait for the hook to resolve/return before continuing.
 
 ## Image Tags
 
-| Tag                | Virtualization | Description                              |
-|--------------------|----------------|------------------------------------------|
-| `latest`           | proton         | Latest image based on proton             |
-| `<version>`        | proton         | Pinned image based on proton (>= 1.x.x)  |
-| `stable-proton`    | proton         | Same as latest image                     |
-| `<version>-proton` | proton         | Pinned image based on proton             |
-| `stable-wine`      | wine           | Latest image based on wine               |
-| `<version>-wine`   | wine           | Pinned image based on wine               |
-| `dev-proton`       | proton         | Dev build based on proton                |
-| `dev-wine`         | wine           | Dev build based on wine                  |
-| `dev-wine-staging` | wine           | Dev build based on wine (staging branch) |
+| Tag                | Description                              |
+|--------------------|------------------------------------------|
+| `latest`           | Latest image                             |
+| `<version>`        | Pinned image                 (>= 1.x.x)  |
+| `dev`              | Dev build                                |
 
 ## Ports (default)
 
 | Port      | Description      |
 |-----------|------------------|
-| 15637/udp | Steam query port |
+| 7777/udp  | Server port      |
+| 27016/udp | Steam query port |
 
 ## Volumes
 
-| Volume          | Description                      |
-|-----------------|----------------------------------|
-| /opt/enshrouded | Game files (steam download path) |
+| Volume            | Description                      |
+|-------------------|----------------------------------|
+| /opt/plainsofpain | Game files (steam download path) |
 
 **Note:** By default the volumes are created with the UID and GID 4711 (that user should not exist). To change this, set
 the environment variables `PUID` and `PGID`.
 
 ## Recommended System Requirements
 
-* CPU: >= 6 cores
-* RAM: >= 16 GB
-* Disk: >= 30 GB (preferably SSD)
-
-**[Official Docs](https://enshrouded.zendesk.com/hc/en-us/articles/16055628734109-Recommended-Server-Specifications)**
+* 4 GB RAM and 2 CPU cores (for small world)
+* 8 GB RAM and 4-6 CPU cores (for large world)
+* 16-32 GB RAM, 8-16 CPU cores for 200 players on any size world
+* Disk: >= 400MB
 
 ## Usage
 
 ### Docker
 
 ```bash
-docker run -d --name enshrouded \
-  --hostname enshrouded \
+docker run -d --name plainsofpain \
+  --hostname plainsofpain \
   --restart=unless-stopped \
-  -p 15637:15637/udp \
-  -v ./game:/opt/enshrouded \
-  -e SERVER_NAME="Enshrouded Server" \
+  -p 7777:7777/udp \
+  -p 27016:27016/udp \
+  -v ./game:/opt/plainsofpain \
+  -e SERVER_NAME="Plains of Pain Server" \
   -e SERVER_PASSWORD="secret" \
   -e UPDATE_CRON="*/30 * * * *" \
   -e PUID=4711 \
   -e PGID=4711 \
-  mornedhels/enshrouded-server:latest
+  ghcr.io/traxo-xx/plainsofpain-server:latest
 ```
 
 ### Docker Compose
 
 ```yaml
+version: "3.8"
+
 services:
-  enshrouded:
-    image: mornedhels/enshrouded-server:latest
-    container_name: enshrouded
-    hostname: enshrouded
+  plainsofpain:
+    image: ghcr.io/traxo-xx/plainsofpain-server:latest
+    container_name: plainsofpain
+    hostname: plainsofpain
     restart: unless-stopped
     stop_grace_period: 90s
     ports:
-      - "15637:15637/udp"
+      - "7777:7777/udp"
+      - "27016:27016/udp"
     volumes:
-      - ./game:/opt/enshrouded
+      - ./game:/opt/plainsofpain
+      - ./worldfiles:/home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain
     environment:
-      - SERVER_NAME=Enshrouded Server
+      - SERVER_NAME=Plains of Pain Server
       - SERVER_PASSWORD=secret
       - UPDATE_CRON=*/30 * * * *
       - PUID=4711
@@ -147,19 +160,23 @@ services:
 location (eg. /var/lib/docker) you can use the following compose file:
 
 ```yaml
+version: "3.8"
+
 services:
-  enshrouded:
-    image: mornedhels/enshrouded-server:latest
-    container_name: enshrouded
-    hostname: enshrouded
+  plainsofpain:
+    image: ghcr.io/traxo-xx/plainsofpain-server:latest
+    container_name: plainsofpain
+    hostname: plainsofpain
     restart: unless-stopped
     stop_grace_period: 90s
     ports:
-      - "15637:15637/udp"
+      - "7777:7777/udp"
+      - "27016:27016/udp"
     volumes:
-      - game:/opt/enshrouded
+      - game:/opt/plainsofpain
+      - worldfiles:/home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain
     environment:
-      - SERVER_NAME=Enshrouded Server
+      - SERVER_NAME=Plains of Pain Server
       - SERVER_PASSWORD=secret
       - UPDATE_CRON=*/30 * * * *
       - PUID=4711
@@ -167,123 +184,14 @@ services:
 
 volumes:
   game:
-```
-
-### Server Roles
-
-To configure server roles, you can use the `SERVER_ROLE_<index>_` environment variables. The index starts at 0. It will
-find the corresponding role in the `enshrouded_server.json` file and update the values accordingly.
-You can also just edit the `enshrouded_server.json` file directly.
-
-<details><summary>Example</summary>
-
-#### Example
-
-With environment variables:
-
-```yaml
-services:
-  enshrouded:
-    image: mornedhels/enshrouded-server:latest
-    container_name: enshrouded
-    hostname: enshrouded
-    restart: unless-stopped
-    stop_grace_period: 90s
-    ports:
-      - "15637:15637/udp"
-    volumes:
-      - ./game:/opt/enshrouded
-    environment:
-      - SERVER_NAME=Enshrouded Server
-      - SERVER_ROLE_0_NAME=Admins
-      - SERVER_ROLE_0_PASSWORD=secret1
-      - SERVER_ROLE_0_CAN_KICK_BAN=true
-      - SERVER_ROLE_0_CAN_ACCESS_INVENTORIES=true
-      - SERVER_ROLE_0_CAN_EDIT_BASE=true
-      - SERVER_ROLE_0_CAN_EXTEND_BASE=true
-      - SERVER_ROLE_0_RESERVED_SLOTS=1
-      - SERVER_ROLE_1_NAME=Friends
-      - SERVER_ROLE_1_PASSWORD=secret2
-      - SERVER_ROLE_1_CAN_ACCESS_INVENTORIES=true
-      - SERVER_ROLE_1_CAN_EDIT_BASE=true
-      - SERVER_ROLE_1_CAN_EXTEND_BASE=true
-      - SERVER_ROLE_1_RESERVED_SLOTS=3
-      - SERVER_ROLE_2_NAME=Guests
-      - SERVER_ROLE_2_PASSWORD=secret3
-```
-
-Creates the following `enshrouded_server.json` file:
-
-```json
-{
-  "name": "Enshrouded Server",
-  "password": "",
-  "saveDirectory": "./savegame",
-  "logDirectory": "./logs",
-  "ip": "0.0.0.0",
-  "queryPort": 15637,
-  "slotCount": 16,
-  "userGroups": [
-    {
-      "name": "Admins",
-      "password": "secret1",
-      "canKickBan": true,
-      "canAccessInventories": true,
-      "canEditBase": true,
-      "canExtendBase": true,
-      "reservedSlots": 1
-    },
-    {
-      "name": "Friends",
-      "password": "secret2",
-      "canKickBan": false,
-      "canAccessInventories": true,
-      "canEditBase": true,
-      "canExtendBase": true,
-      "reservedSlots": 3
-    },
-    {
-      "name": "Guests",
-      "password": "secret3",
-      "canKickBan": false,
-      "canAccessInventories": false,
-      "canEditBase": false,
-      "canExtendBase": false,
-      "reservedSlots": 0
-    }
-  ]
-}
+  worldfiles:
 ```
 
 </details>
 
-## Backup
-
-The image includes a backup script that creates a zip file of the last saved game state. To enable backups, set
-the `BACKUP_CRON` environment variable. To limit the number of backups, set the `BACKUP_MAX_COUNT` environment variable.
-
-To restore a backup, stop the server and simply extract the zip file to the savegame folder and start the server up
-again. If you want to keep the current savegame, make sure to make a backup before deleting or overwriting the files.
-
-> [!WARNING]  
-> Verify the permissions of the extracted files. The files should be owned by the user with the UID and GID set in the
-> environment variables. If the image is running in privileged mode, the files will be automatically chowned to the
-> given `UID` and `GID`.
-
-## Commands
-
-* **Force Update:**
-  ```bash
-  docker compose exec enshrouded supervisorctl start enshrouded-force-update
-  ```
-* **Reset Server Roles:** (Restarts the whole docker container) ⚠️
-  ```bash
-  docker compose exec enshrouded supervisorctl start enshrouded-reset-roles
-  ```
-
 ## Known Issues
 
-* The server doesn't start (not logging `'HostOnline' (up)!`) or the update fails with following error:
+* The server doesn't start or the update fails with following error:
   ```
   Error! App '2278520' state is 0x202 after update job.
   ```

@@ -1,10 +1,11 @@
 #!/bin/bash
-install_path=/opt/enshrouded/server
-version_file_path=/opt/enshrouded/current_version
+install_path=/opt/plainsofpain/server
+version_file_path=/opt/plainsofpain/current_version
 steamcmd_path=/usr/bin/steamcmd
-steam_app_id=2278520
-enshrouded_binary_path=enshrouded_server.exe
+steam_app_id=2227360
+plainsofpain_binary_path=PlainsOfPain.x86_64
 savefile_name=3ad85aea
+plainsofpain_world_sizes="3 5 7 9 11"
 
 # trap SIGUSR1 as it is being used to check
 # for process aliveness when an existing
@@ -12,21 +13,13 @@ savefile_name=3ad85aea
 trap ':' USR1
 
 # Collection of PID files
-enshrouded_server_pidfile=/var/run/enshrouded/enshrouded-server.pid
-enshrouded_updater_pidfile=/var/run/enshrouded/enshrouded-updater.pid
-enshrouded_backup_pidfile=/var/run/enshrouded/enshrouded-backup.pid
+plainsofpain_server_pidfile=/var/run/plainsofpain/plainsofpain-server.pid
+plainsofpain_updater_pidfile=/var/run/plainsofpain/plainsofpain-updater.pid
+plainsofpain_backup_pidfile=/var/run/plainsofpain/plainsofpain-backup.pid
 
 # Syslog supervisor config file
 supervisor_syslog_conf=/usr/local/etc/supervisor/conf.d/syslog.conf
 rsyslog_conf=/etc/rsyslog.d/stdout.conf
-
-# WINE
-WINEPREFIX=/home/enshrouded/
-WINEARCH=win64
-WINEPATH=$install_path
-
-# Proton
-PROTONPREFIX="$install_path/steamapps/compatdata/$steam_app_id/pfx"
 
 # log levels
 debug=50
