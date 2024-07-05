@@ -9,7 +9,8 @@ services:
     restart: unless-stopped
     stop_grace_period: 90s
     ports:
-      - "15637:15637/udp"
+      - "7777:7777/udp"
+      - "27016:27016/udp"
     volumes:
       - ./game:/opt/plainsofpain
       - ./worldfiles:/home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain
