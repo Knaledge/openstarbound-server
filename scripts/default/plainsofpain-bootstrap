@@ -5,8 +5,8 @@
 
 main() {
   info "Running plainsofpain-bootstrap"
-  prepareEnshroudedAppFolders
-  updateOrCreateEnshroudedServerConfig
+  preparePlainsofPainAppFolders
+  updateOrCreatePlainsofPainServerConfig
   prepareSteamA2sPythonLibrary
   bootstrapHook
 
