@@ -33,7 +33,7 @@ runServer() {
   export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
 
   chmod +x "$plainsofpain_server"
-  $plainsofpain_server -nographics -batchmode -localhost -startServer -ignorecompilererrors -overrideTerrainData -config "${install_path}/plainsofpain_server.json" &
+  $plainsofpain_server -nographics -batchmode -localhost -startServer -ignorecompilererrors -overrideTerrainData -worldId "${SERVER_WORLD_ID}" -config "${install_path}/plainsofpain_server.json" &
   plainsofpain_server_pid=$!
   echo $plainsofpain_server_pid >"$plainsofpain_server_pidfile"
 
