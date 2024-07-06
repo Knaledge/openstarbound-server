@@ -72,7 +72,7 @@ checkServerEmpty() {
   connected_players=$(python3 -c "
 try:
     import a2s
-    print(len(a2s.players(('127.0.0.1',${SERVER_QUERYPORT:-15637}))))
+    print(len(a2s.players(('127.0.0.1',${SERVER_QUERYPORT:-27016}))))
 except Exception as e:
     print('null')
 ")
