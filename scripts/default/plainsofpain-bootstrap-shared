@@ -63,6 +63,8 @@ EOF
 
   if [[ -n "$SERVER_PASSWORD" ]]; then
     echo "$(jq --arg password "$SERVER_PASSWORD" '.password = $password' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  else
+    echo "$(jq '.password = ""' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
   fi
 
   if [[ -n "$SERVER_SEED" ]]; then
