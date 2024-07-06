@@ -45,9 +45,9 @@ updateOrCreatePlainsofPainServerConfig() {
 {  
   "serverName":"PlainsofPain Server",
   "password": "",
+  "seed":40377,
   "worldId":0,
   "mapId":0,
-  "seed":40377,
   "difficulty":2,
   "worldSize":5,
   "port":7777,
@@ -58,19 +58,35 @@ EOF
   fi
 
   if [[ -n "$SERVER_NAME" ]]; then
-    echo "$(jq --arg name "$SERVER_NAME" '.name = $name' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+    echo "$(jq --arg serverName "$SERVER_NAME" '.serverName = $serverName' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
   fi
 
   if [[ -n "$SERVER_PASSWORD" ]]; then
     echo "$(jq --arg password "$SERVER_PASSWORD" '.password = $password' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
   fi
 
-  if [[ -n "$SERVER_SAVE_DIR" ]]; then
-    echo "$(jq --arg saveDirectory "$SERVER_SAVE_DIR" '.saveDirectory = $saveDirectory' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  if [[ -n "$SERVER_SEED" ]]; then
+    echo "$(jq --arg seed "$SERVER_SEED" '.seed = $seed' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
   fi
 
-  if [[ -n "$SERVER_IP" ]]; then
-    echo "$(jq --arg ip "$SERVER_IP" '.ip = $ip' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  if [[ -n "$SERVER_WORLD_ID" ]]; then
+    echo "$(jq --arg worldId "$SERVER_WORLD_ID" '.worldId = $worldId' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
+  if [[ -n "$SERVER_MAP_ID" ]]; then
+    echo "$(jq --arg mapId "$SERVER_MAP_ID" '.mapId = $mapId' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
+  if [[ -n "$SERVER_DIFFICULTY" ]]; then
+    echo "$(jq --arg difficulty "$SERVER_DIFFICULTY" '.difficulty = $difficulty' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
+  if [[ -n "$SERVER_WORLD_SIZE" ]]; then
+    echo "$(jq --arg worldSize "$SERVER_WORLD_SIZE" '.worldSize = $worldSize' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
+  if [[ -n "$SERVER_SAVE_DIR" ]]; then
+    echo "$(jq --arg saveDirectory "$SERVER_SAVE_DIR" '.saveDirectory = $saveDirectory' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
   fi
 
   if [[ -n "$SERVER_QUERYPORT" ]]; then
