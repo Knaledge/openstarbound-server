@@ -188,6 +188,13 @@ volumes:
 
 </details>
 
+## Commands
+
+* **Force Update:**
+  ```bash
+  docker compose exec plainsofpain supervisorctl start plainsofpain-force-update
+  ```
+
 ## Known Issues
 
 * The server doesn't start or the update fails with following error:
