@@ -43,9 +43,7 @@ Windows and then copied to the docker host.**
 | `GAME_BRANCH`                     |          | `public`            | string                | Steam branch (eg. testing) of the Plains of Pain server                                                                |     |
 | `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
 
-All environment Variables prefixed with SERVER, are the available config.json options
-
-⚠️: Work in Progress
+All environment Variables prefixed with SERVER are the available config.json options
 
 ### Additional Information
 
@@ -62,8 +60,6 @@ All environment Variables prefixed with SERVER, are the available config.json op
 | `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |     |
 
 The scripts will wait for the hook to resolve/return before continuing.
-
-⚠️: Work in Progress
 
 ## Image Tags
 
@@ -82,15 +78,17 @@ The scripts will wait for the hook to resolve/return before continuing.
 
 ## Volumes
 
-| Volume            | Description                      |
-|-------------------|----------------------------------|
-| /opt/plainsofpain | Game files (steam download path) |
+| Volume                                                           | Description                      |
+|------------------------------------------------------------------|----------------------------------|
+| /opt/plainsofpain                                                | Game files (steam download path) |
+| /home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain | World filesand character files   |
 
 **Note:** By default the volumes are created with the UID and GID 4711 (that user should not exist). To change this, set
 the environment variables `PUID` and `PGID`.
 
 ## Recommended System Requirements
 
+* 50-250 kbps of bandwidth per 1 player
 * 4 GB RAM and 2 CPU cores (for small world)
 * 8 GB RAM and 4-6 CPU cores (for large world)
 * 16-32 GB RAM, 8-16 CPU cores for 200 players on any size world
