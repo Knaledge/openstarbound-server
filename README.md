@@ -78,10 +78,10 @@ The scripts will wait for the hook to resolve/return before continuing.
 
 ## Volumes
 
-| Volume                                                           | Description                      |
-|------------------------------------------------------------------|----------------------------------|
-| /opt/plainsofpain                                                | Game files (steam download path) |
-| /home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain | World filesand character files   |
+| Volume                                                           | Description                       |
+|------------------------------------------------------------------|-----------------------------------|
+| /opt/plainsofpain                                                | Game files (steam download path)  |
+| /home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain | World files and character files   |
 
 **Note:** By default the volumes are created with the UID and GID 4711 (that user should not exist). To change this, set
 the environment variables `PUID` and `PGID`.
