@@ -8,9 +8,11 @@ Docker image for the game Plains of Pain. The repo is based on the [enshrouded-s
 
 ## Creating world files on Windows
 
-**Linux generates slightly different worlds, so they are not perfectly 1:1 same with those
+
+> [!IMPORTANT]
+> Linux generates slightly different worlds, so they are not perfectly 1:1 same with those
 generated on Windows. Because of that, world data has to be generated on
-Windows and then copied to the docker host.**
+Windows and then copied to the docker host.
 
 * Run the game (or Windows Dedicated Server) with the CLI argument `-cacheTerrainData`
 * Create a new world with desired size, seed and map
@@ -149,8 +151,8 @@ services:
       - PGID=4711
 ```
 
-**Note:** The volumes are created next to the docker-compose.yml file. If you want to create the volumes, in the default
-location (eg. /var/lib/docker) you can use the following compose file:
+**Note:** The volumes are created next to the docker-compose.yml file. If you want to create the volumes in the default
+location (eg. /var/lib/docker), you can use the following compose file:
 
 ```yaml
 services:
@@ -183,6 +185,9 @@ volumes:
   game:
   worldfiles:
 ```
+
+> [!NOTE]
+> The image is also available on Docker Hub: [thatcasualgamingguy/plainsofpain-server](https://hub.docker.com/r/thatcasualgamingguy/plainsofpain-server)
 
 </details>
 
