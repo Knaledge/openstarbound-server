@@ -48,4 +48,4 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}:dev
-            ${{ vars.DOCKER_HUB_USERNAME }}:dev
+            ${{ vars.DOCKER_HUB_USERNAME }}/plainsofpain-server:dev

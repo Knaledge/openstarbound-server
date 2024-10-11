@@ -37,5 +37,5 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }}
             ghcr.io/${{ github.repository }}:latest
-            ${{ vars.DOCKER_HUB_USERNAME }}:${{ github.event.release.tag_name }}
-            ${{ vars.DOCKER_HUB_USERNAME }}:latest
+            ${{ vars.DOCKER_HUB_USERNAME }}/plainsofpain-server:${{ github.event.release.tag_name }}
+            ${{ vars.DOCKER_HUB_USERNAME }}/plainsofpain-server:latest
