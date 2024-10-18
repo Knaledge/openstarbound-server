@@ -87,6 +87,10 @@ EOF
     echo "$(jq --arg worldSize "$SERVER_WORLD_SIZE" '.worldSize = $worldSize' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
   fi
 
+  if [[ -n "$SERVER_PORT" ]]; then
+    echo "$(jq --argjson port "$SERVER_PORT" '.port = $port' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
+  fi
+
   if [[ -n "$SERVER_QUERYPORT" ]]; then
     echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${install_path}/plainsofpain_server.json)" > ${install_path}/plainsofpain_server.json
   fi
