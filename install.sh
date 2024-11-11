@@ -25,6 +25,9 @@ download_url=$(echo "$response" | jq -r '.assets[] | select(.name == "linux-stat
 if [ -n "$download_url" ]; then
     echo "Downloading linux-static.tar.gz from the latest release..."
     curl -L "$download_url" -o /tmp/linux-static.tar.gz
+    
+    echo "Creating server folder"
+    mkdir -p /starbound/server
 
     echo "Extracting linux-static.tar.gz ..."
     tar -xzf /tmp/linux-static.tar.gz -C /starbound/server
