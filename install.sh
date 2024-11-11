@@ -27,7 +27,7 @@ if [ -n "$download_url" ]; then
     curl -L "$download_url" -o /tmp/linux-static.tar.gz
 
     echo "Extracting linux-static.tar.gz ..."
-    tar -xzf /tmp/linux-static.tar.gz -C /starbound/steamapps/common/Starbound/server
+    tar -xzf /tmp/linux-static.tar.gz -C /starbound/server
 
     echo "Cleaning up downloaded file..."
     rm /tmp/linux-static.tar.gz
