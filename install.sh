@@ -1,19 +1,34 @@
 #!/bin/bash
 
-read -p "Enter Steam username: " STEAM_USER
-read -sp "Enter Steam password: " STEAM_PASSWORD
+skip_verify=false
+for arg in "$@"; do
+    if [ "$arg" == "--skip-verify" ]; then
+        skip_verify=true
+        break
+    fi
+done
+
+if [ -z "$STEAM_USER" ]; then
+    read -p "Enter Steam username: " STEAM_USER
+fi
+
+if [ -z "$STEAM_PASS" ]; then
+    read -sp "Enter Steam password: " STEAM_PASS
+fi
 echo
 
-/steamcmd/steamcmd.sh \
-    +force_install_dir /starbound/ \
-    +login "$STEAM_USER" "$STEAM_PASSWORD" \
-    +app_update 211820 validate \
-    +quit
+if [ "$skip_verify" = false ]; then
+    /steamcmd/steamcmd.sh \
+        +force_install_dir /starbound/ \
+        +login "$STEAM_USER" "$STEAM_PASS" \
+        +app_update 211820 validate \
+        +quit
 
-# Check if the SteamCMD login was successful
-if [ $? -ne 0 ]; then
-    echo "SteamCMD failed. Check the output for more details."
-    exit 1
+    # Check if the SteamCMD login was successful
+    if [ $? -ne 0 ]; then
+        echo "SteamCMD failed. Check the output for more details."
+        exit 1
+    fi
 fi
 
 response=$(curl -s "https://api.github.com/repos/xStarbound/xStarbound/releases/latest")
@@ -28,7 +43,7 @@ if [ -n "$download_url" ]; then
     curl -L "$download_url" -o /tmp/linux-static.tar.gz
     
     echo "Downloading assets.pak from the latest release..."
-    curl -L "$download_url" -o /tmp/assets.pak
+    curl -L "$assets_url" -o /tmp/assets.pak
 
     echo "Creating server folder"
     mkdir -p /starbound/server
