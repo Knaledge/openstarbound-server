@@ -1,4 +1,4 @@
-FROM steamcmd/steamcmd:ubuntu-24@sha256:0b597447391c18b26c5374ee0c6e8c76c2eff6bb91b1381680a695cc7753056a
+FROM steamcmd/steamcmd:ubuntu-24@sha256:f2455505e4c474acfbd0763cb83e481c824e7e59dd4086251bd44edecb9d9f03
 LABEL maintainer="get.to.the.gone@gmail.com"
 LABEL org.opencontainers.image.description="Docker image for the game Plains of Pain. The repo is based on the [enshrouded-server](https://github.com/mornedhels/enshrouded-server) repo made by [mornedhels](https://github.com/mornedhels) and uses supervisor to handle startup, automatic updates and cleanup."
 
