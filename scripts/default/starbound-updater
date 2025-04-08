@@ -1,21 +1,21 @@
 #!/bin/bash
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
-. "$(dirname "$0")/plainsofpain-updater-shared"
+. "$(dirname "$0")/starbound-updater-shared"
 
 main() {
-  info "Running plainsofpain-updater"
+  info "Running starbound-updater"
   update
-  info "plainsofpain-updater complete"
+  info "starbound-updater complete"
 }
 
 downloadPlainsofPain() {
-  debug "Downloading Plains of Pain server"
+  debug "Downloading Starbound server"
 
   mkdir -p "$install_path/steamapps/compatdata/$steam_app_id"
-  export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/plainsofpain/.steam/steam"
+  export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/starbound/.steam/steam"
   export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
-  export STEAM_DIR="/home/plainsofpain/.steam/steam/"
+  export STEAM_DIR="/home/starbound/.steam/steam/"
 
   $steamcmd_path +force_install_dir "$install_path" +login anonymous +app_update $steam_app_id "$GAME_BRANCH $STEAMCMD_ARGS" +quit
 }
@@ -33,18 +33,18 @@ checkForUpdates() {
 
   if [ "$latest_version" == "null" ] || [ "$latest_version" == "" ] || [ "$latest_version" == "-1" ]; then
     if [ "$current_version" == "0" ]; then
-      warn "Unable to determine latest version of Plains of Pain server! No version currently installed, update server anyways"
+      warn "Unable to determine latest version of Starbound server! No version currently installed, update server anyways"
       return 0
     fi
-    warn "Unable to determine latest version of Plains of Pain server! No update will be performed"
+    warn "Unable to determine latest version of Starbound server! No update will be performed"
     return 1
   fi
 
   if [ "$current_version" != "$latest_version" ]; then
-    info "Plains of Pain server needs to be updated"
+    info "Starbound server needs to be updated"
     return 0
   else
-    info "Plains of Pain server is already the latest version"
+    info "Starbound server is already the latest version"
     return 1
   fi
 }
