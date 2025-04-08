@@ -2,14 +2,14 @@
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
 
-pidfile=$plainsofpain_backup_pidfile
+pidfile=$starbound_backup_pidfile
 save_dir=""
 backup_dir=""
 
 main() {
-  info "Running plainsofpain-backup"
+  info "Running starbound-backup"
   prepareBackup
-  info "plainsofpain-backup complete"
+  info "starbound-backup complete"
 }
 
 prepareBackup() {
@@ -29,9 +29,9 @@ prepareBackup() {
   trap shutdown SIGINT SIGTERM
 
   backupAndCleanup &
-  plainsofpain_backup_pid=$!
-  echo $plainsofpain_backup_pid >"$pidfile"
-  wait $plainsofpain_backup_pid
+  starbound_backup_pid=$!
+  echo $starbound_backup_pid >"$pidfile"
+  wait $starbound_backup_pid
 }
 
 backupAndCleanup() {
@@ -45,7 +45,8 @@ backup() {
   local latest_save_index latest_savefile_name backup_file_name
   debug "run backup"
 
-  # parse 3ad85aea-index (json) to get latest save file
+  # parse 3ad85aea-index (json) to get latest save file 
+  # TODO: Determine if this is needed with Starbound; it may be that this viable for Starbound "universe" file 
   latest_save_index=$(jq -r '.latest' "$save_dir/$savefile_name-index")
 
   # if index = 0 save game is just $savefile_name otherwise $savefile_name-$index
@@ -95,7 +96,7 @@ cleanup() {
 
 getSaveDir() {
   if [ -z "$SERVER_SAVE_DIR" ]; then
-    SERVER_SAVE_DIR=$(jq -r '.saveDirectory' ${install_path}/plainsofpain_server.json)
+    SERVER_SAVE_DIR=$(jq -r '.saveDirectory' ${install_path}/starbound_server.json) # TODO: Determine if this should be 'starbound_server.config'
   fi
   if [[ "$SERVER_SAVE_DIR" == /* ]]; then
     save_dir="$SERVER_SAVE_DIR"
@@ -127,7 +128,7 @@ backupPostHook() {
 }
 
 shutdown() {
-  debug "Received signal to shut down plainsofpain-backup"
+  debug "Received signal to shut down starbound-backup"
   clearLock "$pidfile"
 }
 
