@@ -1,0 +1,18 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+. "$(dirname "$0")/starbound-bootstrap-shared"
+
+main() {
+  info "Running starbound-bootstrap"
+  prepareStarboundAppFolders
+  updateOrCreateStarboundServerConfig
+  prepareSteamA2sPythonLibrary
+  bootstrapHook
+
+  initCrontab
+  supervisorctl start starbound-updater
+  info "Bootstrap complete"
+}
+
+main

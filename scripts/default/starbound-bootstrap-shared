@@ -1,0 +1,102 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+prepareStarboundAppFolders() {
+  mkdir -p "$install_path"
+}
+
+initCrontab() {
+  crontab=$(mktemp)
+
+  if [ -n "$UPDATE_CRON" ]; then
+    debug "creating cron for update checks (schedule: $UPDATE_CRON)"
+    echo "$UPDATE_CRON supervisorctl start starbound-updater >/dev/null 2>&1" >>"$crontab"
+  fi
+
+  # if [ -n "$BACKUP_CRON" ]; then
+  #   debug "creating cron for backups (schedule: $BACKUP_CRON)"
+  #   echo "$BACKUP_CRON supervisorctl start starbound-backup >/dev/null 2>&1" >>"$crontab"
+  # fi
+
+  crontab "$crontab"
+  rm -f "$crontab"
+}
+
+prepareSteamA2sPythonLibrary() {
+  pip3 install python-a2s==1.3.0 --break-system-packages
+}
+
+bootstrapHook() {
+  if [ -n "$BOOTSTRAP_HOOK" ]; then
+    info "Running bootstrap hook: $BOOTSTRAP_HOOK"
+    eval "$BOOTSTRAP_HOOK"
+  fi
+}
+
+updateOrCreateStarboundServerConfig() {
+  if [[ ! -e ${install_path}/starbound_server.json ]]; then #TODO: Determine if this needs to be 'starbound_server.config'
+    mkdir -p ${install_path}
+    touch ${install_path}/starbound_server.json
+
+    # write json to file ${install_path}/starbound_server.json
+
+    cat >${install_path}/starbound_server.json << EOF # TODO: Determine which of the follow default config entries are mappable/reusable in Starbound
+{  
+  "serverName":"Starbound Server",
+  "password": "",
+  "seed":40377,
+  "worldId":0,
+  "mapId":0,
+  "difficulty":2,
+  "worldSize":5,
+  "port":21025,
+  "queryPort":21025,
+  "maxPlayers":10
+}
+EOF
+  fi
+
+  if [[ -n "$SERVER_NAME" ]]; then
+    echo "$(jq --arg serverName "$SERVER_NAME" '.serverName = $serverName' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  fi
+
+  if [[ -n "$SERVER_PASSWORD" ]]; then
+    echo "$(jq --arg password "$SERVER_PASSWORD" '.password = $password' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  else
+    echo "$(jq '.password = ""' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  fi
+
+  if [[ -n "$SERVER_SEED" ]]; then
+    echo "$(jq --arg seed "$SERVER_SEED" '.seed = $seed' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  fi
+
+  if [[ -n "$SERVER_WORLD_ID" ]]; then
+    echo "$(jq --arg worldId "$SERVER_WORLD_ID" '.worldId = $worldId' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  fi
+
+  if [[ -n "$SERVER_MAP_ID" ]]; then
+    echo "$(jq --arg mapId "$SERVER_MAP_ID" '.mapId = $mapId' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  fi
+
+  if [[ -n "$SERVER_DIFFICULTY" ]]; then
+    echo "$(jq --arg difficulty "$SERVER_DIFFICULTY" '.difficulty = $difficulty' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  fi
+
+  if [[ -n "$SERVER_WORLD_SIZE" ]]; then
+    echo "$(jq --arg worldSize "$SERVER_WORLD_SIZE" '.worldSize = $worldSize' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  fi
+
+  if [[ -n "$SERVER_PORT" ]]; then
+    echo "$(jq --argjson port "$SERVER_PORT" '.port = $port' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  fi
+
+  if [[ -n "$SERVER_QUERYPORT" ]]; then
+    echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  fi
+
+  if [[ -n "$SERVER_SLOT_COUNT" ]]; then
+    echo "$(jq --argjson maxPlayers "$SERVER_SLOT_COUNT" '.maxPlayers = $maxPlayers' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+  fi
+
+}

@@ -2,7 +2,7 @@
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
 
-pidfile=$plainsofpain_updater_pidfile
+pidfile=$starbound_updater_pidfile
 latest_version=-1
 
 update() {
@@ -12,37 +12,37 @@ update() {
   fi
   trap shutdown SIGINT SIGTERM
   if ! checkForUpdates; then
-    if ! checkRunning "plainsofpain-server"; then
-      info "Plains of Pain server is not running - starting"
-      supervisorctl start plainsofpain-server
+    if ! checkRunning "starbound-server"; then
+      info "Starbound server is not running - starting"
+      supervisorctl start starbound-server
     fi
     return
   fi
   if ! checkServerEmpty; then
-    warn "Plains of Pain server is not empty - update will not be performed"
+    warn "Starbound server is not empty - update will not be performed"
     return
   fi
 
   doUpdate &
-  plainsofpain_updater_pid=$!
-  echo $plainsofpain_updater_pid >"$pidfile"
-  wait $plainsofpain_updater_pid
+  starbound_updater_pid=$!
+  echo $starbound_updater_pid >"$pidfile"
+  wait $starbound_updater_pid
 }
 
 doUpdate() {
   updatePreHook
-  if checkRunning "plainsofpain-server"; then
-    supervisorctl stop plainsofpain-server
+  if checkRunning "starbound-server"; then
+    supervisorctl stop starbound-server
   fi
   verifyCpuMhz
-  if ! downloadPlainsofPain; then
-    warn "Download of Plains of Pain server failed - aborting update"
-    supervisorctl start plainsofpain-server
+  if ! downloadStarbound; then
+    warn "Download of Starbound server failed - aborting update"
+    supervisorctl start starbound-server
     clearLock "$pidfile"
     return
   fi
   setCurrentVersion
-  supervisorctl start plainsofpain-server
+  supervisorctl start starbound-server
   updatePostHook
 
   clearLock "$pidfile"
@@ -110,6 +110,6 @@ updatePostHook() {
 }
 
 shutdown() {
-  debug "Received signal to shut down plainsofpain-updater"
+  debug "Received signal to shut down starbound-updater"
   clearLock "$pidfile"
 }

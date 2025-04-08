@@ -3,9 +3,9 @@
 . "$(dirname "$0")/defaults"
 
 main() {
-  info "Force Plains of Pain update"
+  info "Force Starbound update"
   rm $version_file_path
-  supervisorctl start plainsofpain-updater
+  supervisorctl start starbound-updater
 }
 
 main

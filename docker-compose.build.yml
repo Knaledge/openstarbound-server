@@ -1,28 +1,27 @@
 services:
-  plainsofpain:
+  starbound:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile
-    image: ghcr.io/traxo-xx/plainsofpain-server:dev
-    container_name: plainsofpain
-    hostname: plainsofpain
+    # image: ghcr.io/traxo-xx/plainsofpain-server:dev
+    container_name: starbound-server
+    hostname: starbound
     restart: unless-stopped
     stop_grace_period: 90s
     ports:
-      - "7777:7777/udp"
-      - "27016:27016/udp"
+      - "21025:21025/tcp"
+      - "21025:21025/udp"
     volumes:
-      - ./game:/opt/plainsofpain
-      - ./worldfiles:/home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain
+      - /path/to/volume:/opt/starbound
     environment:
-      - SERVER_NAME=PlainsOfPainTest
-      - SERVER_SEED=40377
-      - SERVER_WORLD_ID=0
-      - SERVER_DIFFICULTY=2
-      - SERVER_MAP_ID=0
-      - SERVER_WORLD_SIZE=5
-      - SERVER_SLOT_COUNT=10
       - PUID=4711
       - PGID=4711
       - UPDATE_CRON=*/30 * * * *
-      - log_level=50
+      - log_level=50      
+      # - SERVER_NAME=PlainsOfPainTest
+      # - SERVER_SEED=40377
+      # - SERVER_WORLD_ID=0
+      # - SERVER_DIFFICULTY=2
+      # - SERVER_MAP_ID=0
+      # - SERVER_WORLD_SIZE=5
+      # - SERVER_SLOT_COUNT=10

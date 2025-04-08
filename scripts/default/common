@@ -1,11 +1,11 @@
 #!/bin/bash
-install_path=/opt/plainsofpain/server
-version_file_path=/opt/plainsofpain/current_version
+install_path=/opt/starbound/linux
+version_file_path=/opt/starbound/current_version
 steamcmd_path=/usr/bin/steamcmd
-steam_app_id=2227360
-plainsofpain_binary_path=PlainsOfPain.x86_64
-savefile_name=3ad85aea
-plainsofpain_world_sizes="3 5 7 9 11"
+steam_app_id=211820
+starbound_binary_path=starbound_server
+savefile_name=3ad85aea # TODO: Target the Starbound "universe" file in 'savefile_name'
+# plainsofpain_world_sizes="3 5 7 9 11"
 
 # trap SIGUSR1 as it is being used to check
 # for process aliveness when an existing
@@ -13,9 +13,9 @@ plainsofpain_world_sizes="3 5 7 9 11"
 trap ':' USR1
 
 # Collection of PID files
-plainsofpain_server_pidfile=/var/run/plainsofpain/plainsofpain-server.pid
-plainsofpain_updater_pidfile=/var/run/plainsofpain/plainsofpain-updater.pid
-plainsofpain_backup_pidfile=/var/run/plainsofpain/plainsofpain-backup.pid
+starbound_server_pidfile=/var/run/starbound/starbound-server.pid
+starbound_updater_pidfile=/var/run/starbound/starbound-updater.pid
+starbound_backup_pidfile=/var/run/starbound/starbound-backup.pid
 
 # Syslog supervisor config file
 supervisor_syslog_conf=/usr/local/etc/supervisor/conf.d/syslog.conf
