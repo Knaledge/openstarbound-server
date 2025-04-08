@@ -9,7 +9,7 @@ main() {
   info "starbound-updater complete"
 }
 
-downloadPlainsofPain() {
+downloadStarbound() {
   debug "Downloading Starbound server"
 
   mkdir -p "$install_path/steamapps/compatdata/$steam_app_id"
