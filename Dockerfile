@@ -26,7 +26,7 @@ RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/starbound /usr/local/et
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY ./supervisord.conf /etc/supervisor/supervisord.conf
-COPY --chmod=755 ./scripts/default/* /usr/local/etc/plainsofpain/
+COPY --chmod=755 ./scripts/default/* /usr/local/etc/starbound/
 
 WORKDIR /usr/local/etc/plainsofpain
 CMD ["/usr/local/etc/plainsofpain/bootstrap"]
