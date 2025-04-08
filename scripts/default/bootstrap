@@ -76,47 +76,47 @@ EOF
 
 verifyVariables() {
 
-  if [[ -n "$SERVER_DIFFICULTY" ]]; then
-    if [[ "$SERVER_DIFFICULTY" -lt 0 ]] || [[ "$SERVER_DIFFICULTY" -gt 4 ]]; then
-      error "SERVER_DIFFICULTY must be between 0 and 4 (actual: $SERVER_DIFFICULTY)"
-      exit 1
-    fi
-  fi
+  # if [[ -n "$SERVER_DIFFICULTY" ]]; then
+  #   if [[ "$SERVER_DIFFICULTY" -lt 0 ]] || [[ "$SERVER_DIFFICULTY" -gt 4 ]]; then
+  #     error "SERVER_DIFFICULTY must be between 0 and 4 (actual: $SERVER_DIFFICULTY)"
+  #     exit 1
+  #   fi
+  # fi
 
-  if [[ -n "$SERVER_MAP_ID" ]]; then
-    if [[ "$SERVER_MAP_ID" -lt 0 ]] || [[ "$SERVER_MAP_ID" -gt 2 ]]; then
-      error "SERVER_MAP_ID must be between 0 and 2 (actual: $SERVER_MAP_ID)"
-      exit 1
-    fi
-  fi
+  # if [[ -n "$SERVER_MAP_ID" ]]; then
+  #   if [[ "$SERVER_MAP_ID" -lt 0 ]] || [[ "$SERVER_MAP_ID" -gt 2 ]]; then
+  #     error "SERVER_MAP_ID must be between 0 and 2 (actual: $SERVER_MAP_ID)"
+  #     exit 1
+  #   fi
+  # fi
 
-  if [[ -n "$SERVER_WORLD_SIZE" ]]; then
-    if ! [[ "$plainsofpain_world_sizes" =~ (^| )"$SERVER_WORLD_SIZE"($| ) ]]; then
-      error "SERVER_WORLD_SIZE must be one of these values: $plainsofpain_world_sizes (actual: $SERVER_WORLD_SIZE)"
-      exit 1
-    fi
-  fi
+  # if [[ -n "$SERVER_WORLD_SIZE" ]]; then
+  #   if ! [[ "$plainsofpain_world_sizes" =~ (^| )"$SERVER_WORLD_SIZE"($| ) ]]; then
+  #     error "SERVER_WORLD_SIZE must be one of these values: $plainsofpain_world_sizes (actual: $SERVER_WORLD_SIZE)"
+  #     exit 1
+  #   fi
+  # fi
 
-  if [[ -n "$SERVER_SLOT_COUNT" ]]; then
-    if [[ "$SERVER_SLOT_COUNT" -lt 1 ]] || [[ "$SERVER_SLOT_COUNT" -gt 200 ]]; then
-      error "SERVER_SLOT_COUNT must be between 1 and 200 (actual: $SERVER_SLOT_COUNT)"
-      exit 1
-    fi
-  fi
+  # if [[ -n "$SERVER_SLOT_COUNT" ]]; then
+  #   if [[ "$SERVER_SLOT_COUNT" -lt 1 ]] || [[ "$SERVER_SLOT_COUNT" -gt 200 ]]; then
+  #     error "SERVER_SLOT_COUNT must be between 1 and 200 (actual: $SERVER_SLOT_COUNT)"
+  #     exit 1
+  #   fi
+  # fi
 
-  if [[ -n "$SERVER_PORT" ]]; then
-    if [[ "$SERVER_PORT" -lt 1 ]] || [[ "$SERVER_PORT" -gt 65535 ]]; then
-      error "SERVER_PORT must be between 1 and 65535 (actual: $SERVER_PORT)"
-      exit 1
-    fi
-  fi
+  # if [[ -n "$SERVER_PORT" ]]; then
+  #   if [[ "$SERVER_PORT" -lt 1 ]] || [[ "$SERVER_PORT" -gt 65535 ]]; then
+  #     error "SERVER_PORT must be between 1 and 65535 (actual: $SERVER_PORT)"
+  #     exit 1
+  #   fi
+  # fi
 
-  if [[ -n "$SERVER_QUERYPORT" ]]; then
-    if [[ "$SERVER_QUERYPORT" -lt 1 ]] || [[ "$SERVER_QUERYPORT" -gt 65535 ]]; then
-      error "SERVER_QUERYPORT must be between 1 and 65535 (actual: $SERVER_QUERYPORT)"
-      exit 1
-    fi
-  fi
+  # if [[ -n "$SERVER_QUERYPORT" ]]; then
+  #   if [[ "$SERVER_QUERYPORT" -lt 1 ]] || [[ "$SERVER_QUERYPORT" -gt 65535 ]]; then
+  #     error "SERVER_QUERYPORT must be between 1 and 65535 (actual: $SERVER_QUERYPORT)"
+  #     exit 1
+  #   fi
+  # fi
 
   if [[ -n "$PUID" ]]; then
     if ! [[ "$PUID" =~ ^[0-9]+$ ]]; then
