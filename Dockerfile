@@ -20,8 +20,8 @@ RUN apt-get update \
 
 # MISC
 RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/starbound /usr/local/etc/supervisor/conf.d/ /opt/starbound /home/starbound/.steam \
-    && groupadd -g "${PGID:-4711}" -o plainsofpain \
-    && useradd -g "${PGID:-4711}" -u "${PUID:-4711}" -o --create-home plainsofpain \
+    && groupadd -g "${PGID:-4711}" -o starbound \
+    && useradd -g "${PGID:-4711}" -u "${PUID:-4711}" -o --create-home starbound \
     && ln -f /root/.steam/sdk32/steamclient.so /home/plainsofpain/.steam/sdk32/steamclient.so \
     && ln -f /root/.steam/sdk64/steamclient.so /home/plainsofpain/.steam/sdk64/steamclient.so \
     && sed -i '/imklog/s/^/#/' /etc/rsyslog.conf \
