@@ -24,22 +24,22 @@ createFolders() {
 
 # Apply user id and group id
 applyPermissions() {
-  info "Setting uid:gid of plainsofpain to $PUID:$PGID"
-  groupmod -g "${PGID}" -o plainsofpain
-  usermod -u "${PUID}" -o plainsofpain
-  sed -i -E "s/^(plainsofpain:x):[0-9]+:[0-9]+:(.*)/\\1:$PUID:$PGID:\\2/" /etc/passwd
+  info "Setting uid:gid of starbound to $PUID:$PGID"
+  groupmod -g "${PGID}" -o starbound
+  usermod -u "${PUID}" -o starbound
+  sed -i -E "s/^(starbound:x):[0-9]+:[0-9]+:(.*)/\\1:$PUID:$PGID:\\2/" /etc/passwd
 
-  chown -R plainsofpain:plainsofpain \
-    /opt/plainsofpain \
-    /home/plainsofpain \
-    /var/run/plainsofpain
+  chown -R starbound:starbound \
+    /opt/starbound \
+    /home/starbound \
+    /var/run/starbound
 
   if [[ "$BACKUP_DIR" == /* ]]; then
     debug "Setting permissions for $BACKUP_DIR"
-    chown -R plainsofpain:plainsofpain "$BACKUP_DIR"
+    chown -R starbound:starbound "$BACKUP_DIR"
   fi
 
-  chgrp plainsofpain /etc/supervisor/supervisord.conf
+  chgrp starbound /etc/supervisor/supervisord.conf
 }
 
 # Configure syslog
