@@ -50,8 +50,8 @@ updateOrCreateStarboundServerConfig() {
   "mapId":0,
   "difficulty":2,
   "worldSize":5,
-  "port":7777,
-  "queryPort":27016,
+  "port":21025,
+  "queryPort":21025,
   "maxPlayers":10
 }
 EOF
