@@ -1,17 +1,17 @@
 #!/bin/bash
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
-. "$(dirname "$0")/plainsofpain-bootstrap-shared"
+. "$(dirname "$0")/starbound-bootstrap-shared"
 
 main() {
-  info "Running plainsofpain-bootstrap"
-  preparePlainsofPainAppFolders
-  updateOrCreatePlainsofPainServerConfig
+  info "Running starbound-bootstrap"
+  prepareStarboundAppFolders
+  updateOrCreateStarboundServerConfig
   prepareSteamA2sPythonLibrary
   bootstrapHook
 
   initCrontab
-  supervisorctl start plainsofpain-updater
+  supervisorctl start starbound-updater
   info "Bootstrap complete"
 }
 
