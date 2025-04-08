@@ -27,7 +27,7 @@ waitForServerDownload() {
 
 runServer() {
   info "Running starbound-server"
-  debug "Server config ServerName:$SERVER_NAME - ServerPort:${SERVER_PORT:-7777} - ServerQueryPort:${SERVER_QUERYPORT:-27016}"
+  debug "Server config ServerName:$SERVER_NAME - ServerPort:${SERVER_PORT:-21025} - ServerQueryPort:${SERVER_QUERYPORT:-21025}"
 
   export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/starbound/.steam/steam"
   export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
