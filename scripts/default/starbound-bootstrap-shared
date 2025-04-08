@@ -41,7 +41,7 @@ updateOrCreateStarboundServerConfig() {
 
     # write json to file ${install_path}/starbound_server.json
 
-    cat >${install_path}/starbound_server.json << EOF
+    cat >${install_path}/starbound_server.json << EOF # TODO: Determine which of the follow default config entries are mappable/reusable in Starbound
 {  
   "serverName":"Starbound Server",
   "password": "",
