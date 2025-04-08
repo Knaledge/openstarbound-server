@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile
-    # image: ghcr.io/traxo-xx/plainsofpain-server:dev
+    image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
     restart: unless-stopped
