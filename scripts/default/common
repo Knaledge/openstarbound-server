@@ -1,9 +1,9 @@
 #!/bin/bash
-install_path=/opt/starbound/linux
+install_path=/opt/starbound/
 version_file_path=/opt/starbound/current_version
 steamcmd_path=/usr/bin/steamcmd
 steam_app_id=211820
-starbound_binary_path=starbound_server
+starbound_binary_path=/linux/starbound_server
 savefile_name=3ad85aea # TODO: Target the Starbound "universe" file in 'savefile_name'
 # plainsofpain_world_sizes="3 5 7 9 11"
 
