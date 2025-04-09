@@ -1,13 +1,12 @@
 services:
   starbound:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile
     image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
     restart: unless-stopped
     stop_grace_period: 90s
+    cap_add:
+      - sys_nice
     ports:
       - "21025:21025/tcp"
       - "21025:21025/udp"
