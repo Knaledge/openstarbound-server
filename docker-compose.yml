@@ -4,7 +4,7 @@ services:
     container_name: starbound-server
     hostname: starbound
     restart: unless-stopped
-    stop_grace_period: 90s
+    stop_grace_period: 2m
     cap_add:
       - sys_nice
     ports:
