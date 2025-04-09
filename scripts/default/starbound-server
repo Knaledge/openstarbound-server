@@ -33,8 +33,8 @@ runServer() {
   export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
 
   chmod +x "$starbound_server"
-  $starbound_server -nographics -batchmode -localhost -startServer -ignorecompilererrors -overrideTerrainData -config "${install_path}/starbound_server.json" &
-  starbound_server_pid=$! #TODO: Determine if there are any startup args to pass to Starbound server; determine if 'starbound_server.json' needs to be 'starbound_server.config'
+  $starbound_server -config "${install_path}/starbound_server.json" & # TODO: Invoke 'sbinit.config' here (via '-bootConfig')
+  starbound_server_pid=$! #TODO: Determine if there are any startup args to pass to Starbound server; determine if 'starbound_server.json' needs to be 'starbound_server.config' or 'sbinit.config'
   echo $starbound_server_pid >"$starbound_server_pidfile"
 
   wait $starbound_server_pid
