@@ -12,7 +12,10 @@ main() {
 downloadStarbound() {
   debug "Downloading Starbound server"
 
-  # Read Docker secrets (mounted at /run/secrets/ -- create this file and define location in docker-compose)
+  echo "Checking for Docker secrets in /run/secrets"
+  ls -l /run/secrets || echo "[DEBUG] /run/secrets does not exist"
+
+  # Read Docker secrets (mounted at /run/secrets/)
   if [ -f /run/secrets/steam_username ]; then
     STEAM_USERNAME=$(cat /run/secrets/steam_username)
   else
@@ -32,7 +35,7 @@ downloadStarbound() {
   export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
   export STEAM_DIR="/home/starbound/.steam/steam/"
 
-  # Authenticated Steam login
+  # Steam login and update
   $steamcmd_path +force_install_dir "$install_path" \
                  +login "$STEAM_USERNAME" "$STEAM_PASSWORD" \
                  +app_update $steam_app_id "$GAME_BRANCH $STEAMCMD_ARGS" \
