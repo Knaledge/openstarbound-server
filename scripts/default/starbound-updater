@@ -12,12 +12,31 @@ main() {
 downloadStarbound() {
   debug "Downloading Starbound server"
 
+  # Read Docker secrets (mounted at /run/secrets/ -- create this file and define location in docker-compose)
+  if [ -f /run/secrets/steam_username ]; then
+    STEAM_USERNAME=$(cat /run/secrets/steam_username)
+  else
+    error "Missing secret: steam_username"
+    exit 1
+  fi
+
+  if [ -f /run/secrets/steam_password ]; then
+    STEAM_PASSWORD=$(cat /run/secrets/steam_password)
+  else
+    error "Missing secret: steam_password"
+    exit 1
+  fi
+
   mkdir -p "$install_path/steamapps/compatdata/$steam_app_id"
   export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/starbound/.steam/steam"
   export STEAM_COMPAT_DATA_PATH="$install_path/steamapps/compatdata/$steam_app_id"
   export STEAM_DIR="/home/starbound/.steam/steam/"
 
-  $steamcmd_path +force_install_dir "$install_path" +login anonymous +app_update $steam_app_id "$GAME_BRANCH $STEAMCMD_ARGS" +quit
+  # Authenticated Steam login
+  $steamcmd_path +force_install_dir "$install_path" \
+                 +login "$STEAM_USERNAME" "$STEAM_PASSWORD" \
+                 +app_update $steam_app_id "$GAME_BRANCH $STEAMCMD_ARGS" \
+                 +quit
 }
 
 checkForUpdates() {
