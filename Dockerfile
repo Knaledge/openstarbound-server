@@ -8,16 +8,16 @@ LABEL org.opencontainers.image.licenses="MIT"
 RUN apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
         cabextract \
-        curl \
-        winbind \
-        supervisor \
         cron \
-        rsyslog \
+        curl \
         jq \
         lsof \
-        zip \
         python3 \
         python3-pip \
+        rsyslog \
+        supervisor \
+        winbind \
+        zip \
     && apt autoremove --purge && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
