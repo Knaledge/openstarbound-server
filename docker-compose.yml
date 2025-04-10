@@ -18,7 +18,7 @@ services:
     environment:
       - PUID=4711
       - PGID=4711
-      - UPDATE_CRON=*/30 * * * *
+      - UPDATE_CRON=0 3 * * 0
       - log_level=50      
       # - SERVER_NAME=PlainsOfPainTest
       # - SERVER_SEED=40377
