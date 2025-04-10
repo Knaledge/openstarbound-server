@@ -27,24 +27,24 @@ Windows and then copied to the docker host.
 
 ## Environment Variables
 
-| Variable                          | Required | Default             | Contraints            | Description                                                                                                        | WIP | 
-|-----------------------------------|:--------:|---------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------|:---:|
-| `SERVER_NAME`                     |          | `Plains of Pain Server` | string                | The name of the server                                                                                             |  ️  |
-| `SERVER_PASSWORD`                 |          |                     | string                | The password for the server                                                                                        |     |
-| `SERVER_SEED`                 |          | `40377`                    | integer                | The server's map seed                                                                                        |     |
-| `SERVER_WORLD_ID`                 |          | `0`                    | integer                | The server's world ID                                                                                        |     |
-| `SERVER_DIFFICULTY`               |          | `2`                 | integer                | The server's difficulty setting. (0 = Tourist, 1 = Rookies, 2 = True Wastelander, 3 = Veteran, 4 = Overlord)                                                                                             |  ️  |
-| `SERVER_MAP_ID`                     |          | `0` | integer                | ID of the map that should be used (0 = Wasteland v0.4, 1 = Dunes v0.4, 2 = Dunes v0.5)                                                                                             |  ️  |
-| `SERVER_WORLD_SIZE`                     |          | `5` | integer                | Size of the server's map (3 = S, 5 = M, 7 = L, 9 = XL, 11 = XXL)                                                                                             |  ️  |
-| `SERVER_SLOT_COUNT`               |          | `10`                | integer (1-200)        | Max allowed concurrent players                                                                                     |     |
-| `SERVER_PORT`                |          | `7777`             | integer               | The game server's port                                                                                |     |
-| `SERVER_QUERYPORT`                |          | `27016`             | integer               | The steam query port for the server                                                                                |     |
-| `PUID`                            |          | `4711`              | integer               | The UID to run server as (file permission)                                                                         |     |
-| `PGID`                            |          | `4711`              | integer               | The GID to run server as (file permission)                                                                         |     |
-| `UPDATE_CRON`                     |          |                     | string (cron format)  | Update game server files cron (eg. `*/30 * * * *` check for updates every 30 minutes)                              |     |
-| `UPDATE_CHECK_PLAYERS`            |          | `false`             | boolean (true, false) | Should the update check if someone is connected                                                                    |     |
-| `GAME_BRANCH`                     |          | `public`            | string                | Steam branch (eg. testing) of the Plains of Pain server                                                                |     |
-| `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional steamcmd args for the updater                                                                           |     |
+| Variable               | Required | Default                 | Contraints            | Description                                                                                                  |  WIP  |
+| ---------------------- | :------: | ----------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------ | :---: |
+| `SERVER_NAME`          |          | `Plains of Pain Server` | string                | The name of the server                                                                                       |   ️   |
+| `SERVER_PASSWORD`      |          |                         | string                | The password for the server                                                                                  |       |
+| `SERVER_SEED`          |          | `40377`                 | integer               | The server's map seed                                                                                        |       |
+| `SERVER_WORLD_ID`      |          | `0`                     | integer               | The server's world ID                                                                                        |       |
+| `SERVER_DIFFICULTY`    |          | `2`                     | integer               | The server's difficulty setting. (0 = Tourist, 1 = Rookies, 2 = True Wastelander, 3 = Veteran, 4 = Overlord) |   ️   |
+| `SERVER_MAP_ID`        |          | `0`                     | integer               | ID of the map that should be used (0 = Wasteland v0.4, 1 = Dunes v0.4, 2 = Dunes v0.5)                       |   ️   |
+| `SERVER_WORLD_SIZE`    |          | `5`                     | integer               | Size of the server's map (3 = S, 5 = M, 7 = L, 9 = XL, 11 = XXL)                                             |   ️   |
+| `SERVER_SLOT_COUNT`    |          | `10`                    | integer (1-200)       | Max allowed concurrent players                                                                               |       |
+| `SERVER_PORT`          |          | `7777`                  | integer               | The game server's port                                                                                       |       |
+| `SERVER_QUERYPORT`     |          | `27016`                 | integer               | The steam query port for the server                                                                          |       |
+| `PUID`                 |          | `4711`                  | integer               | The UID to run server as (file permission)                                                                   |       |
+| `PGID`                 |          | `4711`                  | integer               | The GID to run server as (file permission)                                                                   |       |
+| `UPDATE_CRON`          |          |                         | string (cron format)  | Update game server files cron (eg. `*/30 * * * *` check for updates every 30 minutes)                        |       |
+| `UPDATE_CHECK_PLAYERS` |          | `false`                 | boolean (true, false) | Should the update check if someone is connected                                                              |       |
+| `GAME_BRANCH`          |          | `public`                | string                | Steam branch (eg. testing) of the Plains of Pain server                                                      |       |
+| `STEAMCMD_ARGS`        |          | `validate`              | string                | Additional steamcmd args for the updater                                                                     |       |
 
 All environment Variables prefixed with SERVER are the available config.json options
 
@@ -54,37 +54,37 @@ All environment Variables prefixed with SERVER are the available config.json opt
 
 ### Hooks
 
-| Variable           | Description                            | WIP |
-|--------------------|----------------------------------------|:---:|
-| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap |     |
-| `UPDATE_PRE_HOOK`  | Command to run before update           |     |
-| `UPDATE_POST_HOOK` | Command to run after update            |     |
-| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup |     |
-| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |     |
+| Variable           | Description                            |  WIP  |
+| ------------------ | -------------------------------------- | :---: |
+| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap |       |
+| `UPDATE_PRE_HOOK`  | Command to run before update           |       |
+| `UPDATE_POST_HOOK` | Command to run after update            |       |
+| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup |       |
+| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |       |
 
 The scripts will wait for the hook to resolve/return before continuing.
 
 ## Image Tags
 
-| Tag                | Description                              |
-|--------------------|------------------------------------------|
-| `latest`           | Latest image                             |
-| `<version>`        | Pinned image                 (>= 1.x.x)  |
-| `dev`              | Dev build                                |
+| Tag         | Description                             |
+| ----------- | --------------------------------------- |
+| `latest`    | Latest image                            |
+| `<version>` | Pinned image                 (>= 1.x.x) |
+| `dev`       | Dev build                               |
 
 ## Ports (default)
 
 | Port      | Description      |
-|-----------|------------------|
+| --------- | ---------------- |
 | 7777/udp  | Server port      |
 | 27016/udp | Steam query port |
 
 ## Volumes
 
-| Volume                                                           | Description                       |
-|------------------------------------------------------------------|-----------------------------------|
-| /opt/plainsofpain                                                | Game files (steam download path)  |
-| /home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain | World files and character files   |
+| Volume                                                           | Description                      |
+| ---------------------------------------------------------------- | -------------------------------- |
+| /opt/plainsofpain                                                | Game files (steam download path) |
+| /home/plainsofpain/.config/unity3d/CobraByteDigital/PlainsOfPain | World files and character files  |
 
 **Note:** By default the volumes are created with the UID and GID 4711 (that user should not exist). To change this, set
 the environment variables `PUID` and `PGID`.
