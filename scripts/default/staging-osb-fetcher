@@ -1,0 +1,54 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+. "$(dirname "$0")/openstarbound-updater-shared"
+
+main() {
+  info "Running OpenStarbound staging fetcher"
+  
+  # This is intended to be used in Docker builds to pre-fetch OpenStarbound
+  # files into a staging area for later use
+  
+  local staging_dir="/tmp/openstarbound_staging"
+  local download_url
+  local asset_name
+  
+  # Create staging directory
+  mkdir -p "$staging_dir"
+  
+  # Get the latest release information
+  info "Fetching latest OpenStarbound release information"
+  if ! download_info=$(curl -s --retry 3 "$osb_release_info_url"); then
+    error "Failed to get OpenStarbound release information"
+    exit 1
+  fi
+  
+  # Extract version
+  latest_version=$(echo "$download_info" | jq -r '.tag_name')
+  info "Latest OpenStarbound version: $latest_version"
+  
+  # Find the appropriate Linux/server asset
+  download_url=$(echo "$download_info" | jq -r '.assets[] | select(.name | contains("linux") and contains("server")) | .browser_download_url')
+  asset_name=$(echo "$download_info" | jq -r '.assets[] | select(.name | contains("linux") and contains("server")) | .name')
+  
+  if [ -z "$download_url" ] || [ "$download_url" == "null" ]; then
+    error "Failed to find appropriate OpenStarbound asset in release"
+    exit 1
+  fi
+  
+  # Download the release
+  info "Downloading OpenStarbound from: $download_url"
+  if ! curl -L --retry 3 "$download_url" -o "$staging_dir/$asset_name"; then
+    error "Failed to download OpenStarbound release"
+    exit 1
+  fi
+  
+  # Write version file
+  echo "$latest_version" > "$staging_dir/version"
+  
+  info "OpenStarbound staged successfully at $staging_dir"
+  info "Files:"
+  ls -la "$staging_dir"
+}
+
+main

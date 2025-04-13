@@ -4,6 +4,11 @@
 
 prepareStarboundAppFolders() {
   mkdir -p "$install_path"
+  
+  # If OpenStarbound is enabled, create its folder too
+  if [ "${USE_OPENSTARBOUND:-false}" == "true" ]; then
+    mkdir -p "$osb_installed_path"
+  fi
 }
 
 initCrontab() {
@@ -12,6 +17,12 @@ initCrontab() {
   if [ -n "$UPDATE_CRON" ]; then
     debug "creating cron for update checks (schedule: $UPDATE_CRON)"
     echo "$UPDATE_CRON supervisorctl start starbound-updater >/dev/null 2>&1" >>"$crontab"
+  fi
+
+  # If OpenStarbound is enabled and has a cron schedule, add it
+  if [ "${USE_OPENSTARBOUND:-false}" == "true" ] && [ -n "$OPENSTARBOUND_UPDATE_CRON" ]; then
+    debug "creating cron for OpenStarbound update checks (schedule: $OPENSTARBOUND_UPDATE_CRON)"
+    echo "$OPENSTARBOUND_UPDATE_CRON supervisorctl start openstarbound-updater >/dev/null 2>&1" >>"$crontab"
   fi
 
   # if [ -n "$BACKUP_CRON" ]; then

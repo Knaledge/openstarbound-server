@@ -20,6 +20,11 @@ STEAMCMD_ARGS=${STEAMCMD_ARGS:-"$GAME_BRANCH" validate}
 UPDATE_CRON=${UPDATE_CRON:-}
 UPDATE_CHECK_PLAYERS=${UPDATE_CHECK_PLAYERS:-false}
 
+# OpenStarbound Settings
+USE_OPENSTARBOUND=${USE_OPENSTARBOUND:-false} # Set to true to enable OpenStarbound
+OPENSTARBOUND_UPDATE_CRON=${OPENSTARBOUND_UPDATE_CRON:-} # Cron schedule for OpenStarbound updates
+OPENSTARBOUND_MANUAL_URL=${OPENSTARBOUND_MANUAL_URL:-} # Override the default GitHub URL if needed
+
 # Backup
 BACKUP_CRON=${BACKUP_CRON:-}
 BACKUP_DIR=${BACKUP_DIR:-backups}

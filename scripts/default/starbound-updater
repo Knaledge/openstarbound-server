@@ -3,6 +3,11 @@
 . "$(dirname "$0")/defaults"
 . "$(dirname "$0")/starbound-updater-shared"
 
+# If OpenStarbound is enabled, also include its shared functions
+if [ "${USE_OPENSTARBOUND:-false}" == "true" ]; then
+  . "$(dirname "$0")/openstarbound-updater-shared"
+fi
+
 main() {
   info "Running starbound-updater"
   update
@@ -40,6 +45,21 @@ downloadStarbound() {
                  +login "$STEAM_USERNAME" "$STEAM_PASSWORD" \
                  +app_update $steam_app_id "$GAME_BRANCH $STEAMCMD_ARGS" \
                  +quit
+                 
+  # If OpenStarbound is installed, we need to reapply its binaries since SteamCMD update may have overwritten them
+  if [ "${USE_OPENSTARBOUND:-false}" == "true" ] && type isOpenStarboundInstalled &>/dev/null && isOpenStarboundInstalled; then
+    info "OpenStarbound is installed - reapplying OpenStarbound binaries"
+    
+    # Copy the OpenStarbound server binaries back to the main Starbound installation
+    if [ -d "$osb_installed_path/linux" ]; then
+      cp -f "$osb_installed_path/linux/"* "$install_path/linux/"
+      info "Reapplied OpenStarbound binaries"
+    else
+      # Try to find where the binaries are
+      find "$osb_installed_path" -name "starbound_server" -exec cp -f {} "$install_path/linux/" \;
+      info "Found and reapplied OpenStarbound server binary"
+    fi
+  fi
 }
 
 checkForUpdates() {

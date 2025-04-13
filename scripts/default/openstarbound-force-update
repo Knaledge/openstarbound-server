@@ -1,0 +1,26 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+. "$(dirname "$0")/openstarbound-updater-shared"
+
+main() {
+  info "Forcing OpenStarbound update"
+  
+  # Skip if OpenStarbound is not enabled
+  if [ "${USE_OPENSTARBOUND:-false}" != "true" ]; then
+    warn "OpenStarbound is not enabled - exiting"
+    exit 0
+  fi
+  
+  if [ -f "$osb_version_file_path" ]; then
+    info "Removing current version file to force update"
+    rm -f "$osb_version_file_path"
+  fi
+  
+  # Force a fresh install
+  doOpenStarboundUpdate
+  
+  info "OpenStarbound force update complete"
+}
+
+main

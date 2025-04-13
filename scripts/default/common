@@ -16,6 +16,7 @@ trap ':' USR1
 starbound_server_pidfile=/var/run/starbound/starbound-server.pid
 starbound_updater_pidfile=/var/run/starbound/starbound-updater.pid
 starbound_backup_pidfile=/var/run/starbound/starbound-backup.pid
+openstarbound_updater_pidfile=/var/run/starbound/openstarbound-updater.pid
 
 # Syslog supervisor config file
 supervisor_syslog_conf=/usr/local/etc/supervisor/conf.d/syslog.conf

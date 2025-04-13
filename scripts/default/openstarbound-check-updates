@@ -1,0 +1,29 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+. "$(dirname "$0")/openstarbound-updater-shared"
+
+main() {
+  info "Checking for OpenStarbound updates"
+  
+  # Skip if OpenStarbound is not enabled
+  if [ "${USE_OPENSTARBOUND:-false}" != "true" ]; then
+    echo "OpenStarbound is not enabled"
+    exit 0
+  fi
+  
+  if ! checkForOpenStarboundUpdates; then
+    echo "OpenStarbound is up to date"
+    exit 0
+  else
+    echo "OpenStarbound updates are available!"
+    if [ -n "$1" ] && [ "$1" == "--auto-update" ]; then
+      echo "Starting automatic update..."
+      supervisorctl start openstarbound-updater
+    else
+      echo "Run 'supervisorctl start openstarbound-updater' to update"
+    fi
+  fi
+}
+
+main "$@"

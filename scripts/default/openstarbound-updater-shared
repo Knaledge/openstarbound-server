@@ -1,0 +1,194 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+pidfile=$openstarbound_updater_pidfile
+latest_osb_version=-1
+osb_version_file_path=/opt/starbound/openstarbound_version
+osb_installed_path=/opt/starbound/openstarbound
+osb_release_info_url="https://api.github.com/repos/OpenStarbound/OpenStarbound/releases/latest"
+
+updateOpenStarbound() {
+  # Skip if OpenStarbound is not enabled
+  if [ "${USE_OPENSTARBOUND:-false}" != "true" ]; then
+    debug "OpenStarbound is not enabled - skipping update check"
+    return 1
+  fi
+
+  if [ -f "$pidfile" ]; then
+    info "Found existing OpenStarbound updater PID file - checking process"
+    checkLock $pidfile
+  fi
+  trap shutdownOsbUpdater SIGINT SIGTERM
+  
+  if ! checkForOpenStarboundUpdates; then
+    info "OpenStarbound is up to date"
+    return 1
+  fi
+  
+  if ! checkServerEmpty; then
+    warn "Starbound server is not empty - OpenStarbound update will not be performed"
+    return 1
+  fi
+
+  doOpenStarboundUpdate &
+  openstarbound_updater_pid=$!
+  echo $openstarbound_updater_pid >"$pidfile"
+  wait $openstarbound_updater_pid
+  return 0
+}
+
+doOpenStarboundUpdate() {
+  updatePreHook
+  if checkRunning "starbound-server"; then
+    info "Stopping Starbound server for OpenStarbound update"
+    supervisorctl stop starbound-server
+  fi
+  
+  if ! downloadOpenStarbound; then
+    warn "Download of OpenStarbound failed - aborting update"
+    supervisorctl start starbound-server
+    clearLock "$pidfile"
+    return 1
+  fi
+  
+  setOpenStarboundCurrentVersion
+  supervisorctl start starbound-server
+  updatePostHook
+
+  clearLock "$pidfile"
+  return 0
+}
+
+# Downloads latest OpenStarbound release from GitHub and installs it
+downloadOpenStarbound() {
+  debug "Downloading OpenStarbound"
+  local temp_dir="/tmp/openstarbound_download"
+  local download_url
+  local asset_name
+  
+  # Create temp directory
+  mkdir -p "$temp_dir"
+  
+  # Get the latest release information
+  info "Fetching latest OpenStarbound release information"
+  if ! download_info=$(curl -s --retry 3 "$osb_release_info_url"); then
+    error "Failed to get OpenStarbound release information"
+    return 1
+  fi
+  
+  # Find the appropriate Linux/server asset
+  download_url=$(echo "$download_info" | jq -r '.assets[] | select(.name | contains("linux") and contains("server")) | .browser_download_url')
+  asset_name=$(echo "$download_info" | jq -r '.assets[] | select(.name | contains("linux") and contains("server")) | .name')
+  
+  if [ -z "$download_url" ] || [ "$download_url" == "null" ]; then
+    error "Failed to find appropriate OpenStarbound asset in release"
+    return 1
+  fi
+  
+  # Download the release
+  info "Downloading OpenStarbound from: $download_url"
+  if ! curl -L --retry 3 "$download_url" -o "$temp_dir/$asset_name"; then
+    error "Failed to download OpenStarbound release"
+    return 1
+  fi
+  
+  # Extract the archive
+  info "Extracting OpenStarbound"
+  mkdir -p "$osb_installed_path"
+  
+  if [[ "$asset_name" == *.zip ]]; then
+    if ! unzip -o "$temp_dir/$asset_name" -d "$osb_installed_path"; then
+      error "Failed to extract OpenStarbound zip file"
+      return 1
+    fi
+  elif [[ "$asset_name" == *.tar.gz ]] || [[ "$asset_name" == *.tgz ]]; then
+    if ! tar -xzf "$temp_dir/$asset_name" -C "$osb_installed_path"; then
+      error "Failed to extract OpenStarbound tar.gz file"
+      return 1
+    fi
+  else
+    error "Unknown archive format for OpenStarbound: $asset_name"
+    return 1
+  fi
+  
+  # Make sure binaries are executable
+  chmod -R +x "$osb_installed_path"
+  
+  # Apply OpenStarbound files to the main Starbound installation
+  info "Installing OpenStarbound files"
+  if [ -d "$osb_installed_path/linux" ]; then
+    cp -f "$osb_installed_path/linux/"* "$install_path/linux/"
+    info "Copied OpenStarbound binaries to Starbound installation"
+  else
+    # Try to find where the binaries are
+    find "$osb_installed_path" -name "starbound_server" -exec cp -f {} "$install_path/linux/" \;
+    info "Found and copied OpenStarbound server binary"
+  fi
+  
+  # Cleanup
+  rm -rf "$temp_dir"
+  
+  info "OpenStarbound installation complete"
+  return 0
+}
+
+checkForOpenStarboundUpdates() {
+  local current_version
+
+  # Skip if OpenStarbound is not enabled
+  if [ "${USE_OPENSTARBOUND:-false}" != "true" ]; then
+    return 1
+  fi
+
+  if [ -f "$osb_version_file_path" ]; then
+    current_version=$(cat "$osb_version_file_path")
+  else
+    current_version="0"
+    info "No existing OpenStarbound installation detected"
+  fi
+
+  # Get latest version information from GitHub
+  release_info=$(curl -s "$osb_release_info_url")
+  latest_osb_version=$(echo "$release_info" | jq -r '.tag_name')
+  
+  if [ -z "$latest_osb_version" ] || [ "$latest_osb_version" == "null" ]; then
+    warn "Unable to determine latest version of OpenStarbound!"
+    if [ "$current_version" == "0" ]; then
+      info "No OpenStarbound version currently installed, will proceed with installation"
+      return 0
+    fi
+    warn "No update will be performed"
+    return 1
+  fi
+
+  if [ "$current_version" != "$latest_osb_version" ]; then
+    info "OpenStarbound needs to be updated from $current_version to $latest_osb_version"
+    return 0
+  else
+    info "OpenStarbound is already the latest version ($latest_osb_version)"
+    return 1
+  fi
+}
+
+setOpenStarboundCurrentVersion() {
+  if [ "$latest_osb_version" == "null" ] || [ "$latest_osb_version" == "-1" ]; then
+    warn "Unable to set current OpenStarbound version - latest version is unknown"
+    return 1
+  fi
+  debug "[setOpenStarboundCurrentVersion]: $latest_osb_version"
+  echo "$latest_osb_version" > "$osb_version_file_path"
+}
+
+isOpenStarboundInstalled() {
+  if [ -f "$osb_version_file_path" ] && [ -d "$osb_installed_path" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+shutdownOsbUpdater() {
+  debug "Received signal to shut down openstarbound-updater"
+  clearLock "$pidfile"
+}

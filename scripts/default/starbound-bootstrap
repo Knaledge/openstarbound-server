@@ -12,6 +12,13 @@ main() {
 
   initCrontab
   supervisorctl start starbound-updater
+  
+  # If OpenStarbound is enabled, trigger its updater during bootstrap
+  if [ "${USE_OPENSTARBOUND:-false}" == "true" ]; then
+    info "OpenStarbound is enabled - triggering updater"
+    supervisorctl start openstarbound-updater
+  fi
+  
   info "Bootstrap complete"
 }
 

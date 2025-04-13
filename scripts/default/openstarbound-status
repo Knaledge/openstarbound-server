@@ -1,0 +1,49 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+. "$(dirname "$0")/openstarbound-updater-shared"
+
+main() {
+  echo "OpenStarbound Status Check"
+  echo "-------------------------"
+  
+  # Check if OpenStarbound is enabled in configuration
+  if [ "${USE_OPENSTARBOUND:-false}" != "true" ]; then
+    echo "OpenStarbound is DISABLED in configuration"
+    echo "To enable it, set USE_OPENSTARBOUND=true"
+    exit 0
+  fi
+  
+  echo "OpenStarbound is ENABLED in configuration"
+  
+  # Check if it's installed
+  if isOpenStarboundInstalled; then
+    current_version=$(cat "$osb_version_file_path")
+    echo "OpenStarbound is INSTALLED (version: $current_version)"
+    
+    # Check for updates
+    if ! checkForOpenStarboundUpdates; then
+      echo "Status: UP TO DATE"
+    else
+      echo "Status: UPDATE AVAILABLE (version: $latest_osb_version)"
+      echo "Run 'supervisorctl start openstarbound-updater' to update"
+    fi
+  else
+    echo "OpenStarbound is NOT INSTALLED"
+    echo "Run 'supervisorctl start openstarbound-updater' to install"
+  fi
+  
+  # Check which binary is currently active
+  if [ -f "$install_path/linux/starbound_server" ]; then
+    echo -n "Current active binary: "
+    if grep -q "OpenStarbound" "$install_path/linux/starbound_server" 2>/dev/null; then
+      echo "OpenStarbound binary is active"
+    else
+      echo "Standard Starbound binary is active"
+    fi
+  else
+    echo "No server binary found"
+  fi
+}
+
+main
