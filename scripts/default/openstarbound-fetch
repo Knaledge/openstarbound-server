@@ -1,37 +1,34 @@
 #!/bin/bash
+. "$(dirname "$0")/common"
 
-response=$(curl -s "https://api.github.com/repos/xStarbound/xStarbound/releases/latest")
+# Retrieve the latest release information for OpenStarbound server from the GitHub API
+response=$(curl -s "https://api.github.com/repos/OpenStarbound/OpenStarbound/releases/latest")
 
-# Extract the tag name and download URL using jq
+# Extract the tag name and download URL for OpenStarbound server (Linux) using jq
 tag_name=$(echo "$response" | jq -r '.tag_name')
-download_url=$(echo "$response" | jq -r '.assets[] | select(.name == "linux-static.tar.gz") | .browser_download_url')
-assets_url=$(echo "$response" | jq -r '.assets[] | select(.name == "xSBassets.pak") | .browser_download_url')
+openstarbound_download_url=$(echo "$response" | jq -r '.assets[] | select(.name == "OpenStarbound-Linux-Server.zip") | .browser_download_url')
 
-if [ -n "$download_url" ]; then
-    echo "Downloading linux-static.tar.gz from the latest release..."
-    curl -L "$download_url" -o /tmp/linux-static.tar.gz
-    
-    echo "Downloading assets.pak from the latest release..."
-    curl -L "$assets_url" -o /tmp/assets.pak
+if [ -n "$openstarbound_download_url" ]; then
+    echo "Preparing download area for OpenStarbound server (Linux)..."
+    mkdir -p $openstarbound_download_path
 
-    echo "Creating server folder"
-    mkdir -p /starbound/server
+    echo "Removing previously downloaded OpenStarbound server (Linux) archives..."
+    find "$openstarbound_download_path" -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' +
 
-    echo "Creating assets folder"
-    mkdir -p /starbound/xsb-assets
+    echo "Downloading latest OpenStarbound server (Linux) release..."
+    curl -L "$openstarbound_download_url" -o $openstarbound_download_path/OpenStarbound-Linux-Server.zip
 
-    echo "Extracting linux-static.tar.gz ..."
-    tar -xzf /tmp/linux-static.tar.gz -C /starbound/server
+    echo "Preparing staging area for OpenStarbound server (Linux)..."
+    mkdir -p $openstarbound_staging_path
 
-    echo "Extracting assets"
-    cp /tmp/assets.pak /starbound/xsb-assets/xSBassets.pak
+    echo "Removing previously extracted OpenStarbound server (Linux) files..."
+    find "$openstarbound_staging_path" -mindepth 1 -maxdepth 1 -exec rm -rf -- '{}' +
 
-    echo "Cleaning up downloaded file..."
-    rm /tmp/linux-static.tar.gz
-    rm /tmp/assets.pak
+    echo "Extracting OpenStarbound server (Linux) to staging area..."
+    tar -xzf $openstarbound_download_path/OpenStarbound-Linux-Server.zip -C $openstarbound_staging_path
 
-    echo "Download and extraction completed successfully."
+    echo "Download and extraction of OpenStarbound server (Linux) completed successfully"
 else
-    echo "No linux-static.tar.gz asset found in the latest release."
+    echo "No OpenStarbound server (Linux) asset found in the latest release"
     exit 1
 fi
