@@ -18,7 +18,17 @@ update() {
   trap shutdown SIGINT SIGTERM
 
   # Check for Starbound updates
-  if ! checkForUpdates; then
+  if checkForUpdates; then
+    starbound_update_needed=true
+  fi
+  
+  # Check for OpenStarbound updates if enabled
+  if [ "$USE_OPENSTARBOUND" == "true" ] && checkForOpenStarboundUpdates; then
+    openstarbound_update_needed=true
+  fi
+  
+  # If no updates needed, exit
+  if [ "$starbound_update_needed" == "false" ] && [ "$openstarbound_update_needed" == "false" ]; then
     if ! checkRunning "starbound-server"; then
       info "Starbound server is not running - starting"
       supervisorctl start starbound-server
@@ -32,7 +42,8 @@ update() {
     return
   fi
 
-  doUpdate &
+# Start update process
+  doUpdate "$starbound_update_needed" "$openstarbound_update_needed" &
   starbound_updater_pid=$!
   echo $starbound_updater_pid >"$pidfile"
   wait $starbound_updater_pid
