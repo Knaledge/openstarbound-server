@@ -35,13 +35,15 @@ bootstrapHook() {
 }
 
 updateOrCreateStarboundServerConfig() {
-  if [[ ! -e ${install_path}/starbound_server.json ]]; then #TODO: Determine if this needs to be 'starbound_server.config'
-    mkdir -p ${install_path}
-    touch ${install_path}/starbound_server.json
+  # Check for presence of Starbound server config file
+  local starbound_server_config="${install_path}/linux/starbound_server.config"
 
-    # write json to file ${install_path}/starbound_server.json
+  if [[ ! -e ${starbound_server_config} ]]; then
+    touch ${starbound_server_config}
 
-    cat >${install_path}/starbound_server.json << EOF # TODO: Determine which of the follow default config entries are mappable/reusable in Starbound
+    # Write server-config environment variable and values as json to Starbound server config file
+
+    cat >${starbound_server_config} << EOF # TODO: Determine which of the follow default config entries are mappable/reusable in Starbound
 {  
   "serverName":"Starbound Server",
   "password": "",
