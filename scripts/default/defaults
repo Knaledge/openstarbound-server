@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Server Settings
+USE_OPENSTARBOUND=${USE_OPENSTARBOUND:-false}
 SERVER_NAME=${SERVER_NAME} # defaults to Plains of Pain Server
 SERVER_PASSWORD=${SERVER_PASSWORD}
 SERVER_SEED=${SERVER_SEED} # defaults to 40337
