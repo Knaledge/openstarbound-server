@@ -7,7 +7,7 @@ starbound_binary_path=linux/starbound_server
 savefile_name=3ad85aea # TODO: Target the Starbound "universe" file in 'savefile_name'
 openstarbound_staging_path=/tmp/openstarbound/staging
 openstarbound_download_path=/tmp/openstarbound/download
-openstarbound_version_file_path=/opt/openstarbound/version
+openstarbound_version_file_path=/opt/starbound/openstarbound/version
 openstarbound_github_api=https://api.github.com/repos/OpenStarbound/OpenStarbound/releases/latest
 # plainsofpain_world_sizes="3 5 7 9 11"
 
