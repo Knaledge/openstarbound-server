@@ -1,16 +1,23 @@
 #!/bin/bash
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
+. "$(dirname "$0")/openstarbound-updater-shared"
 
 pidfile=$starbound_updater_pidfile
 latest_version=-1
 
 update() {
+  local starbound_update_needed=false
+  local openstarbound_update_needed=false
+
+  # PID lock check
   if [ -f "$pidfile" ]; then
     info "Found existing PID file - checking process"
     checkLock $pidfile
   fi
   trap shutdown SIGINT SIGTERM
+
+  # Check for Starbound updates
   if ! checkForUpdates; then
     if ! checkRunning "starbound-server"; then
       info "Starbound server is not running - starting"
@@ -18,6 +25,8 @@ update() {
     fi
     return
   fi
+
+  # Check if the server is empty
   if ! checkServerEmpty; then
     warn "Starbound server is not empty - update will not be performed"
     return
