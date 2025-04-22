@@ -60,45 +60,45 @@ EOF
   fi
 
   if [[ -n "$SERVER_NAME" ]]; then
-    echo "$(jq --arg serverName "$SERVER_NAME" '.serverName = $serverName' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --arg serverName "$SERVER_NAME" '.serverName = $serverName' ${starbound_server_config)" > ${starbound_server_config
   fi
 
   if [[ -n "$SERVER_PASSWORD" ]]; then
-    echo "$(jq --arg password "$SERVER_PASSWORD" '.password = $password' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --arg password "$SERVER_PASSWORD" '.password = $password' ${starbound_server_config)" > ${starbound_server_config
   else
-    echo "$(jq '.password = ""' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq '.password = ""' ${starbound_server_config)" > ${starbound_server_config
   fi
 
   if [[ -n "$SERVER_SEED" ]]; then
-    echo "$(jq --arg seed "$SERVER_SEED" '.seed = $seed' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --arg seed "$SERVER_SEED" '.seed = $seed' ${starbound_server_config)" > ${starbound_server_config
   fi
 
   if [[ -n "$SERVER_WORLD_ID" ]]; then
-    echo "$(jq --arg worldId "$SERVER_WORLD_ID" '.worldId = $worldId' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --arg worldId "$SERVER_WORLD_ID" '.worldId = $worldId' ${starbound_server_config)" > ${starbound_server_config
   fi
 
   if [[ -n "$SERVER_MAP_ID" ]]; then
-    echo "$(jq --arg mapId "$SERVER_MAP_ID" '.mapId = $mapId' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --arg mapId "$SERVER_MAP_ID" '.mapId = $mapId' ${starbound_server_config)" > ${starbound_server_config
   fi
 
   if [[ -n "$SERVER_DIFFICULTY" ]]; then
-    echo "$(jq --arg difficulty "$SERVER_DIFFICULTY" '.difficulty = $difficulty' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --arg difficulty "$SERVER_DIFFICULTY" '.difficulty = $difficulty' ${starbound_server_config)" > ${starbound_server_config
   fi
 
   if [[ -n "$SERVER_WORLD_SIZE" ]]; then
-    echo "$(jq --arg worldSize "$SERVER_WORLD_SIZE" '.worldSize = $worldSize' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --arg worldSize "$SERVER_WORLD_SIZE" '.worldSize = $worldSize' ${starbound_server_config)" > ${starbound_server_config
   fi
 
   if [[ -n "$SERVER_PORT" ]]; then
-    echo "$(jq --argjson port "$SERVER_PORT" '.port = $port' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --argjson port "$SERVER_PORT" '.port = $port' ${starbound_server_config)" > ${starbound_server_config
   fi
 
   if [[ -n "$SERVER_QUERYPORT" ]]; then
-    echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${starbound_server_config)" > ${starbound_server_config
   fi
 
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
-    echo "$(jq --argjson maxPlayers "$SERVER_SLOT_COUNT" '.maxPlayers = $maxPlayers' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --argjson maxPlayers "$SERVER_SLOT_COUNT" '.maxPlayers = $maxPlayers' ${starbound_server_config)" > ${starbound_server_config
   fi
 
 }
