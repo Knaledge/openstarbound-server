@@ -89,7 +89,7 @@ updateOpenStarbound() {
     return 0
   fi
   
-  if fetchOpenStarbound; then
+  if downloadOpenStarbound; then
     if installOpenStarbound; then
       info "OpenStarbound Linux Server update completed successfully"
       return 0
