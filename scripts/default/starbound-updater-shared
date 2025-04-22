@@ -1,6 +1,7 @@
 #!/bin/bash
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
+. "$(dirname "$0")/openstarbound-updater"
 . "$(dirname "$0")/openstarbound-updater-shared"
 
 pidfile=$starbound_updater_pidfile
@@ -50,18 +51,39 @@ update() {
 }
 
 doUpdate() {
+  local starbound_update_needed=$1
+  local openstarbound_update_needed=$2
+
   updatePreHook
+  
+  # Check if the server is running and stop it
   if checkRunning "starbound-server"; then
     supervisorctl stop starbound-server
   fi
-  verifyCpuMhz
-  if ! downloadStarbound; then
-    warn "Download of Starbound server failed - aborting update"
-    supervisorctl start starbound-server
-    clearLock "$pidfile"
-    return
+
+  # Update Starbound if needed
+  if [ "$starbound_update_needed" == "true" ]; then
+    info "Updating Starbound..."
+    verifyCpuMhz
+    if ! downloadStarbound; then
+      warn "Download of Starbound server failed - aborting..."
+      supervisorctl start starbound-server
+      clearLock "$pidfile"
+      return
+    fi
+    setCurrentVersion
   fi
-  setCurrentVersion
+
+  # Update OpenStarbound if needed
+  if [ "$openstarbound_update_needed" == "true" ] && [ "$USE_OPENSTARBOUND" == "true" ]; then
+    if ! updateOpenStarbound; then
+      warn "OpenStarbound update failed - aborting..."
+      clearLock "$pidfile"
+      return
+    fi
+  fi
+
+  # Restart the server and run post-update hooks
   supervisorctl start starbound-server
   updatePostHook
 
