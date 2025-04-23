@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Server Settings
+# Server Settings: General
 USE_OPENSTARBOUND=${USE_OPENSTARBOUND:-false}
 SERVER_NAME=${SERVER_NAME} # defaults to Plains of Pain Server
 SERVER_PASSWORD=${SERVER_PASSWORD}
@@ -12,6 +12,20 @@ SERVER_WORLD_SIZE=${SERVER_WORLD_SIZE} # defaults to 40337
 SERVER_SLOT_COUNT=${SERVER_SLOT_COUNT} # defaults to 10
 SERVER_PORT=${SERVER_PORT} # defaults to 7777
 SERVER_QUERYPORT=${SERVER_QUERYPORT} # defaults to 27016
+
+# Server Settings: Authentication
+## RCON password - must use Docker secret 'starbound_rcon_password'
+SERVER_RCON_PASSWORD=""
+if [ -f /run/secrets/starbound_rcon_password ]; then
+  SERVER_RCON_PASSWORD=$(cat /run/secrets/starbound_rcon_password)
+  if [ -n "$SERVER_RCON_PASSWORD" ]; then
+    info "Using Starbound RCON password from Docker secrets"
+  else
+    info "Starbound RCON password secret file exists - but is empty"
+  fi
+else
+  info "No Starbound RCON password secret found"
+fi
 
 # Steam Settings
 GAME_BRANCH=${GAME_BRANCH:-public}
