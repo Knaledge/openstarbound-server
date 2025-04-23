@@ -42,7 +42,6 @@ updateOrCreateStarboundServerConfig() {
     touch ${starbound_server_config}
 
     # Initialize server-config variables and values and write as json to Starbound server config file
-
     cat >${starbound_server_config} << EOF # TODO: Determine which of the follow default config entries are mappable/reusable in Starbound
 {  
   "serverName":"Starbound Server",
