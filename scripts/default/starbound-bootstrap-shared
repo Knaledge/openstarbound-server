@@ -76,6 +76,19 @@ EOF
     info "Starbound RCON password set from Docker secret"
   fi
 
+  if [[ "$SERVER_RCON_ENABLED" == "true" ]]; then
+    if [[ -z "$SERVER_RCON_PASSWORD" ]]; then
+      info "Starbound RCON server disabled: No Starbound RCON password defined via Docker secret"
+      echo "$(jq --arg '.runRconServer = false' ${starbound_server_config})" > ${starbound_server_config}
+    else
+      echo "$(jq --arg '.runRconServer = true' ${starbound_server_config})" > ${starbound_server_config}
+      info "RCON server enabled"
+    fi
+  else
+    echo "$(jq --arg '.runRconServer = false' ${starbound_server_config})" > ${starbound_server_config}
+    info "RCON server disabled"
+  fi
+
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
     echo "$(jq --argjson maxPlayers "$SERVER_SLOT_COUNT" '.maxPlayers = $maxPlayers' ${starbound_server_config})" > ${starbound_server_config}
   fi
