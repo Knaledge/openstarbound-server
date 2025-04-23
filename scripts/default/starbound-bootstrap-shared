@@ -35,17 +35,21 @@ bootstrapHook() {
 }
 
 updateOrCreateStarboundServerConfig() {
-  # Check for presence of Starbound server config file
   local starbound_server_config="${install_path}/linux/starbound_server.config"
 
-  # Create directory structure for Starbound server config if it does not exist
-  mkdir -p "$(dirname "${starbound_server_config}")"
+  # Create directory structure for Starbound Linux server and Starbound server config file if it does not exist
+  if [ ! -d "$(dirname "${starbound_server_config}")" ]; then
+    info "Creating Starbound Linux server directory: $(dirname "${starbound_server_config}")"
+    mkdir -p "$(dirname "${starbound_server_config}")"
+  else
+    info "Starbound Linux server directory already exists: $(dirname "${starbound_server_config}")"
+  fi
 
   # Create the Starbound server config file if it does not exist
   if [[ ! -e ${starbound_server_config} ]]; then
     touch ${starbound_server_config}
 
-    # Initialize server-config variables and values and write as json to Starbound server config file
+    # Initialize server-config variables and values; write as json to Starbound server config file
     cat >${starbound_server_config} << EOF
 {  
   "serverName":"Starbound Server",
