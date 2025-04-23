@@ -47,7 +47,7 @@ updateOrCreateStarboundServerConfig() {
 {  
   "serverName":"Starbound Server",
   "gameServerPort":21025,
-  "queryPort":21025,
+  "queryServerPort":21025,
   "runRconServer":false,
   "maxPlayers":8
 }
@@ -63,7 +63,7 @@ EOF
   fi
 
   if [[ -n "$SERVER_QUERYPORT" ]]; then
-    echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${starbound_server_config})" > ${starbound_server_config}
+    echo "$(jq --argjson queryServerPort "$SERVER_QUERYPORT" '.queryServerPort = $queryServerPort' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
   if [[ -n "$SERVER_RCON_PASSWORD" ]]; then
