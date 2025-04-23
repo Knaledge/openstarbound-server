@@ -41,19 +41,14 @@ updateOrCreateStarboundServerConfig() {
   if [[ ! -e ${starbound_server_config} ]]; then
     touch ${starbound_server_config}
 
-    # Write server-config environment variable and values as json to Starbound server config file
+    # Initialize server-config variables and values and write as json to Starbound server config file
 
     cat >${starbound_server_config} << EOF # TODO: Determine which of the follow default config entries are mappable/reusable in Starbound
 {  
   "serverName":"Starbound Server",
-  "password": "",
-  "seed":40377,
-  "worldId":0,
-  "mapId":0,
-  "difficulty":2,
-  "worldSize":5,
   "port":21025,
   "queryPort":21025,
+  "runRconServer":false,
   "maxPlayers":10
 }
 EOF
@@ -79,13 +74,13 @@ EOF
   if [[ "$SERVER_RCON_ENABLED" == "true" ]]; then
     if [[ -z "$SERVER_RCON_PASSWORD" ]]; then
       info "Starbound RCON server disabled: No Starbound RCON password defined via Docker secret"
-      echo "$(jq --arg '.runRconServer = false' ${starbound_server_config})" > ${starbound_server_config}
+      echo "$(jq --argjson runRconServer false '.runRconServer = $runRconServer' ${starbound_server_config})" > ${starbound_server_config}
     else
-      echo "$(jq --arg '.runRconServer = true' ${starbound_server_config})" > ${starbound_server_config}
+      echo "$(jq --argjson runRconServer true '.runRconServer = $runRconServer' ${starbound_server_config})" > ${starbound_server_config}
       info "RCON server enabled"
     fi
   else
-    echo "$(jq --arg '.runRconServer = false' ${starbound_server_config})" > ${starbound_server_config}
+    echo "$(jq --argjson runRconServer false '.runRconServer = $runRconServer' ${starbound_server_config})" > ${starbound_server_config}
     info "RCON server disabled"
   fi
 
