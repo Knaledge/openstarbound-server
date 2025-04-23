@@ -96,8 +96,12 @@ EOF
   if [[ "$USE_OPENSTARBOUND" == "true" ]]; then
     # Force asset digest checking when OpenStarbound is enabled
     echo "$(jq --argjson checkAssetsDigest true '.checkAssetsDigest = $checkAssetsDigest' ${starbound_server_config})" > ${starbound_server_config}
+    info "OpenStarbound is enabled - asset digest checking is enforced"
   else
     # Otherwise retain defined value when OpenStarbound is not enabled
     echo "$(jq --argjson checkAssetsDigest ${SERVER_CHECK_ASSETS} '.checkAssetsDigest = $checkAssetsDigest' ${starbound_server_config})" > ${starbound_server_config}
+    if [[ "$SERVER_CHECK_ASSETS" == "true" ]]; then
+      info "Asset digest checking enabled by user configuration"
+    fi
   fi
 }
