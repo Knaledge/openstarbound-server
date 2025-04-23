@@ -63,10 +63,10 @@ EOF
     echo "$(jq --arg serverName "$SERVER_NAME" '.serverName = $serverName' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
-  if [[ -n "$SERVER_PASSWORD" ]]; then
-    echo "$(jq --arg password "$SERVER_PASSWORD" '.password = $password' ${starbound_server_config})" > ${starbound_server_config}
+  if [[ -n "$SERVER_RCON_PASSWORD" ]]; then
+    echo "$(jq --arg rconServerPassword "$SERVER_RCON_PASSWORD" '.rconServerPassword = $rconServerPassword' ${starbound_server_config})" > ${starbound_server_config}
   else
-    echo "$(jq '.password = ""' ${starbound_server_config})" > ${starbound_server_config}
+    echo "$(jq '.rconServerPassword = ""' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
   if [[ -n "$SERVER_SEED" ]]; then
