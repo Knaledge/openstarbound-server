@@ -1,7 +1,17 @@
 #!/bin/bash
 
-# Server Settings: General
+# Docker process user/group IDs
+PUID=${PUID:-4711}
+PGID=${PGID:-4711}
+
+# Steam Settings
+GAME_BRANCH=${GAME_BRANCH:-public}
+STEAMCMD_ARGS=${STEAMCMD_ARGS:-"$GAME_BRANCH" validate}
+
+# OpenStarbound Settings
 USE_OPENSTARBOUND=${USE_OPENSTARBOUND:-false}
+
+# Server Settings: General
 SERVER_NAME=${SERVER_NAME: -"Starbound Server"} 
 SERVER_PORT=${SERVER_PORT} # defaults to 21025
 SERVER_QUERYPORT=${SERVER_QUERYPORT} # defaults to 21025
@@ -20,10 +30,6 @@ else
   info "No Starbound RCON password secret found"
 fi
 
-# Steam Settings
-GAME_BRANCH=${GAME_BRANCH:-public}
-STEAMCMD_ARGS=${STEAMCMD_ARGS:-"$GAME_BRANCH" validate}
-
 # Update
 UPDATE_CRON=${UPDATE_CRON:-}
 UPDATE_CHECK_PLAYERS=${UPDATE_CHECK_PLAYERS:-false}
@@ -39,9 +45,3 @@ UPDATE_PRE_HOOK=${UPDATE_PRE_HOOK:-}
 UPDATE_POST_HOOK=${UPDATE_POST_HOOK:-}
 BACKUP_PRE_HOOK=${BACKUP_PRE_HOOK:-}
 BACKUP_POST_HOOK=${BACKUP_POST_HOOK:-}
-
-# Docker process user/group IDs
-PUID=${PUID:-4711}
-PGID=${PGID:-4711}
-
-
