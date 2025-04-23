@@ -15,6 +15,7 @@ USE_OPENSTARBOUND=${USE_OPENSTARBOUND:-false}
 SERVER_NAME=${SERVER_NAME:-"Starbound Server"} 
 SERVER_PORT=${SERVER_PORT:-21025} # defaults to 21025
 SERVER_QUERYPORT=${SERVER_QUERYPORT:-21025} # defaults to 21025
+SERVER_RCON_PORT=${SERVER_RCON_PORT:-21026} # defaults to 21026
 SERVER_RCON_ENABLED=${SERVER_RCON_ENABLED:-false} # forced to "false" if Docker secret for Starbound RCON password not defined
 SERVER_SLOT_COUNT=${SERVER_SLOT_COUNT:-8} # defaults to 8 slots
 
