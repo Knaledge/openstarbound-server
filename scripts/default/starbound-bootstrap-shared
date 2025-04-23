@@ -92,9 +92,12 @@ EOF
     echo "$(jq --argjson maxPlayers "$SERVER_SLOT_COUNT" '.maxPlayers = $maxPlayers' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
+  # Set checkAssetsDigest based on OpenStarbound status
   if [[ "$USE_OPENSTARBOUND" == "true" ]]; then
+    # Force asset digest checking when OpenStarbound is enabled
     echo "$(jq --argjson checkAssetsDigest true '.checkAssetsDigest = $checkAssetsDigest' ${starbound_server_config})" > ${starbound_server_config}
   else
+    # Otherwise retain defined value when OpenStarbound is not enabled
     echo "$(jq --argjson checkAssetsDigest ${SERVER_CHECK_ASSETS} '.checkAssetsDigest = $checkAssetsDigest' ${starbound_server_config})" > ${starbound_server_config}
   fi
 }
