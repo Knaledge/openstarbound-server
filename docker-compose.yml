@@ -21,7 +21,7 @@ services:
       - PGID=4711                        # Docker Process Group ID; default is "4711"
       - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
       - log_level=50
-      - SERVER_NAME="Starbound Server"
+      - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
       - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
       - SERVER_RCON_ENABLED=false        # Forced to "false" if 'starbound_rcon_password' secret is undefined
