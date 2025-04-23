@@ -14,7 +14,8 @@ services:
       - /path/to/volume:/opt/starbound
     secrets:
       - steam_username
-      - steam_password      
+      - steam_password
+      - starbound_rcon_password
     environment:
       - PUID=4711
       - PGID=4711
@@ -30,6 +31,8 @@ services:
 
 secrets:
   steam_username:
-    file: /path/to/secrets/steam_username.txt
+    file: /path/to/secrets/volume/steam_username.txt
   steam_password:
-    file: /path/to/secrets/steam_password.txt      
+    file: /path/to/secrets/volume/steam_password.txt
+  rcon_password:
+    file: /path/to/secrets/volume/starbound_rcon_password.txt
