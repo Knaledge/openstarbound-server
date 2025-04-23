@@ -38,6 +38,10 @@ updateOrCreateStarboundServerConfig() {
   # Check for presence of Starbound server config file
   local starbound_server_config="${install_path}/linux/starbound_server.config"
 
+  # Create directory structure for Starbound server config if it does not exist
+  mkdir -p "$(dirname "${starbound_server_config}")"
+
+  # Create the Starbound server config file if it does not exist
   if [[ ! -e ${starbound_server_config} ]]; then
     touch ${starbound_server_config}
 
