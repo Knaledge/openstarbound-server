@@ -46,7 +46,7 @@ updateOrCreateStarboundServerConfig() {
     cat >${starbound_server_config} << EOF # TODO: Determine which of the follow default config entries are mappable/reusable in Starbound
 {  
   "serverName":"Starbound Server",
-  "port":21025,
+  "gameServerPort":21025,
   "queryPort":21025,
   "runRconServer":false,
   "maxPlayers":8
@@ -59,7 +59,7 @@ EOF
   fi
 
   if [[ -n "$SERVER_PORT" ]]; then
-    echo "$(jq --argjson port "$SERVER_PORT" '.port = $port' ${starbound_server_config})" > ${starbound_server_config}
+    echo "$(jq --argjson gameServerPort "$SERVER_PORT" '.gameServerPort = $gameServerPort' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
   if [[ -n "$SERVER_QUERYPORT" ]]; then
