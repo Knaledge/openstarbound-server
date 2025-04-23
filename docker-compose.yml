@@ -32,5 +32,5 @@ secrets:
     file: /path/to/secrets/volume/steam_username.txt
   steam_password:
     file: /path/to/secrets/volume/steam_password.txt
-  rcon_password:
+  starbound_rcon_password:
     file: /path/to/secrets/volume/starbound_rcon_password.txt
