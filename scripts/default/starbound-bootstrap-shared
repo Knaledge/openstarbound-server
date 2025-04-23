@@ -63,17 +63,17 @@ EOF
     echo "$(jq --arg serverName "$SERVER_NAME" '.serverName = $serverName' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
-  if [[ -n "$SERVER_RCON_PASSWORD" ]]; then
-    echo "$(jq --arg rconServerPassword "$SERVER_RCON_PASSWORD" '.rconServerPassword = $rconServerPassword' ${starbound_server_config})" > ${starbound_server_config}
-    info "Starbound RCON password set from Docker secret"
-  fi
-
   if [[ -n "$SERVER_PORT" ]]; then
     echo "$(jq --argjson port "$SERVER_PORT" '.port = $port' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
   if [[ -n "$SERVER_QUERYPORT" ]]; then
     echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${starbound_server_config})" > ${starbound_server_config}
+  fi
+
+  if [[ -n "$SERVER_RCON_PASSWORD" ]]; then
+    echo "$(jq --arg rconServerPassword "$SERVER_RCON_PASSWORD" '.rconServerPassword = $rconServerPassword' ${starbound_server_config})" > ${starbound_server_config}
+    info "Starbound RCON password set from Docker secret"
   fi
 
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
