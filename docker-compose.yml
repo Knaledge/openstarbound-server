@@ -8,8 +8,8 @@ services:
     cap_add:
       - sys_nice
     ports:
-      - "21025:21025/tcp"
-      - "21026:21026/tcp"
+      - "21025:21025/tcp"                # Match with 'SERVER_PORT' value
+      - "21026:21026/tcp"                # Match with 'SERVER_RCON_PORT' value
     volumes:
       - /path/to/volume:/opt/starbound
     secrets:
@@ -17,12 +17,15 @@ services:
       - steam_password
       - starbound_rcon_password
     environment:
-      - PUID=4711
-      - PGID=4711
-      - UPDATE_CRON=0 3 * * 0
+      - PUID=4711                        # Docker Process User ID; default is "4711"
+      - PGID=4711                        # Docker Process Group ID; default is "4711"
+      - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
       - log_level=50
       - SERVER_NAME="Starbound Server"
-      - SERVER_RCON_ENABLED=false
+      - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
+      - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
+      - SERVER_RCON_ENABLED=false        # Forced to "false" if 'starbound_rcon_password' secret is undefined
+      - SERVER_SLOT_COUNT=8
 
 secrets:
   steam_username:
