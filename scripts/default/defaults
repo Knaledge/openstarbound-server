@@ -12,13 +12,13 @@ STEAMCMD_ARGS=${STEAMCMD_ARGS:-"$GAME_BRANCH" validate}
 USE_OPENSTARBOUND=${USE_OPENSTARBOUND:-false}
 
 # Server Settings: General
-SERVER_NAME=${SERVER_NAME: -"Starbound Server"} 
-SERVER_PORT=${SERVER_PORT} # defaults to 21025
-SERVER_QUERYPORT=${SERVER_QUERYPORT} # defaults to 21025
-SERVER_RCON_ENABLED=${SERVER_RCON_ENABLED:-false} # forced to "false" if 'SERVER_RCON_PASSWORD' not defined
+SERVER_NAME=${SERVER_NAME:-"Starbound Server"} 
+SERVER_PORT=${SERVER_PORT:-21025} # defaults to 21025
+SERVER_QUERYPORT=${SERVER_QUERYPORT:-21025} # defaults to 21025
+SERVER_RCON_ENABLED=${SERVER_RCON_ENABLED:-false} # forced to "false" if Docker secret for Starbound RCON password not defined
 
 # Server Settings: Authentication
-## RCON password - must use Docker secret 'starbound_rcon_password'
+## Starbound RCON password - must use Docker secret 'starbound_rcon_password'
 SERVER_RCON_PASSWORD=""
 if [ -f /run/secrets/starbound_rcon_password ]; then
   SERVER_RCON_PASSWORD=$(cat /run/secrets/starbound_rcon_password)
@@ -33,7 +33,7 @@ fi
 
 # Update
 UPDATE_CRON=${UPDATE_CRON:-}
-UPDATE_CHECK_PLAYERS=${UPDATE_CHECK_PLAYERS:-false}
+UPDATE_CHECK_PLAYERS=${UPDATE_CHECK_PLAYERS:-true}
 
 # Backup
 BACKUP_CRON=${BACKUP_CRON:-}
