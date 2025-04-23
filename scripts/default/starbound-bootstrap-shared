@@ -92,4 +92,9 @@ EOF
     echo "$(jq --argjson maxPlayers "$SERVER_SLOT_COUNT" '.maxPlayers = $maxPlayers' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
+  if [[ "$USE_OPENSTARBOUND" == "true" ]]; then
+    echo "$(jq --argjson checkAssetsDigest true '.checkAssetsDigest = $checkAssetsDigest' ${starbound_server_config})" > ${starbound_server_config}
+  else
+    echo "$(jq --argjson checkAssetsDigest ${SERVER_CHECK_ASSETS} '.checkAssetsDigest = $checkAssetsDigest' ${starbound_server_config})" > ${starbound_server_config}
+  fi
 }
