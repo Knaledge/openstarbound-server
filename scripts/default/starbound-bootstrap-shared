@@ -49,7 +49,7 @@ updateOrCreateStarboundServerConfig() {
   "port":21025,
   "queryPort":21025,
   "runRconServer":false,
-  "maxPlayers":10
+  "maxPlayers":8
 }
 EOF
   fi
