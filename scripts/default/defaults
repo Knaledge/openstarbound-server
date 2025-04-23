@@ -2,9 +2,9 @@
 
 # Server Settings: General
 USE_OPENSTARBOUND=${USE_OPENSTARBOUND:-false}
-SERVER_NAME=${SERVER_NAME} # defaults to Plains of Pain Server
-SERVER_PORT=${SERVER_PORT} # defaults to 7777
-SERVER_QUERYPORT=${SERVER_QUERYPORT} # defaults to 27016
+SERVER_NAME=${SERVER_NAME: -"Starbound Server"} 
+SERVER_PORT=${SERVER_PORT} # defaults to 21025
+SERVER_QUERYPORT=${SERVER_QUERYPORT} # defaults to 21025
 
 # Server Settings: Authentication
 ## RCON password - must use Docker secret 'starbound_rcon_password'
