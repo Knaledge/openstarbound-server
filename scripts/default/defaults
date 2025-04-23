@@ -35,7 +35,7 @@ else
 fi
 
 # Update
-UPDATE_CRON=${UPDATE_CRON:-}
+UPDATE_CRON=${UPDATE_CRON:-"0 3 * * 0"} # defaults to every Sunday at 3AM (server host time)
 UPDATE_CHECK_PLAYERS=${UPDATE_CHECK_PLAYERS:-true}
 
 # Backup
