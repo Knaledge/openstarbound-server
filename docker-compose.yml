@@ -8,28 +8,29 @@ services:
     cap_add:
       - sys_nice
     ports:
-      - "21025:21025/tcp"
-      - "21025:21025/udp"
+      - "21025:21025/tcp"                # Match with 'SERVER_PORT' value
+      - "21026:21026/tcp"                # Match with 'SERVER_RCON_PORT' value
     volumes:
       - /path/to/volume:/opt/starbound
     secrets:
       - steam_username
-      - steam_password      
+      - steam_password
+      - starbound_rcon_password
     environment:
-      - PUID=4711
-      - PGID=4711
-      - UPDATE_CRON=0 3 * * 0
-      - log_level=50      
-      # - SERVER_NAME=PlainsOfPainTest
-      # - SERVER_SEED=40377
-      # - SERVER_WORLD_ID=0
-      # - SERVER_DIFFICULTY=2
-      # - SERVER_MAP_ID=0
-      # - SERVER_WORLD_SIZE=5
-      # - SERVER_SLOT_COUNT=10
+      - PUID=4711                        # Docker Process User ID; default is "4711"
+      - PGID=4711                        # Docker Process Group ID; default is "4711"
+      - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
+      - log_level=50
+      - SERVER_NAME=Starbound Server
+      - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
+      - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
+      - SERVER_RCON_ENABLED=false        # Forced to "false" if 'starbound_rcon_password' secret is undefined
+      - SERVER_SLOT_COUNT=8
 
 secrets:
   steam_username:
-    file: /path/to/secrets/steam_username.txt
+    file: /path/to/secrets/volume/steam_username.txt
   steam_password:
-    file: /path/to/secrets/steam_password.txt      
+    file: /path/to/secrets/volume/steam_password.txt
+  starbound_rcon_password:
+    file: /path/to/secrets/volume/starbound_rcon_password.txt

@@ -48,5 +48,14 @@ setOpenStarboundCurrentVersion() {
     return 1
   fi
   debug "[setOpenStarboundCurrentVersion]: $openstarbound_latest_version"
+
+  # Create the OpenStarbound directory for version-file storage if it does not exist
+  if [ ! -d "$(dirname "${openstarbound_version_file_path}")" ]; then
+    info "Creating directory for OpenStarbound version file: $(dirname "${openstarbound_version_file_path}")"
+    mkdir -p "$(dirname "${openstarbound_version_file_path}")"
+  else
+    info "Directory for OpenStarbound version file already exists: $(dirname "${openstarbound_version_file_path}")"
+  fi
+
   echo "$openstarbound_latest_version" > "$openstarbound_version_file_path"
 }

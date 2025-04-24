@@ -35,68 +35,81 @@ bootstrapHook() {
 }
 
 updateOrCreateStarboundServerConfig() {
-  if [[ ! -e ${install_path}/starbound_server.json ]]; then #TODO: Determine if this needs to be 'starbound_server.config'
-    mkdir -p ${install_path}
-    touch ${install_path}/starbound_server.json
+  local starbound_server_config="${install_path}/linux/starbound_server.config"
 
-    # write json to file ${install_path}/starbound_server.json
+  # Create directory structure for Starbound Linux server and Starbound server config file if it does not exist
+  if [ ! -d "$(dirname "${starbound_server_config}")" ]; then
+    info "Creating Starbound Linux server directory: $(dirname "${starbound_server_config}")"
+    mkdir -p "$(dirname "${starbound_server_config}")"
+  else
+    info "Starbound Linux server directory already exists: $(dirname "${starbound_server_config}")"
+  fi
 
-    cat >${install_path}/starbound_server.json << EOF # TODO: Determine which of the follow default config entries are mappable/reusable in Starbound
+  # Create the Starbound server config file if it does not exist
+  if [[ ! -e ${starbound_server_config} ]]; then
+    touch ${starbound_server_config}
+
+    # Initialize server-config variables and values; write as json to Starbound server config file
+    cat >${starbound_server_config} << EOF
 {  
   "serverName":"Starbound Server",
-  "password": "",
-  "seed":40377,
-  "worldId":0,
-  "mapId":0,
-  "difficulty":2,
-  "worldSize":5,
-  "port":21025,
-  "queryPort":21025,
-  "maxPlayers":10
+  "gameServerPort":21025,
+  "queryServerPort":21025,
+  "rconServerPort":21026,
+  "runRconServer":false,
+  "maxPlayers":8
 }
 EOF
   fi
 
   if [[ -n "$SERVER_NAME" ]]; then
-    echo "$(jq --arg serverName "$SERVER_NAME" '.serverName = $serverName' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
-  fi
-
-  if [[ -n "$SERVER_PASSWORD" ]]; then
-    echo "$(jq --arg password "$SERVER_PASSWORD" '.password = $password' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
-  else
-    echo "$(jq '.password = ""' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
-  fi
-
-  if [[ -n "$SERVER_SEED" ]]; then
-    echo "$(jq --arg seed "$SERVER_SEED" '.seed = $seed' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
-  fi
-
-  if [[ -n "$SERVER_WORLD_ID" ]]; then
-    echo "$(jq --arg worldId "$SERVER_WORLD_ID" '.worldId = $worldId' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
-  fi
-
-  if [[ -n "$SERVER_MAP_ID" ]]; then
-    echo "$(jq --arg mapId "$SERVER_MAP_ID" '.mapId = $mapId' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
-  fi
-
-  if [[ -n "$SERVER_DIFFICULTY" ]]; then
-    echo "$(jq --arg difficulty "$SERVER_DIFFICULTY" '.difficulty = $difficulty' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
-  fi
-
-  if [[ -n "$SERVER_WORLD_SIZE" ]]; then
-    echo "$(jq --arg worldSize "$SERVER_WORLD_SIZE" '.worldSize = $worldSize' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --arg serverName "$SERVER_NAME" '.serverName = $serverName' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
   if [[ -n "$SERVER_PORT" ]]; then
-    echo "$(jq --argjson port "$SERVER_PORT" '.port = $port' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --argjson gameServerPort "$SERVER_PORT" '.gameServerPort = $gameServerPort' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
   if [[ -n "$SERVER_QUERYPORT" ]]; then
-    echo "$(jq --argjson queryPort "$SERVER_QUERYPORT" '.queryPort = $queryPort' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --argjson queryServerPort "$SERVER_QUERYPORT" '.queryServerPort = $queryServerPort' ${starbound_server_config})" > ${starbound_server_config}
+  fi
+
+  if [[ -n "$SERVER_RCON_PORT" ]]; then
+    echo "$(jq --argjson rconServerPort "$SERVER_RCON_PORT" '.rconServerPort = $rconServerPort' ${starbound_server_config})" > ${starbound_server_config}
+  fi
+
+  if [[ -n "$SERVER_RCON_PASSWORD" ]]; then
+    echo "$(jq --arg rconServerPassword "$SERVER_RCON_PASSWORD" '.rconServerPassword = $rconServerPassword' ${starbound_server_config})" > ${starbound_server_config}
+    info "Starbound RCON password set from Docker secret"
+  fi
+
+  if [[ "$SERVER_RCON_ENABLED" == "true" ]]; then
+    if [[ -z "$SERVER_RCON_PASSWORD" ]]; then
+      info "Starbound RCON server disabled: No Starbound RCON password defined via Docker secret"
+      echo "$(jq --argjson runRconServer false '.runRconServer = $runRconServer' ${starbound_server_config})" > ${starbound_server_config}
+    else
+      echo "$(jq --argjson runRconServer true '.runRconServer = $runRconServer' ${starbound_server_config})" > ${starbound_server_config}
+      info "RCON server enabled"
+    fi
+  else
+    echo "$(jq --argjson runRconServer false '.runRconServer = $runRconServer' ${starbound_server_config})" > ${starbound_server_config}
+    info "RCON server disabled"
   fi
 
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
-    echo "$(jq --argjson maxPlayers "$SERVER_SLOT_COUNT" '.maxPlayers = $maxPlayers' ${install_path}/starbound_server.json)" > ${install_path}/starbound_server.json
+    echo "$(jq --argjson maxPlayers "$SERVER_SLOT_COUNT" '.maxPlayers = $maxPlayers' ${starbound_server_config})" > ${starbound_server_config}
   fi
 
+  # Set 'checkAssetsDigest' based on OpenStarbound status
+  if [[ "$USE_OPENSTARBOUND" == "true" ]]; then
+    # Force asset digest checking when OpenStarbound is enabled
+    echo "$(jq --argjson checkAssetsDigest true '.checkAssetsDigest = $checkAssetsDigest' ${starbound_server_config})" > ${starbound_server_config}
+    info "OpenStarbound is enabled - asset digest checking is enforced"
+  else
+    # Otherwise retain defined value when OpenStarbound is not enabled
+    echo "$(jq --argjson checkAssetsDigest ${SERVER_CHECK_ASSETS} '.checkAssetsDigest = $checkAssetsDigest' ${starbound_server_config})" > ${starbound_server_config}
+    if [[ "$SERVER_CHECK_ASSETS" == "true" ]]; then
+      info "Asset digest checking enabled by user configuration"
+    fi
+  fi
 }

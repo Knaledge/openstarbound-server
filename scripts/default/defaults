@@ -1,25 +1,42 @@
 #!/bin/bash
 
-# Server Settings
-USE_OPENSTARBOUND=${USE_OPENSTARBOUND:-false}
-SERVER_NAME=${SERVER_NAME} # defaults to Plains of Pain Server
-SERVER_PASSWORD=${SERVER_PASSWORD}
-SERVER_SEED=${SERVER_SEED} # defaults to 40337
-SERVER_WORLD_ID=${SERVER_WORLD_ID} # defaults to 0
-SERVER_MAP_ID=${SERVER_MAP_ID} # defaults to 0
-SERVER_DIFFICULTY=${SERVER_DIFFICULTY} # defaults to 2
-SERVER_WORLD_SIZE=${SERVER_WORLD_SIZE} # defaults to 40337
-SERVER_SLOT_COUNT=${SERVER_SLOT_COUNT} # defaults to 10
-SERVER_PORT=${SERVER_PORT} # defaults to 7777
-SERVER_QUERYPORT=${SERVER_QUERYPORT} # defaults to 27016
+# Docker process user/group IDs
+PUID=${PUID:-4711}
+PGID=${PGID:-4711}
 
 # Steam Settings
 GAME_BRANCH=${GAME_BRANCH:-public}
 STEAMCMD_ARGS=${STEAMCMD_ARGS:-"$GAME_BRANCH" validate}
 
+# OpenStarbound Settings
+USE_OPENSTARBOUND=${USE_OPENSTARBOUND:-false}
+
+# Server Settings: General
+SERVER_NAME=${SERVER_NAME:-"Starbound Server"} 
+SERVER_PORT=${SERVER_PORT:-21025} # defaults to 21025
+SERVER_QUERYPORT=${SERVER_QUERYPORT:-21025} # defaults to 21025
+SERVER_RCON_PORT=${SERVER_RCON_PORT:-21026} # defaults to 21026
+SERVER_RCON_ENABLED=${SERVER_RCON_ENABLED:-false} # forced to "false" if Docker secret for Starbound RCON password not defined
+SERVER_CHECK_ASSETS=${SERVER_CHECK_ASSETS:-false} # forced to "true" if 'USE_OPENSTARBOUND' is "true"
+SERVER_SLOT_COUNT=${SERVER_SLOT_COUNT:-8} # defaults to 8 slots
+
+# Server Settings: Authentication
+## Starbound RCON password - must use Docker secret 'starbound_rcon_password'
+SERVER_RCON_PASSWORD=""
+if [ -f /run/secrets/starbound_rcon_password ]; then
+  SERVER_RCON_PASSWORD=$(cat /run/secrets/starbound_rcon_password)
+  if [ -n "$SERVER_RCON_PASSWORD" ]; then
+    info "Using Starbound RCON password from Docker secrets"
+  else
+    info "Starbound RCON password secret file exists - but is empty"
+  fi
+else
+  info "No Starbound RCON password secret found"
+fi
+
 # Update
-UPDATE_CRON=${UPDATE_CRON:-}
-UPDATE_CHECK_PLAYERS=${UPDATE_CHECK_PLAYERS:-false}
+UPDATE_CRON=${UPDATE_CRON:-"0 3 * * 0"} # defaults to every Sunday at 3AM (server host time)
+UPDATE_CHECK_PLAYERS=${UPDATE_CHECK_PLAYERS:-true}
 
 # Backup
 BACKUP_CRON=${BACKUP_CRON:-}
@@ -32,9 +49,3 @@ UPDATE_PRE_HOOK=${UPDATE_PRE_HOOK:-}
 UPDATE_POST_HOOK=${UPDATE_POST_HOOK:-}
 BACKUP_PRE_HOOK=${BACKUP_PRE_HOOK:-}
 BACKUP_POST_HOOK=${BACKUP_POST_HOOK:-}
-
-# MISC
-PUID=${PUID:-4711}
-PGID=${PGID:-4711}
-
-

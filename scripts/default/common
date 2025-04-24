@@ -1,15 +1,14 @@
 #!/bin/bash
-install_path=/opt/starbound
-version_file_path=/opt/starbound/current_version
 steamcmd_path=/usr/bin/steamcmd
 steam_app_id=211820
+install_path=/opt/starbound
 starbound_binary_path=linux/starbound_server
+version_file_path=/opt/starbound/current_version
 savefile_name=3ad85aea # TODO: Target the Starbound "universe" file in 'savefile_name'
 openstarbound_staging_path=/tmp/openstarbound/staging
 openstarbound_download_path=/tmp/openstarbound/download
-openstarbound_version_file_path=/opt/starbound/openstarbound/version
+openstarbound_version_file_path=/opt/starbound/openstarbound/current_version
 openstarbound_github_api=https://api.github.com/repos/OpenStarbound/OpenStarbound/releases/latest
-# plainsofpain_world_sizes="3 5 7 9 11"
 
 # trap SIGUSR1 as it is being used to check
 # for process aliveness when an existing
