@@ -74,8 +74,8 @@ doUpdate() {
     setCurrentVersion
   fi
 
-  # Update OpenStarbound if needed
-  if [ "$openstarbound_update_needed" == "true" ] && [ "$USE_OPENSTARBOUND" == "true" ]; then
+  # Install/update OpenStarbound as needed - especially if Starbound was just installed/updated
+  if [ "$USE_OPENSTARBOUND" == "true" ] && ([ "$openstarbound_update_needed" == "true" ] || [ "$starbound_update_needed" == "true" ]); then
     if ! updateOpenStarbound; then
       warn "OpenStarbound update failed - aborting..."
       clearLock "$pidfile"
