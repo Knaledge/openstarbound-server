@@ -11,7 +11,13 @@ main() {
   bootstrapHook
 
   initCrontab
-  supervisorctl start starbound-updater
+
+  # Ensure OpenStarbound (if enabled) is installed/updated after Starbound is installed/updated
+  if [ "$USE_OPENSTARBOUND" == "true" ]; then
+    supervisorctl start update-sequence:*
+  else
+    supervisorctl start starbound-updater
+  fi
   info "Bootstrap complete"
 }
 
