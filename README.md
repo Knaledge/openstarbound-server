@@ -103,7 +103,7 @@ Simply create a directory on the game server's host itself to store the "Host Se
 > [!NOTE]
 > SteamCMD typically requires approximately 2x the size of the game server in order to update the game server itself
 
-By default the volumes are created with the PUID and PGID "4711". Override this default by defining the environment variables `PUID` and `PGID` via `docker-compose` (or the command line).
+By default the volumes are created with the PUID and PGID "4711". Override this default by defining the environment variables `PUID` and `PGID` via `docker-compose`
 
 | Volume             | Description                                   |
 |--------------------|-----------------------------------------------|
@@ -154,23 +154,6 @@ secrets:
     file: /path/to/secrets/volume/steam_password.txt
   starbound_rcon_password:
     file: /path/to/secrets/volume/starbound_rcon_password.txt
-```
-
-### Docker Command Line
-
-```bash
-docker run -d --name starbound-server \
-  --hostname starbound \
-  --restart=unless-stopped \
-  -p 21025:21025/tcp \
-  -p 21026:21026/tcp \
-  -v ./game:/opt/starbound \
-  -e SERVER_NAME="Starbound Server" \
-  -e SERVER_SLOT_COUNT=8 \
-  -e UPDATE_CRON="0 3 * * 0" \
-  -e PUID=4711 \
-  -e PGID=4711 \
-  ghcr.io/knaledge/openstarbound-server:latest
 ```
 
 ## Additional Commands
