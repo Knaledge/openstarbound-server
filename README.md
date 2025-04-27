@@ -3,12 +3,12 @@
 ## Overview
 Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) game server (Linux), weaving in the option to also deploy [OpenStarbound](https://github.com/OpenStarbound/OpenStarbound) - an unaffiliated fan-maintained project that extends the life of Starbound through bug fixes, engine optimizations, and new features introduced to the core experience.
 
----
 ### Features
 - **Core functions** include: game server installation/updates, startup, shutdown, and maintenance
 - [Supervisor](https://github.com/Supervisor/supervisor) handles health/liveness monitoring of all ***core functions***
 - Configurable [cron](https://en.wikipedia.org/wiki/Cron) [schedule](https://crontab.guru/) for many ***core functions*** (e.g., update, backup, restart, etc.)
 - Optional checks for player presence ahead of all ***core functions***
+- [Hooks](#hooks) before and after ***core functions*** which allow for additional execution of custom commands/scripts
 - [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) for Steam and game-server credentials (so you don't have to use container-accessible repo-tracked files simply for your sensitive data)
 - Headless runner of game server (i.e. no unnecessary use of xvfb, xterm, etc.)
 
@@ -17,13 +17,29 @@ Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) 
 - Optional [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) support (via initial interactive shell session ahead of ***core functions***)
 - Mod support via Steam workshop API/CDN (i.e. no need to subscrib to mods via Steam client)
 
----
 ### Thanks & Credits
 The code and scripts featured in this repo are iterations of original content from [enshrouded-server](https://github.com/mornedhels/enshrouded-server) (by [@mornedhels](https://github.com/mornedhels)) and inspired by its fork [plainsofpain-server](https://github.com/traxo-xx/plainsofpain-server) (by [@traxo-xx](https://github.com/traxo-xx))
 
 Special thanks to the members of the [OpenStarbound Discord community](https://discord.gg/f8B5bWy3bA) for their objective support and feedback as the technical aspects of this project were being developed
 
 ---
+## Recommended Host Requirements
+
+* 2 CPU cores & 4GB RAM (minimum)
+* 6 CPU cores & 16GB RAM (for active servers with multiple concurrent players)
+* Storage: >= 8GB
+
+## Container Image Tags
+
+<!-- > [!NOTE]
+> The container image for this repo is also available on Docker Hub: [](() -->
+
+| Tag                | Description                              |
+|--------------------|------------------------------------------|
+| `latest`           | Latest image                             |
+| `<version>`        | Pinned image                 (>= 1.x.x)  |
+| `dev`              | Dev build                                |
+
 ## Environment Variables
 
 > [!NOTE]
@@ -90,54 +106,7 @@ By default the volumes are created with the PUID and PGID "4711". Override this 
 |--------------------|-----------------------------------------------|
 | `/opt/starbound`   | Game server files (including Steam content)   |
 
-### Hooks
-
-> [!NOTE]
-> Utilize hooks to perform tasks before/after the primary purpose of each install/update script is finished; use of hooks will cause the related install/update scripts to wait for each hook to resolve/return before continuing
-
-| Variable           | Description                            |
-|--------------------|----------------------------------------|
-| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap |
-| `UPDATE_PRE_HOOK`  | Command to run before update           |
-| `UPDATE_POST_HOOK` | Command to run after update            |
-| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup |
-| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |
-
-## Container Image Tags
-
-| Tag                | Description                              |
-|--------------------|------------------------------------------|
-| `latest`           | Latest image                             |
-| `<version>`        | Pinned image                 (>= 1.x.x)  |
-| `dev`              | Dev build                                |
-
-## Recommended System Requirements
-
-* 4 GB RAM and 2 CPU cores (minimum)
-* 16 GB RAM and 6 CPU cores (recommended for active servers with multiple concurrent players)
-* Disk: >= 8GB
-
 ## Usage
-
-### Docker Command Line
-
-<!-- > [!NOTE]
-> The container image for this repo is also available on Docker Hub: [](() -->
-
-```bash
-docker run -d --name starbound-server \
-  --hostname starbound \
-  --restart=unless-stopped \
-  -p 21025:21025/tcp \
-  -p 21026:21026/tcp \
-  -v ./game:/opt/starbound \
-  -e SERVER_NAME="Starbound Server" \
-  -e SERVER_SLOT_COUNT=8 \
-  -e UPDATE_CRON="0 3 * * 0" \
-  -e PUID=4711 \
-  -e PGID=4711 \
-  ghcr.io/knaledge/openstarbound-server:latest
-```
 
 ### Docker Compose
 
@@ -184,9 +153,39 @@ secrets:
     file: /path/to/secrets/volume/starbound_rcon_password.txt
 ```
 
+### Docker Command Line
+
+```bash
+docker run -d --name starbound-server \
+  --hostname starbound \
+  --restart=unless-stopped \
+  -p 21025:21025/tcp \
+  -p 21026:21026/tcp \
+  -v ./game:/opt/starbound \
+  -e SERVER_NAME="Starbound Server" \
+  -e SERVER_SLOT_COUNT=8 \
+  -e UPDATE_CRON="0 3 * * 0" \
+  -e PUID=4711 \
+  -e PGID=4711 \
+  ghcr.io/knaledge/openstarbound-server:latest
+```
+
 ## Commands
 
 * **Force Update:**
   ```bash
   docker compose exec starbound supervisorctl start starbound-force-update
   ```
+
+## Hooks
+
+> [!NOTE]
+> Utilize hooks to perform tasks before/after the primary purpose of each install/update script is finished; use of hooks will cause the related install/update scripts to wait for each hook to resolve/return before continuing
+
+| Variable           | Description                            |
+|--------------------|----------------------------------------|
+| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap |
+| `UPDATE_PRE_HOOK`  | Command to run before update           |
+| `UPDATE_POST_HOOK` | Command to run after update            |
+| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup |
+| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |
