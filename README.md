@@ -4,6 +4,21 @@ Automated deployment of the Linux game server for Starbound - with optional depl
 
 Supervisor handles the startup, shutdown, and maintenance of the game server.
 
+## Table of Contents
+- [Environment Variables](#environment-variables)
+- [Docker Secrets](#docker-secrets)
+  - [Steam Credentials](#steam-credentials)
+  - [Secrets Storage](#secrets-storage)
+- [Ports](#ports)
+- [Volumes](#volumes)
+  - [Hooks](#hooks)
+- [Container Image Tags](#container-image-tags)
+- [Recommended System Requirements](#recommended-system-requirements)
+- [Usage](#usage)
+  - [Docker Command Line](#docker-command-line)
+  - [Docker Compose](#docker-compose)
+- [Commands](#commands)
+
 ## Environment Variables
 
 > [!NOTE]
@@ -99,7 +114,7 @@ By default the volumes are created with the PUID and PGID "4711". Override this 
 
 ## Usage
 
-### Docker
+### Docker Command Line
 
 <!-- > [!NOTE]
 > The container image for this repo is also available on Docker Hub: [](() -->
