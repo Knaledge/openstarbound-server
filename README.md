@@ -51,7 +51,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 |-----------------------------------|:--------:|---------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
 | `PUID`                            |          | `4711`              | integer               | User ID to run the game server processes under (file permission)                                                           |
 | `PGID`                            |          | `4711`              | integer               | Group ID to run the game server processes under (file permission)                                                          |
-| `LOG_LEVEL`                       |          | `50`                | integer (0-100)       | Filter the logging from Supervisor in container (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)       |
+| `LOG_LEVEL`                       |          | `50`                | integer (0-50)        | Filter the logging from Supervisor in container (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)       |
 | `GAME_BRANCH`                     |          | `public`            | string                | Steam branch (eg. testing) to utilize for the game server                                                                  |
 | `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional SteamCMD arguments to be used when installing/updating the game server                                          |
 | `UPDATE_CRON`                     |          | `0 3 * * 0`         | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
@@ -138,7 +138,7 @@ services:
       - PUID=4711                        # Docker Process User ID; default is "4711"
       - PGID=4711                        # Docker Process Group ID; default is "4711"
       - UPDATE_CRON="0 3 * * 0"          # Default is update every Sunday at 3 AM (server host time)
-      - LOG_LEVEL=50                     # Default is "50" (debug); 0-100 (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)
+      - LOG_LEVEL=50                     # Default is "50" (debug); 0-50 (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
       - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
