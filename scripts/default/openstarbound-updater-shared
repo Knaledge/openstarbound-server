@@ -129,9 +129,12 @@ installOpenStarbound() {
   chmod +x "$install_path/linux/starbound_server"
   
   # Debug after copying
-  debug "Final binary information:"
-  ls -la "$install_path/linux/starbound_server"
-  file "$install_path/linux/starbound_server"
+  [ "$log_level" -le "$debug" ] && {
+    debug "Final OpenStarbound binary information:"
+    ls -la  "$install_path/linux/starbound_server"
+    stat    "$install_path/linux/starbound_server" | grep -E 'Size|Access: \('
+    readelf -h "$install_path/linux/starbound_server" | head -n 1
+  }
   
   # Update version file
   setOpenStarboundCurrentVersion
