@@ -13,11 +13,11 @@ main() {
   initCrontab
 
   # Ensure OpenStarbound (if enabled) is installed/updated after Starbound is installed/updated
-  if [ "$USE_OPENSTARBOUND" == "true" ]; then
-    supervisorctl start update-sequence:*
-  else
+  # if [ "$USE_OPENSTARBOUND" == "true" ]; then
+  #   supervisorctl start update-sequence:*
+  # else
     supervisorctl start starbound-updater
-  fi
+  # fi
   info "Bootstrap complete"
 }
 

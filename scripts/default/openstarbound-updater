@@ -9,98 +9,112 @@ main() {
   info "openstarbound-updater complete"
 }
 
-downloadOpenStarbound() {
-  info "Downloading OpenStarbound version $openstarbound_latest_version"
+# downloadOpenStarbound() {
+#   info "Downloading OpenStarbound version $openstarbound_latest_version"
 
-  # Create OpenStarbound download directory
-  mkdir -p "$openstarbound_download_path"
+#   # Create OpenStarbound download directory
+#   mkdir -p "$openstarbound_download_path"
 
-  # Create OpenStarbound staging directory
-  mkdir -p "$openstarbound_staging_path"
+#   # Create OpenStarbound staging directory
+#   mkdir -p "$openstarbound_staging_path"
   
-  # Get download URL for the OpenStarbound Linux Server asset
-  local openstarbound_download_url
-  openstarbound_download_url=$(curl -sX GET "$openstarbound_github_api" | jq -r '.assets[] | select((.name | test("linux"; "i")) and (.name | test("server"; "i"))) | .browser_download_url')
+#   # Get download URL for the OpenStarbound Linux Server asset
+#   local openstarbound_download_url
+#   openstarbound_download_url=$(curl -sX GET "$openstarbound_github_api" | jq -r '.assets[] | select((.name | test("linux"; "i")) and (.name | test("server"; "i"))) | .browser_download_url')
 
-  if [ -z "$openstarbound_download_url" ] || [ "$openstarbound_download_url" == "null" ]; then
-    error "Failed to get download URL for OpenStarbound Linux Server"
-    return 1
-  fi
+#   if [ -z "$openstarbound_download_url" ] || [ "$openstarbound_download_url" == "null" ]; then
+#     error "Failed to get download URL for OpenStarbound Linux Server"
+#     return 1
+#   fi
   
-  # Download OpenStarbound Linux Server asset and extract
-  local openstarbound_archive_path="$openstarbound_download_path/OpenStarbound-Linux-Server.zip"
-  curl -sL "$openstarbound_download_url" -o "$openstarbound_archive_path"
+#   # Download OpenStarbound Linux Server asset and extract
+#   local openstarbound_archive_path="$openstarbound_download_path/OpenStarbound-Linux-Server.zip"
+#   curl -sL "$openstarbound_download_url" -o "$openstarbound_archive_path"
   
-  if [ ! -f "$openstarbound_archive_path" ]; then
-    error "Failed to download OpenStarbound Linux Server asset"
-    return 1
-  fi
+#   if [ ! -f "$openstarbound_archive_path" ]; then
+#     error "Failed to download OpenStarbound Linux Server asset"
+#     return 1
+#   fi
   
-  # Extract the downloaded OpenStarbound Linux Server asset
-  info "Extracting OpenStarbound Linux Server asset..."
-  tar -xzf "$openstarbound_archive_path" -C "$openstarbound_staging_path"
+#   # Extract the downloaded OpenStarbound Linux Server asset
+#   info "Extracting OpenStarbound Linux Server asset..."
+#   tar -xzf "$openstarbound_archive_path" -C "$openstarbound_staging_path"
 
-  # Remove the recently downloaded OpenStarbound Linux Server asset
-  info "Cleaning up OpenStarbound download directory..."
-  find "$openstarbound_download_path" -type f \( -iname '*linux*' -iname '*server*' \) -exec rm -f {} +
+#   # Remove the recently downloaded OpenStarbound Linux Server asset
+#   info "Cleaning up OpenStarbound download directory..."
+#   find "$openstarbound_download_path" -type f \( -iname '*linux*' -iname '*server*' \) -exec rm -f {} +
 
-  info "OpenStarbound downloaded to staging directory"
-  return 0
-}
+#   info "OpenStarbound downloaded to staging directory"
+#   return 0
+# }
 
-installOpenStarbound() {
-  info "Installing OpenStarbound Linux Server version $openstarbound_latest_version ..."
+# installOpenStarbound() {
+#   info "Installing OpenStarbound Linux Server version $openstarbound_latest_version ..."
   
-  # Check if the required OpenStarbound files exist
-  if [ ! -f "$openstarbound_staging_path/server_distribution/linux/btree_repacker" ] || \
-     [ ! -f "$openstarbound_staging_path/server_distribution/linux/starbound_server" ] || \
-     [ ! -f "$openstarbound_staging_path/server_distribution/assets/opensb.pak" ]; then
-    error "OpenStarbound files are missing in staging directory"
-    return 1
-  fi
+#   # Create necessary directories if they don't exist
+#   mkdir -p "$install_path/linux"
+#   mkdir -p "$install_path/assets"
   
-  # Copy required OpenStarbound files to the Starbound installation path
-  cp -f "$openstarbound_staging_path/server_distribution/linux/btree_repacker" "$install_path/linux/"
-  cp -f "$openstarbound_staging_path/server_distribution/linux/starbound_server" "$install_path/linux/"
-  cp -f "$openstarbound_staging_path/server_distribution/assets/opensb.pak" "$install_path/assets/"
+#   # Debug before copying
+#   debug "OpenStarbound staging path contents:"
+#   ls -la "$openstarbound_staging_path/server_distribution/linux/"
   
-  # Make binaries executable
-  chmod +x "$install_path/linux/btree_repacker"
-  chmod +x "$install_path/linux/starbound_server"
+#   # Check if the required OpenStarbound files exist
+#   if [ ! -f "$openstarbound_staging_path/server_distribution/linux/btree_repacker" ] || \
+#      [ ! -f "$openstarbound_staging_path/server_distribution/linux/starbound_server" ] || \
+#      [ ! -f "$openstarbound_staging_path/server_distribution/assets/opensb.pak" ]; then
+#     error "OpenStarbound files are missing in staging directory"
+#     return 1
+#   fi
   
-  # Update version file
-  setOpenStarboundCurrentVersion
+#   # Copy required OpenStarbound files to the Starbound installation path
+#   info "Copying OpenStarbound files to installation path"
+#   cp -fv "$openstarbound_staging_path/server_distribution/linux/btree_repacker" "$install_path/linux/"
+#   cp -fv "$openstarbound_staging_path/server_distribution/linux/starbound_server" "$install_path/linux/"
+#   cp -fv "$openstarbound_staging_path/server_distribution/assets/opensb.pak" "$install_path/assets/"
   
-  info "OpenStarbound Linux Server version $openstarbound_latest_version installed successfully"
-  return 0
-}
+#   # Make binaries executable
+#   chmod +x "$install_path/linux/btree_repacker"
+#   chmod +x "$install_path/linux/starbound_server"
+  
+#   # Debug after copying
+#   debug "Final binary information:"
+#   ls -la "$install_path/linux/starbound_server"
+#   file "$install_path/linux/starbound_server"
+  
+#   # Update version file
+#   setOpenStarboundCurrentVersion
+  
+#   info "OpenStarbound Linux Server version $openstarbound_latest_version installed successfully"
+#   return 0
+# }
 
-updateOpenStarbound() {
-  if [ "$USE_OPENSTARBOUND" != "true" ]; then
-    debug "OpenStarbound is disabled, skipping update"
-    return 0
-  fi
+# updateOpenStarbound() {
+#   if [ "$USE_OPENSTARBOUND" != "true" ]; then
+#     debug "OpenStarbound is disabled, skipping update"
+#     return 0
+#   fi
   
-  info "Updating OpenStarbound Linux Server..."
+#   info "Updating OpenStarbound Linux Server..."
   
-  # First check if an OpenStarbound update is available
-  if ! checkForOpenStarboundUpdates; then
-    debug "No OpenStarbound Linux Server update needed"
-    return 0
-  fi
+#   # First check if an OpenStarbound update is available
+#   if ! checkForOpenStarboundUpdates; then
+#     debug "No OpenStarbound Linux Server update needed"
+#     return 0
+#   fi
   
-  if downloadOpenStarbound; then
-    if installOpenStarbound; then
-      info "OpenStarbound Linux Server update completed successfully"
-      return 0
-    else
-      error "Failed to install OpenStarbound Linux Server"
-      return 1
-    fi
-  else
-    error "Failed to download OpenStarbound Linux Server"
-    return 1
-  fi
-}
+#   if downloadOpenStarbound; then
+#     if installOpenStarbound; then
+#       info "OpenStarbound Linux Server update completed successfully"
+#       return 0
+#     else
+#       error "Failed to install OpenStarbound Linux Server"
+#       return 1
+#     fi
+#   else
+#     error "Failed to download OpenStarbound Linux Server"
+#     return 1
+#   fi
+# }
 
 main
