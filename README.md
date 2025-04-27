@@ -5,11 +5,11 @@ Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) 
 
 ### Features
 - **Core functions** include: game server installation/updates, startup, shutdown, and maintenance
-- [Supervisor](https://github.com/Supervisor/supervisor) handles health/liveness monitoring of all ***core functions***
+- [Supervisor](https://github.com/Supervisor/supervisor) monitoring of health/liveness for all ***core functions***
 - Configurable [cron](https://en.wikipedia.org/wiki/Cron) [schedule](https://crontab.guru/) for many ***core functions*** (e.g., update, backup, restart, etc.)
 - Optional checks for player presence ahead of all ***core functions***
 - [Hooks](#hooks) before and after ***core functions*** which allow for additional execution of custom commands/scripts
-- [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) for Steam and game-server credentials (so you don't have to use container-accessible repo-tracked files simply for your sensitive data)
+- [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) for Steam and game-server credentials (*eliminating* the use of container-accessible repo-tracked files for sensitive data)
 - Headless runner of game server (i.e. no unnecessary use of xvfb, xterm, etc.)
 
 #### Coming Soon
@@ -20,7 +20,7 @@ Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) 
 ### Thanks & Credits
 The code and scripts featured in this repo are iterations of original content from [enshrouded-server](https://github.com/mornedhels/enshrouded-server) (by [@mornedhels](https://github.com/mornedhels)) and inspired by its fork [plainsofpain-server](https://github.com/traxo-xx/plainsofpain-server) (by [@traxo-xx](https://github.com/traxo-xx))
 
-Special thanks to the members of the [OpenStarbound Discord community](https://discord.gg/f8B5bWy3bA) for their objective support and feedback as the technical aspects of this project were being developed
+Special thanks to the members of the [OpenStarbound Discord community](https://discord.gg/f8B5bWy3bA) for their objective support and feedback during development of the technical aspects of this project
 
 ---
 ## Recommended Host Requirements
@@ -43,9 +43,9 @@ Special thanks to the members of the [OpenStarbound Discord community](https://d
 ## Environment Variables
 
 > [!NOTE]
-> "Default" values are passed in automatically as outlined below. "Required" environment variables will also require a value to be defined.
+> ["Default" values](./scripts/default/defaults) are passed in automatically as outlined below. "Required" environment variables will also require a value to be defined.
 
-All environment variables prefixed with `SERVER_` are the available Starbound/OpenStarbound server configuration values
+All environment variables prefixed with `SERVER_` are the available Starbound/OpenStarbound server-configuration values
 
 | Variable                          | Required | Default             | Type                  | Description                                                                                                                |
 |-----------------------------------|:--------:|---------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
@@ -68,6 +68,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 
 > [!IMPORTANT]
 > [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords). Unless otherwise specified, each of the "***Host Secret Files***" for each secret ***must*** be created prior to deployment of the game server (even if the secret is empty/undefined)
+> **Docker Compose ***must*** be used to deploy the game server**
 
 #### Steam Credentials
 
@@ -76,7 +77,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 
 ### Secrets Storage
 
-Simply create a directory on the game server's host itself to store the "Host Secret File" - then define the host path to each secret via `docker-compose` ([example](./docker-compose.yml)) (or `--secret` command line flag)
+Simply create a directory on the game server's host itself to store the "Host Secret File" - then define the host path to each secret via `docker-compose` ([example](#docker-compose))
 
 | Secret                        | Host Secret File                               | Description                                    | Required File  | Value Required                |
 |-------------------------------|------------------------------------------------|------------------------------------------------|:--------------:|:-----------------------------:|
@@ -170,7 +171,7 @@ docker run -d --name starbound-server \
   ghcr.io/knaledge/openstarbound-server:latest
 ```
 
-## Commands
+## Additional Commands
 
 #### Force Update
   ```bash
