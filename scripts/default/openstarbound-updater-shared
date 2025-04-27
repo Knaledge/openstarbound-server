@@ -107,8 +107,10 @@ installOpenStarbound() {
   mkdir -p "$install_path/assets"
   
   # Debug before copying
-  debug "OpenStarbound staging path contents:"
-  ls -la "$openstarbound_staging_path/server_distribution/linux/"
+  [ "$log_level" -le "$debug" ] && {
+    debug "OpenStarbound staging path contents:"
+    ls -la "$openstarbound_staging_path/server_distribution/linux/"\
+  }
   
   # Check if the required OpenStarbound files exist
   if [ ! -f "$openstarbound_staging_path/server_distribution/linux/btree_repacker" ] || \
@@ -133,7 +135,6 @@ installOpenStarbound() {
     debug "Final OpenStarbound binary information:"
     ls -la  "$install_path/linux/starbound_server"
     stat    "$install_path/linux/starbound_server" | grep -E 'Size|Access: \('
-    readelf -h "$install_path/linux/starbound_server" | head -n 1
   }
   
   # Update version file
