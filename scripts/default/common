@@ -37,7 +37,7 @@ debug() { logstd $debug "DEBUG - [$$] - $*"; }
 info() { logstd $info "INFO - $*"; }
 warn() { logstd $warn "WARN - $*"; }
 error() { logerr $error "ERROR - $*"; }
-critical() { logerr $critical "CRITIAL - $*"; }
+critical() { logerr $critical "CRITICAL - $*"; }
 fatal() {
   logerr $fatal "FATAL - $*"
   exit 1
