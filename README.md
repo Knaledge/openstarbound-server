@@ -5,7 +5,17 @@ Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) 
 
 ---
 ### Features
-- Supervisor handles the startup, shutdown, and maintenance of the game server
+- **Core functions** include: game server installation/updates, startup, shutdown, and maintenance
+- [Supervisor](https://github.com/Supervisor/supervisor) handles health/liveness monitoring of all ***core functions***
+- Configurable [cron](https://en.wikipedia.org/wiki/Cron) [schedule](https://crontab.guru/) for many ***core functions*** (e.g., update, backup, restart, etc.)
+- Optional checks for player presence ahead of all ***core functions***
+- [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) for Steam and game-server credentials (so you don't have to use container-accessible repo-tracked files simply for your sensitive data)
+- Headless runner of game server (i.e. no unnecessary use of xvfb, xterm, etc.)
+
+#### Coming Soon
+- Reintroduction of game server backups
+- Optional SteamGuard support (via initial interactive shell session ahead of ***core functions***)
+- Mod support via Steam workshop API/CDN (i.e. no need to subscrib to mods via Steam client)
 
 ---
 ### Thanks & Credits
@@ -13,6 +23,7 @@ The code and scripts featured in this repo are iterations of original content fr
 
 Special thanks to the members of the [OpenStarbound Discord community](https://discord.gg/f8B5bWy3bA) for their objective support and feedback as the technical aspects of this project were being developed
 
+---
 ## Environment Variables
 
 > [!NOTE]
