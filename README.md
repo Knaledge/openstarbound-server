@@ -1,8 +1,4 @@
 # Starbound + OpenStarbound Dedicated Server (Linux)
-<table>
-<tr>
-
-<td style="width:60%; vertical-align:top;">
 
 ## Overview
 Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) game server (Linux), weaving in the option to also deploy [OpenStarbound](https://github.com/OpenStarbound/OpenStarbound) - an unaffiliated fan-maintained project that extends the life of Starbound through bug fixes, engine optimizations, and new features introduced to the core experience.
@@ -16,30 +12,6 @@ Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) 
 The code and scripts featured in this repo are iterations of original content from [enshrouded-server](https://github.com/mornedhels/enshrouded-server) (by [@mornedhels](https://github.com/mornedhels)) and inspired by its fork [plainsofpain-server](https://github.com/traxo-xx/plainsofpain-server) (by [@traxo-xx](https://github.com/traxo-xx))
 
 Special thanks to the members of the [OpenStarbound Discord community](https://discord.gg/f8B5bWy3bA) for their objective support and feedback as the technical aspects of this project were being developed
-
-</td>
-
-<td style="width:40%; vertical-align:top;">
-
-## 📚 Table of Contents
-- [Environment Variables](#environment-variables)
-- [Docker Secrets](#docker-secrets)
-  - [Steam Credentials](#steam-credentials)
-  - [Secrets Storage](#secrets-storage)
-- [Ports](#ports)
-- [Volumes](#volumes)
-- [Hooks](#hooks)
-- [Container Image Tags](#container-image-tags)
-- [Recommended System Requirements](#recommended-system-requirements)
-- [Usage](#usage)
-  - [Docker Command Line](#docker-command-line)
-  - [Docker Compose](#docker-compose)
-- [Commands](#commands)
-
-</td>
-
-</tr>
-</table>
 
 ## Environment Variables
 
