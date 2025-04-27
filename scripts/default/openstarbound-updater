@@ -51,6 +51,14 @@ downloadOpenStarbound() {
 installOpenStarbound() {
   info "Installing OpenStarbound Linux Server version $openstarbound_latest_version ..."
   
+  # Create necessary directories if they don't exist
+  mkdir -p "$install_path/linux"
+  mkdir -p "$install_path/assets"
+  
+  # Debug before copying
+  debug "OpenStarbound staging path contents:"
+  ls -la "$openstarbound_staging_path/server_distribution/linux/"
+  
   # Check if the required OpenStarbound files exist
   if [ ! -f "$openstarbound_staging_path/server_distribution/linux/btree_repacker" ] || \
      [ ! -f "$openstarbound_staging_path/server_distribution/linux/starbound_server" ] || \
@@ -60,13 +68,19 @@ installOpenStarbound() {
   fi
   
   # Copy required OpenStarbound files to the Starbound installation path
-  cp -f "$openstarbound_staging_path/server_distribution/linux/btree_repacker" "$install_path/linux/"
-  cp -f "$openstarbound_staging_path/server_distribution/linux/starbound_server" "$install_path/linux/"
-  cp -f "$openstarbound_staging_path/server_distribution/assets/opensb.pak" "$install_path/assets/"
+  info "Copying OpenStarbound files to installation path"
+  cp -fv "$openstarbound_staging_path/server_distribution/linux/btree_repacker" "$install_path/linux/"
+  cp -fv "$openstarbound_staging_path/server_distribution/linux/starbound_server" "$install_path/linux/"
+  cp -fv "$openstarbound_staging_path/server_distribution/assets/opensb.pak" "$install_path/assets/"
   
   # Make binaries executable
   chmod +x "$install_path/linux/btree_repacker"
   chmod +x "$install_path/linux/starbound_server"
+  
+  # Debug after copying
+  debug "Final binary information:"
+  ls -la "$install_path/linux/starbound_server"
+  file "$install_path/linux/starbound_server"
   
   # Update version file
   setOpenStarboundCurrentVersion
