@@ -1,6 +1,6 @@
 # Starbound + OpenStarbound Dedicated Server (Linux)
 
-Automated deployment of the Linux game server for Starbound - with optional deployment of OpenStarbound. The code and scripts in this are based on (or largely inspired by) on the [enshrouded-server](https://github.com/mornedhels/enshrouded-server) repo made by [mornedhels](https://github.com/mornedhels) and the [plains-of-pain-server](https://github.com/traxo-xx/plainsofpain-server) repo. 
+Automated deployment of the Linux game server for Starbound - with optional deployment of [OpenStarbound](https://github.com/OpenStarbound/OpenStarbound). The code and scripts in this are based on (or largely inspired by) on the [enshrouded-server](https://github.com/mornedhels/enshrouded-server) repo made by [mornedhels](https://github.com/mornedhels) and the [plains-of-pain-server](https://github.com/traxo-xx/plainsofpain-server) repo. 
 
 Supervisor handles the startup, shutdown, and maintenance of the game server.
 
