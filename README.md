@@ -43,7 +43,9 @@ Special thanks to the members of the [OpenStarbound Discord community](https://d
 ## Environment Variables
 
 > [!NOTE]
-> ["Default" values](./scripts/default/defaults) are passed in automatically as outlined below. "Required" environment variables will also require a value to be defined.
+> ["Default" values](./scripts/default/defaults) are passed in automatically as outlined below 
+> 
+> "Required" environment variables will also require a value to be defined
 
 All environment variables prefixed with `SERVER_` are the available Starbound/OpenStarbound server-configuration values
 
