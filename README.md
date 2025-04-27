@@ -14,7 +14,7 @@ Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) 
 
 #### Coming Soon
 - Reintroduction of game server backups
-- Optional SteamGuard support (via initial interactive shell session ahead of ***core functions***)
+- Optional [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) support (via initial interactive shell session ahead of ***core functions***)
 - Mod support via Steam workshop API/CDN (i.e. no need to subscrib to mods via Steam client)
 
 ---
@@ -56,11 +56,11 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 #### Steam Credentials
 
 > [!WARNING]
-> At the moment, Steam Guard must be ***DISABLED*** to allow Starbound server deployment
+> At the moment, [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) must be ***DISABLED*** to allow Starbound game server deployment
 
 ### Secrets Storage
 
-Simply create a directory on the game server's host itself to store the "Host Secret File" - then define the host path to each secret via `docker-compose` (or `--secret` command line flag)
+Simply create a directory on the game server's host itself to store the "Host Secret File" - then define the host path to each secret via `docker-compose` ([example](./docker-compose.yml)) (or `--secret` command line flag)
 
 | Secret                        | Host Secret File                               | Description                                    | Required File  | Value Required                |
 |-------------------------------|------------------------------------------------|------------------------------------------------|:--------------:|:-----------------------------:|
