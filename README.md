@@ -17,7 +17,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 | `PGID`                            |          | `4711`              | integer               | Group ID to run the game server processes under (file permission)                                                          |
 | `GAME_BRANCH`                     |          | `public`            | string                | Steam branch (eg. testing) to utilize for the game server                                                                  |
 | `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional SteamCMD arguments to be used when installing/updating the game server                                          |
-| `UPDATE_CRON`                     |          | `0 3 * * 0 `        | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
+| `UPDATE_CRON`                     |          | `0 3 * * 0`        | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
 | `UPDATE_CHECK_PLAYERS`            |          | `true`              | boolean (true, false) | Check if any players are connected to the game server prior to updating the game server                                    |
 | `SERVER_NAME`                     |          | `Starbound Server`  | string                | Name of the game server                                                                                                    |
 | `SERVER_SLOT_COUNT`               |          | `8`                 | integer               | Max allowed concurrent players                                                                                             |
@@ -57,22 +57,22 @@ Simply create a directory on the storage of the game server's host itself - then
 
 By default the volumes are created with the PUID and PGID "4711". Override this default by defining the environment variables `PUID` and `PGID` via `docker-compose` (or the command line).
 
-| Volume                                                           | Description                                   |
-|------------------------------------------------------------------|-----------------------------------------------|
-| `/opt/starbound`                                                 | Game server files (including Steam content)   |
+| Volume             | Description                                   |
+|--------------------|-----------------------------------------------|
+| `/opt/starbound`   | Game server files (including Steam content)   |
 
 ### Hooks
 
 > [!NOTE]
 > Utilize hooks to perform tasks before/after the primary purpose of each install/update script is finished; use of hooks will cause the related install/update scripts to wait for each hook to resolve/return before continuing
 
-| Variable           | Description                            | WIP |
-|--------------------|----------------------------------------|:---:|
-| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap |     |
-| `UPDATE_PRE_HOOK`  | Command to run before update           |     |
-| `UPDATE_POST_HOOK` | Command to run after update            |     |
-| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup |     |
-| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |     |
+| Variable           | Description                            |
+|--------------------|----------------------------------------|
+| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap |
+| `UPDATE_PRE_HOOK`  | Command to run before update           |
+| `UPDATE_POST_HOOK` | Command to run after update            |
+| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup |
+| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |
 
 ## Container Image Tags
 
@@ -105,7 +105,7 @@ docker run -d --name starbound-server \
   -v ./game:/opt/starbound \
   -e SERVER_NAME="Starbound Server" \
   -e SERVER_SLOT_COUNT=8 \
-  -e UPDATE_CRON="*/30 * * * *" \
+  -e UPDATE_CRON="0 3 * * 0" \
   -e PUID=4711 \
   -e PGID=4711 \
   ghcr.io/knaledge/openstarbound-server:latest
