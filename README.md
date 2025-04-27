@@ -93,7 +93,6 @@ By default the volumes are created with the PUID and PGID "4711". Override this 
 
 ## Recommended System Requirements
 
-* 50-250 Kbps of bandwidth per 1 player
 * 4 GB RAM and 2 CPU cores (minimum)
 * 16 GB RAM and 6 CPU cores (recommended for active servers with multiple concurrent players)
 * Disk: >= 8GB
@@ -122,12 +121,52 @@ docker run -d --name starbound-server \
 
 ### Docker Compose
 
-> [!NOTE]
-> The volumes are created next to the docker-compose.yml file. If you want to create the volumes in the default location (e.g., /var/lib/docker), you can use the following compose file:
+Current [docker-compose.yml](./docker-compose.yml)
+
+```yml
+services:
+  starbound:
+    image: ghcr.io/knaledge/openstarbound-server:latest
+    container_name: starbound-server
+    hostname: starbound
+    restart: unless-stopped
+    stop_grace_period: 2m
+    cap_add:
+      - sys_nice
+    ports:
+      - "21025:21025/tcp"                # Match with 'SERVER_PORT' value
+      - "21026:21026/tcp"                # Match with 'SERVER_RCON_PORT' value
+    volumes:
+      - /path/to/volume:/opt/starbound
+    secrets:
+      - steam_username
+      - steam_password
+      - starbound_rcon_password
+    environment:
+      - PUID=4711                        # Docker Process User ID; default is "4711"
+      - PGID=4711                        # Docker Process Group ID; default is "4711"
+      - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
+      - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
+      - SERVER_NAME=Starbound Server
+      - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
+      - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
+      - SERVER_RCON_ENABLED=false        # Forced to "false" if 'starbound_rcon_password' secret is undefined
+      - SERVER_SLOT_COUNT=8
+      - SERVER_CHECK_ASSETS=false        # Forced to "true" when 'USE_OPENSTARBOUND' is "true"
+      - USE_OPENSTARBOUND=false          # Enable deployment of OpenStarbound on top of the Starbound game server
+
+secrets:
+  steam_username:
+    file: /path/to/secrets/volume/steam_username.txt
+  steam_password:
+    file: /path/to/secrets/volume/steam_password.txt
+  starbound_rcon_password:
+    file: /path/to/secrets/volume/starbound_rcon_password.txt
+```
 
 ## Commands
 
 * **Force Update:**
   ```bash
-  docker compose exec plainsofpain supervisorctl start plainsofpain-force-update
+  docker compose exec starbound supervisorctl start starbound-force-update
   ```
