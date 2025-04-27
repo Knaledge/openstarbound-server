@@ -68,6 +68,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 
 > [!IMPORTANT]
 > [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords). Unless otherwise specified, each of the "***Host Secret Files***" for each secret ***must*** be created prior to deployment of the game server (even if the secret is empty/undefined)
+> 
 > **Docker Compose ***must*** be used to deploy the game server**
 
 #### Steam Credentials
