@@ -43,7 +43,9 @@ Special thanks to the members of the [OpenStarbound Discord community](https://d
 ## Environment Variables
 
 > [!NOTE]
-> ["Default" values](./scripts/default/defaults) are passed in automatically as outlined below. "Required" environment variables will also require a value to be defined.
+> ["Default" values](./scripts/default/defaults) are passed in automatically as outlined below 
+> 
+> "Required" environment variables will also require a value to be defined
 
 All environment variables prefixed with `SERVER_` are the available Starbound/OpenStarbound server-configuration values
 
@@ -51,6 +53,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 |-----------------------------------|:--------:|---------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
 | `PUID`                            |          | `4711`              | integer               | User ID to run the game server processes under (file permission)                                                           |
 | `PGID`                            |          | `4711`              | integer               | Group ID to run the game server processes under (file permission)                                                          |
+| `LOG_LEVEL`                       |          | `50`                | integer (0-50)        | Filter the logging from Supervisor in container (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)       |
 | `GAME_BRANCH`                     |          | `public`            | string                | Steam branch (eg. testing) to utilize for the game server                                                                  |
 | `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional SteamCMD arguments to be used when installing/updating the game server                                          |
 | `UPDATE_CRON`                     |          | `0 3 * * 0`         | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
@@ -69,7 +72,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 > [!IMPORTANT]
 > [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords). Unless otherwise specified, each of the "***Host Secret Files***" for each secret ***must*** be created prior to deployment of the game server (even if the secret is empty/undefined)
 > 
-> **Docker Compose ***must*** be used to deploy the game server**
+> **[Docker Compose](#docker-compose) ***must*** be used to deploy the game server**
 
 #### Steam Credentials
 
@@ -102,7 +105,7 @@ Simply create a directory on the game server's host itself to store the "Host Se
 > [!NOTE]
 > SteamCMD typically requires approximately 2x the size of the game server in order to update the game server itself
 
-By default the volumes are created with the PUID and PGID "4711". Override this default by defining the environment variables `PUID` and `PGID` via `docker-compose` (or the command line).
+By default the volumes are created with the **PUID** and **PGID** "4711" and may be overridden by defining the environment variables `PUID` and `PGID` via `docker-compose` ([example](#docker-compose))
 
 | Volume             | Description                                   |
 |--------------------|-----------------------------------------------|
@@ -136,8 +139,8 @@ services:
     environment:
       - PUID=4711                        # Docker Process User ID; default is "4711"
       - PGID=4711                        # Docker Process Group ID; default is "4711"
-      - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
-      - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
+      - UPDATE_CRON="0 3 * * 0"          # Default is update every Sunday at 3 AM (server host time)
+      - LOG_LEVEL=50                     # Default is "50" (debug); 0-50 (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
       - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
@@ -153,23 +156,6 @@ secrets:
     file: /path/to/secrets/volume/steam_password.txt
   starbound_rcon_password:
     file: /path/to/secrets/volume/starbound_rcon_password.txt
-```
-
-### Docker Command Line
-
-```bash
-docker run -d --name starbound-server \
-  --hostname starbound \
-  --restart=unless-stopped \
-  -p 21025:21025/tcp \
-  -p 21026:21026/tcp \
-  -v ./game:/opt/starbound \
-  -e SERVER_NAME="Starbound Server" \
-  -e SERVER_SLOT_COUNT=8 \
-  -e UPDATE_CRON="0 3 * * 0" \
-  -e PUID=4711 \
-  -e PGID=4711 \
-  ghcr.io/knaledge/openstarbound-server:latest
 ```
 
 ## Additional Commands
