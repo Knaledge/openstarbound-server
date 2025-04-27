@@ -1,7 +1,6 @@
 #!/bin/bash
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
-. "$(dirname "$0")/openstarbound-updater"
 . "$(dirname "$0")/openstarbound-updater-shared"
 
 pidfile=$starbound_updater_pidfile
@@ -74,8 +73,9 @@ doUpdate() {
     setCurrentVersion
   fi
 
-  # Update OpenStarbound if needed
-  if [ "$openstarbound_update_needed" == "true" ] && [ "$USE_OPENSTARBOUND" == "true" ]; then
+  # Install/update OpenStarbound as needed - especially if Starbound was just installed/updated
+  if [ "$USE_OPENSTARBOUND" == "true" ] && ([ "$openstarbound_update_needed" == "true" ] || [ "$starbound_update_needed" == "true" ]); then
+    info "OpenStarbound is enabled - beginning install/update..."
     if ! updateOpenStarbound; then
       warn "OpenStarbound update failed - aborting..."
       clearLock "$pidfile"

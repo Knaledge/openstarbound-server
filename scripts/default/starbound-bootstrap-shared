@@ -4,6 +4,8 @@
 
 prepareStarboundAppFolders() {
   mkdir -p "$install_path"
+  mkdir -p "$install_path/linux"
+  mkdir -p "$install_path/assets"
 }
 
 initCrontab() {
