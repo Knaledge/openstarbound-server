@@ -1,23 +1,44 @@
 # Starbound + OpenStarbound Dedicated Server (Linux)
 
-Automated deployment of the Linux game server for Starbound - with optional deployment of [OpenStarbound](https://github.com/OpenStarbound/OpenStarbound). The code and scripts in this are based on (or largely inspired by) on the [enshrouded-server](https://github.com/mornedhels/enshrouded-server) repo made by [mornedhels](https://github.com/mornedhels) and the [plains-of-pain-server](https://github.com/traxo-xx/plainsofpain-server) repo. 
+## Overview
+Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) game server (Linux), weaving in the option to also deploy [OpenStarbound](https://github.com/OpenStarbound/OpenStarbound) - an unaffiliated fan-maintained project that extends the life of Starbound through bug fixes, engine optimizations, and new features introduced to the core experience.
 
-Supervisor handles the startup, shutdown, and maintenance of the game server.
+### Features
+- **Core functions** include: game server installation/updates, startup, shutdown, and maintenance
+- [Supervisor](https://github.com/Supervisor/supervisor) handles health/liveness monitoring of all ***core functions***
+- Configurable [cron](https://en.wikipedia.org/wiki/Cron) [schedule](https://crontab.guru/) for many ***core functions*** (e.g., update, backup, restart, etc.)
+- Optional checks for player presence ahead of all ***core functions***
+- [Hooks](#hooks) before and after ***core functions*** which allow for additional execution of custom commands/scripts
+- [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) for Steam and game-server credentials (so you don't have to use container-accessible repo-tracked files simply for your sensitive data)
+- Headless runner of game server (i.e. no unnecessary use of xvfb, xterm, etc.)
 
-## Table of Contents
-- [Environment Variables](#environment-variables)
-- [Docker Secrets](#docker-secrets)
-  - [Steam Credentials](#steam-credentials)
-  - [Secrets Storage](#secrets-storage)
-- [Ports](#ports)
-- [Volumes](#volumes)
-  - [Hooks](#hooks)
-- [Container Image Tags](#container-image-tags)
-- [Recommended System Requirements](#recommended-system-requirements)
-- [Usage](#usage)
-  - [Docker Command Line](#docker-command-line)
-  - [Docker Compose](#docker-compose)
-- [Commands](#commands)
+#### Coming Soon
+- Reintroduction of game server backups
+- Optional [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) support (via initial interactive shell session ahead of ***core functions***)
+- Mod support via Steam workshop API/CDN (i.e. no need to subscrib to mods via Steam client)
+
+### Thanks & Credits
+The code and scripts featured in this repo are iterations of original content from [enshrouded-server](https://github.com/mornedhels/enshrouded-server) (by [@mornedhels](https://github.com/mornedhels)) and inspired by its fork [plainsofpain-server](https://github.com/traxo-xx/plainsofpain-server) (by [@traxo-xx](https://github.com/traxo-xx))
+
+Special thanks to the members of the [OpenStarbound Discord community](https://discord.gg/f8B5bWy3bA) for their objective support and feedback as the technical aspects of this project were being developed
+
+---
+## Recommended Host Requirements
+
+* 2 CPU cores & 4GB RAM (minimum)
+* 6 CPU cores & 16GB RAM (for active servers with multiple concurrent players)
+* Storage: >= 8GB
+
+## Container Image Tags
+
+<!-- > [!NOTE]
+> The container image for this repo is also available on Docker Hub: [](() -->
+
+| Tag                | Description                              |
+|--------------------|------------------------------------------|
+| `latest`           | Latest image                             |
+| `<version>`        | Pinned image                 (>= 1.x.x)  |
+| `dev`              | Dev build                                |
 
 ## Environment Variables
 
@@ -46,18 +67,18 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 ## Docker Secrets
 
 > [!IMPORTANT]
-> Docker-native secrets are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords). All of the files for each secret must be created prior to deployment of the game server (even if the secret is empty/undefined)
+> [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords). Unless otherwise specified, each of the "***Host Secret Files***" for each secret ***must*** be created prior to deployment of the game server (even if the secret is empty/undefined)
 
 #### Steam Credentials
 
 > [!WARNING]
-> At the moment, Steam Guard must be ***DISABLED*** to allow Starbound server deployment
+> At the moment, [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) must be ***DISABLED*** to allow Starbound game server deployment
 
-#### Secrets Storage
+### Secrets Storage
 
-Simply create a directory on the storage of the game server's host itself - then define the path to each secret via `docker-compose` (or the command line flag `--secret`)
+Simply create a directory on the game server's host itself to store the "Host Secret File" - then define the host path to each secret via `docker-compose` ([example](./docker-compose.yml)) (or `--secret` command line flag)
 
-| Secret                        | Host File                                      | Description                                    | Required File  | Value Required                |
+| Secret                        | Host Secret File                               | Description                                    | Required File  | Value Required                |
 |-------------------------------|------------------------------------------------|------------------------------------------------|:--------------:|:-----------------------------:|
 | `steam_username`              | `steam_username.txt`                           | Steam username to utilize with SteamCMD        | Yes            | Yes                           |
 | `steam_password`              | `steam_password.txt`                           | Steam password to utilize with SteamCMD        | Yes            | Yes                           |
@@ -85,54 +106,7 @@ By default the volumes are created with the PUID and PGID "4711". Override this 
 |--------------------|-----------------------------------------------|
 | `/opt/starbound`   | Game server files (including Steam content)   |
 
-### Hooks
-
-> [!NOTE]
-> Utilize hooks to perform tasks before/after the primary purpose of each install/update script is finished; use of hooks will cause the related install/update scripts to wait for each hook to resolve/return before continuing
-
-| Variable           | Description                            |
-|--------------------|----------------------------------------|
-| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap |
-| `UPDATE_PRE_HOOK`  | Command to run before update           |
-| `UPDATE_POST_HOOK` | Command to run after update            |
-| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup |
-| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |
-
-## Container Image Tags
-
-| Tag                | Description                              |
-|--------------------|------------------------------------------|
-| `latest`           | Latest image                             |
-| `<version>`        | Pinned image                 (>= 1.x.x)  |
-| `dev`              | Dev build                                |
-
-## Recommended System Requirements
-
-* 4 GB RAM and 2 CPU cores (minimum)
-* 16 GB RAM and 6 CPU cores (recommended for active servers with multiple concurrent players)
-* Disk: >= 8GB
-
 ## Usage
-
-### Docker Command Line
-
-<!-- > [!NOTE]
-> The container image for this repo is also available on Docker Hub: [](() -->
-
-```bash
-docker run -d --name starbound-server \
-  --hostname starbound \
-  --restart=unless-stopped \
-  -p 21025:21025/tcp \
-  -p 21026:21026/tcp \
-  -v ./game:/opt/starbound \
-  -e SERVER_NAME="Starbound Server" \
-  -e SERVER_SLOT_COUNT=8 \
-  -e UPDATE_CRON="0 3 * * 0" \
-  -e PUID=4711 \
-  -e PGID=4711 \
-  ghcr.io/knaledge/openstarbound-server:latest
-```
 
 ### Docker Compose
 
@@ -179,9 +153,39 @@ secrets:
     file: /path/to/secrets/volume/starbound_rcon_password.txt
 ```
 
+### Docker Command Line
+
+```bash
+docker run -d --name starbound-server \
+  --hostname starbound \
+  --restart=unless-stopped \
+  -p 21025:21025/tcp \
+  -p 21026:21026/tcp \
+  -v ./game:/opt/starbound \
+  -e SERVER_NAME="Starbound Server" \
+  -e SERVER_SLOT_COUNT=8 \
+  -e UPDATE_CRON="0 3 * * 0" \
+  -e PUID=4711 \
+  -e PGID=4711 \
+  ghcr.io/knaledge/openstarbound-server:latest
+```
+
 ## Commands
 
-* **Force Update:**
+#### Force Update
   ```bash
   docker compose exec starbound supervisorctl start starbound-force-update
   ```
+
+## Hooks
+
+> [!NOTE]
+> Utilize hooks to perform tasks before/after the primary purpose of each install/update script is finished; use of hooks will cause the related install/update scripts to wait for each hook to resolve/return before continuing
+
+| Variable           | Description                            |
+|--------------------|----------------------------------------|
+| `BOOTSTRAP_HOOK`   | Command to run after general bootstrap |
+| `UPDATE_PRE_HOOK`  | Command to run before update           |
+| `UPDATE_POST_HOOK` | Command to run after update            |
+| `BACKUP_PRE_HOOK`  | Command to run before backup & cleanup |
+| `BACKUP_POST_HOOK` | Command to run after backup & cleanup  |
