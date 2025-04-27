@@ -109,7 +109,7 @@ installOpenStarbound() {
   # Debug before copying
   [ "$log_level" -le "$debug" ] && {
     debug "OpenStarbound staging path contents:"
-    ls -la "$openstarbound_staging_path/server_distribution/linux/"\
+    ls -la "$openstarbound_staging_path/server_distribution/linux/"
   }
   
   # Check if the required OpenStarbound files exist
