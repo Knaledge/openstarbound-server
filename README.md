@@ -103,7 +103,7 @@ Simply create a directory on the game server's host itself to store the "Host Se
 > [!NOTE]
 > SteamCMD typically requires approximately 2x the size of the game server in order to update the game server itself
 
-By default the volumes are created with the PUID and PGID "4711". Override this default by defining the environment variables `PUID` and `PGID` via `docker-compose`
+By default the volumes are created with the **PUID** and **PGID** "4711" and may be overridden by defining the environment variables `PUID` and `PGID` via `docker-compose` ([example](#docker-compose))
 
 | Volume             | Description                                   |
 |--------------------|-----------------------------------------------|
