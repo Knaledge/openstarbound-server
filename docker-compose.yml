@@ -20,12 +20,14 @@ services:
       - PUID=4711                        # Docker Process User ID; default is "4711"
       - PGID=4711                        # Docker Process Group ID; default is "4711"
       - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
-      - log_level=50
+      - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
       - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
       - SERVER_RCON_ENABLED=false        # Forced to "false" if 'starbound_rcon_password' secret is undefined
       - SERVER_SLOT_COUNT=8
+      - SERVER_CHECK_ASSETS=false        # Forced to "true" when 'USE_OPENSTARBOUND' is "true"
+      - USE_OPENSTARBOUND=false          # Enable deployment of OpenStarbound on top of the Starbound game server
 
 secrets:
   steam_username:
