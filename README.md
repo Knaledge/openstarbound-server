@@ -31,22 +31,22 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 ## Docker Secrets
 
 > [!IMPORTANT]
-> Docker-native secrets are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords)
+> Docker-native secrets are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords). All of the files for each secret must be created prior to deployment of the game server (even if the secret is empty/undefined)
 
-### Steam Credentials
+#### Steam Credentials
 
 > [!WARNING]
 > At the moment, Steam Guard must be ***DISABLED*** to allow Starbound server deployment
 
-### Secrets Storage
+#### Secrets Storage
 
 Simply create a directory on the storage of the game server's host itself - then define the path to each secret via `docker-compose` (or the command line flag `--secret`)
 
-| Secret                        | Host File                                      | Description                                    |
-|-------------------------------|------------------------------------------------|------------------------------------------------|
-| `steam_username`              | `steam_username.txt`                           | Steam username to utilize with SteamCMD        |
-| `steam_password`              | `steam_password.txt`                           | Steam password to utilize with SteamCMD        |
-| `starbound_rcon_password`     | `starbound_rcon_password.txt`                  | Password for RCON access to the game server    |
+| Secret                        | Host File                                      | Description                                    | Required File  | Value Required                |
+|-------------------------------|------------------------------------------------|------------------------------------------------|:--------------:|:-----------------------------:|
+| `steam_username`              | `steam_username.txt`                           | Steam username to utilize with SteamCMD        | Yes            | Yes                           |
+| `steam_password`              | `steam_password.txt`                           | Steam password to utilize with SteamCMD        | Yes            | Yes                           |
+| `starbound_rcon_password`     | `starbound_rcon_password.txt`                  | Password for RCON access to the game server    | Yes            | No (*if RCON is not desired*) |
 
 ## Ports
 
