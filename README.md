@@ -172,7 +172,7 @@ docker run -d --name starbound-server \
 
 ## Commands
 
-* **Force Update:**
+#### Force Update
   ```bash
   docker compose exec starbound supervisorctl start starbound-force-update
   ```
