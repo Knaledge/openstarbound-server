@@ -17,7 +17,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 | `PGID`                            |          | `4711`              | integer               | Group ID to run the game server processes under (file permission)                                                          |
 | `GAME_BRANCH`                     |          | `public`            | string                | Steam branch (eg. testing) to utilize for the game server                                                                  |
 | `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional SteamCMD arguments to be used when installing/updating the game server                                          |
-| `UPDATE_CRON`                     |          | `0 3 * * 0`        | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
+| `UPDATE_CRON`                     |          | `0 3 * * 0`         | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
 | `UPDATE_CHECK_PLAYERS`            |          | `true`              | boolean (true, false) | Check if any players are connected to the game server prior to updating the game server                                    |
 | `SERVER_NAME`                     |          | `Starbound Server`  | string                | Name of the game server                                                                                                    |
 | `SERVER_SLOT_COUNT`               |          | `8`                 | integer               | Max allowed concurrent players                                                                                             |
@@ -25,11 +25,20 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 | `SERVER_QUERYPORT`                |          | `21025`             | integer               | Networking port used when utilizing the "query port" of the game server                                                    |
 | `SERVER_RCON_PORT`                |          | `21026`             | integer               | Networking port used when utilizing the "remote control" functionality of the game server                                  |
 | `SERVER_RCON_ENABLED`             |          | `false`             | boolean               | Remote control of the game server available; forced to "false" if `starbound_rcon_password` Docker secret is undefined     |
+| `SERVER_CHECK_ASSETS`             |          | `false`             | boolean               | Enable asset checking (not mods); forced to "true" when `USE_OPENSTARBOUND` is "true"                                      |
+| `USE_OPENSTARBOUND`               |          | `false`             | boolean               | Enable deployment of OpenStarbound on top of the Starbound game server (updated per `UPDATE_CRON` schedule)                |
 
 ## Docker Secrets
 
 > [!IMPORTANT]
 > Docker-native secrets are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords)
+
+### Steam Credentials
+
+> [!WARNING]
+> At the moment, Steam Guard must be ***DISABLED*** to allow Starbound server deployment
+
+### Secrets Storage
 
 Simply create a directory on the storage of the game server's host itself - then define the path to each secret via `docker-compose` (or the command line flag `--secret`)
 
