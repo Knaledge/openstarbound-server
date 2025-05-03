@@ -66,10 +66,11 @@ cleanup() {
 }
 
 getSaveDir() {
-  if [[ "$SERVER_SAVE_DIR" == /* ]]; then
-    save_dir="$SERVER_SAVE_DIR"
+  # If 'savefile_path' starts with '/' then consider it an absolute path; use it verbatim
+  if [[ "$savefile_path" == /* ]]; then
+    save_dir="$savefile_path"
   else
-    save_dir="$install_path/$SERVER_SAVE_DIR"
+    save_dir="$install_path/$savefile_path"
   fi
 }
 
