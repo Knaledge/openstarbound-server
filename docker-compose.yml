@@ -19,7 +19,9 @@ services:
     environment:
       - PUID=4711                        # Docker Process User ID; default is "4711"
       - PGID=4711                        # Docker Process Group ID; default is "4711"
-      - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
+      - UPDATE_CRON="0 3 * * 0"          # Default is update every Sunday at 3 AM (server host time)
+      - BACKUP_CRON="0 4 * * 0"          # Default is backup every Sunday at 4 AM (server host time)
+      - BACKUP_MAX_COUNT=7               # Default is keep a max of 7 backups (before deleting the oldest)
       - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
