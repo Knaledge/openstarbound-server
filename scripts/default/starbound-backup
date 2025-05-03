@@ -47,12 +47,9 @@ backup() {
 
   backupPreHook
 
-  backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-$savefile_name.zip"
-  info "Backing up save file to $backup_dir/$backup_file_name"
-  debug "zip -j \"$backup_dir/$backup_file_name\" \"$save_dir/$latest_savefile_name\" \"/tmp/$savefile_name-index\""
-  zip -j "$backup_dir/$backup_file_name" "$save_dir/$latest_savefile_name" /tmp/$savefile_name-index
-  debug "echo -ne \"@ $latest_savefile_name\n@=$savefile_name\n\" | zipnote -w \"$backup_dir/$backup_file_name\""
-  echo -ne "@ $latest_savefile_name\n@=$savefile_name\n" | zipnote -w "$backup_dir/$backup_file_name"
+  backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-$(basename "$save_dir").zip"
+  info "Backing up $save_dir to $backup_dir/$backup_file_name"
+  zip -r "$backup_dir/$backup_file_name" "$save_dir"
 }
 
 cleanup() {
