@@ -47,15 +47,6 @@ backup() {
 
   backupPreHook
 
-  # create new index file
-  cat > /tmp/$savefile_name-index <<EOF
-  {
-    "latest": 0,
-    "time": $(jq -r '.time' "$save_dir/$savefile_name-index"),
-    "deleted": false
-  }
-EOF
-
   backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-$savefile_name.zip"
   info "Backing up save file to $backup_dir/$backup_file_name"
   debug "zip -j \"$backup_dir/$backup_file_name\" \"$save_dir/$latest_savefile_name\" \"/tmp/$savefile_name-index\""
