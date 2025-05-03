@@ -21,8 +21,8 @@ prepareBackup() {
   getSaveDir
   getBackupDir
 
-  if [ ! -f "$save_dir/$savefile_name-index" ]; then
-    warn "Save file not found - aborting backup"
+  if [ ! -d "$save_dir" ]; then
+    warn "Save directory '$save_dir' not found - aborting backup"
     return
   fi
 
