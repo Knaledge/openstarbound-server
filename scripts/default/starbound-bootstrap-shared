@@ -16,10 +16,10 @@ initCrontab() {
     echo "$UPDATE_CRON supervisorctl start starbound-updater >/dev/null 2>&1" >>"$crontab"
   fi
 
-  # if [ -n "$BACKUP_CRON" ]; then
-  #   debug "creating cron for backups (schedule: $BACKUP_CRON)"
-  #   echo "$BACKUP_CRON supervisorctl start starbound-backup >/dev/null 2>&1" >>"$crontab"
-  # fi
+  if [ -n "$BACKUP_CRON" ]; then
+    info "Creating cron for backups (schedule: $BACKUP_CRON)"
+    echo "$BACKUP_CRON supervisorctl start starbound-backup >/dev/null 2>&1" >>"$crontab"
+  fi
 
   crontab "$crontab"
   rm -f "$crontab"
