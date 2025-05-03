@@ -45,12 +45,6 @@ backup() {
   local backup_file_name
   debug "run backup"
 
-  # check if latest save file exists
-  if [ ! -f "$save_dir/$latest_savefile_name" ]; then
-    warn "Latest save file not found - aborting backup"
-    return
-  fi
-
   backupPreHook
 
   # create new index file
