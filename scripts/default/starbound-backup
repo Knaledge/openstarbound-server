@@ -66,9 +66,6 @@ cleanup() {
 }
 
 getSaveDir() {
-  if [ -z "$SERVER_SAVE_DIR" ]; then
-    SERVER_SAVE_DIR=$(jq -r '.saveDirectory' ${install_path}/starbound_server.json) # TODO: Determine if this should be 'starbound_server.config'
-  fi
   if [[ "$SERVER_SAVE_DIR" == /* ]]; then
     save_dir="$SERVER_SAVE_DIR"
   else
