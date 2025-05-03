@@ -42,19 +42,8 @@ backupAndCleanup() {
 }
 
 backup() {
-  local latest_save_index latest_savefile_name backup_file_name
+  local backup_file_name
   debug "run backup"
-
-  # parse 3ad85aea-index (json) to get latest save file 
-  # TODO: Determine if this is needed with Starbound; it may be that this viable for Starbound "universe" file 
-  latest_save_index=$(jq -r '.latest' "$save_dir/$savefile_name-index")
-
-  # if index = 0 save game is just $savefile_name otherwise $savefile_name-$index
-  if [ "$latest_save_index" -eq 0 ]; then
-    latest_savefile_name="$savefile_name"
-  else
-    latest_savefile_name="$savefile_name-$latest_save_index"
-  fi
 
   # check if latest save file exists
   if [ ! -f "$save_dir/$latest_savefile_name" ]; then
