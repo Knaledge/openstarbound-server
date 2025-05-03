@@ -60,20 +60,20 @@ backup() {
 }
 
 cleanup() {
-  debug "run cleanup"
+  info "Beginning cleanup routine for $backup_dir"
 
-  # skip if BACKUP_MAX_COUNT is not set or is 0
+  # skip if BACKUP_MAX_COUNT is "0" or undefined
   if [ -z "$BACKUP_MAX_COUNT" ] || [ "$BACKUP_MAX_COUNT" -eq 0 ]; then
     warn "Skipping cleanup - BACKUP_MAX_COUNT is not set or is 0 (infinite)"
     return
   fi
 
-  info "Removing old backups with number of backups set to $BACKUP_MAX_COUNT"
+  info "Removing old backups - only keeping $BACKUP_MAX_COUNT most recent backups"
   find "$backup_dir" -type f -printf '%T@ %p\n' | sort -n | cut -d' ' -f 2- | head -n -$BACKUP_MAX_COUNT | xargs rm -fv
 }
 
 getSaveDir() {
-  # If 'savefile_path' starts with '/' then consider it an absolute path; use it verbatim
+  # If 'savefile_path' starts with '/' then consider it an absolute path and use it verbatim
   if [[ "$savefile_path" == /* ]]; then
     save_dir="$savefile_path"
   else
