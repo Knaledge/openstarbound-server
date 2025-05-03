@@ -43,7 +43,7 @@ backupAndCleanup() {
 
 backup() {
   local backup_file_name
-  debug "run backup"
+  info "Beginning backup routine for $save_dir"
 
   backupPreHook
 
