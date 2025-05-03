@@ -47,7 +47,14 @@ backup() {
 
   backupPreHook
 
-  backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-$(basename "$save_dir").zip"
+  # Add context to backup-file name if OpenStarbound is enabled
+  if [[ "$USE_OPENSTARBOUND" == "true" ]]; then
+    openstarbound_backup_suffix="_openstarbound"
+  else
+    openstarbound_backup_suffix=""
+  fi
+
+  backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-$(basename "$save_dir")${openstarbound_backup_suffix}.zip"
   info "Backing up $save_dir to $backup_dir/$backup_file_name"
   zip -r "$backup_dir/$backup_file_name" "$save_dir"
 }
