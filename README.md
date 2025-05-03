@@ -4,7 +4,7 @@
 Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) game server (Linux), weaving in the option to also deploy [OpenStarbound](https://github.com/OpenStarbound/OpenStarbound) - an unaffiliated fan-maintained project that extends the life of Starbound through bug fixes, engine optimizations, and new features introduced to the core experience.
 
 ### Features
-- **Core functions** include: game server installation/updates, startup, shutdown, and maintenance
+- **Core functions** include: game server installation/updates, startup, shutdown, maintenance, and backups
 - [Supervisor](https://github.com/Supervisor/supervisor) monitoring of health/liveness for all ***core functions***
 - Configurable [cron](https://en.wikipedia.org/wiki/Cron) [schedule](https://crontab.guru/) for many ***core functions*** (e.g., update, backup, restart, etc.)
 - Optional checks for player presence ahead of all ***core functions***
@@ -13,7 +13,6 @@ Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) 
 - Headless runner of game server (i.e. no unnecessary use of xvfb, xterm, etc.)
 
 #### Coming Soon
-- Reintroduction of game server backups
 - Optional [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) support (via initial interactive shell session ahead of ***core functions***)
 - Mod support via Steam workshop API/CDN (i.e. no need to subscrib to mods via Steam client)
 
@@ -58,6 +57,8 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 | `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional SteamCMD arguments to be used when installing/updating the game server                                          |
 | `UPDATE_CRON`                     |          | `0 3 * * 0`         | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
 | `UPDATE_CHECK_PLAYERS`            |          | `true`              | boolean (true, false) | Check if any players are connected to the game server prior to updating the game server                                    |
+| `BACKUP_CRON`                     |          | `0 4 * * *`         | string                | Back up game server files on a schedule via cron (e.g., `0 4 * * *` triggers backup every day at 4:00 AM)                  |
+| `BACKUP_MAX_COUNT`                |          | `7`                 | integer               | Number of backups retained before oldest backup is overwritten                                                             |
 | `SERVER_NAME`                     |          | `Starbound Server`  | string                | Name of the game server                                                                                                    |
 | `SERVER_SLOT_COUNT`               |          | `8`                 | integer               | Max allowed concurrent players                                                                                             |
 | `SERVER_PORT`                     |          | `21025`             | integer               | Primary networking port used when connecting to the game server                                                            |
@@ -139,8 +140,10 @@ services:
     environment:
       - PUID=4711                        # Docker Process User ID; default is "4711"
       - PGID=4711                        # Docker Process Group ID; default is "4711"
-      - UPDATE_CRON="0 3 * * 0"          # Default is update every Sunday at 3 AM (server host time)
-      - LOG_LEVEL=50                     # Default is "50" (debug); 0-50 (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)
+      - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
+      - BACKUP_CRON=0 4 * * *            # Default is backup every day at 4 AM (server host time)
+      - BACKUP_MAX_COUNT=7               # Default is retain a max of 7 backups before overwriting the oldest
+      - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
       - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"

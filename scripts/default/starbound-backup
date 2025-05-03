@@ -21,8 +21,8 @@ prepareBackup() {
   getSaveDir
   getBackupDir
 
-  if [ ! -f "$save_dir/$savefile_name-index" ]; then
-    warn "Save file not found - aborting backup"
+  if [ ! -d "$save_dir" ]; then
+    warn "Save directory '$save_dir' not found - aborting backup"
     return
   fi
 
@@ -42,66 +42,42 @@ backupAndCleanup() {
 }
 
 backup() {
-  local latest_save_index latest_savefile_name backup_file_name
-  debug "run backup"
-
-  # parse 3ad85aea-index (json) to get latest save file 
-  # TODO: Determine if this is needed with Starbound; it may be that this viable for Starbound "universe" file 
-  latest_save_index=$(jq -r '.latest' "$save_dir/$savefile_name-index")
-
-  # if index = 0 save game is just $savefile_name otherwise $savefile_name-$index
-  if [ "$latest_save_index" -eq 0 ]; then
-    latest_savefile_name="$savefile_name"
-  else
-    latest_savefile_name="$savefile_name-$latest_save_index"
-  fi
-
-  # check if latest save file exists
-  if [ ! -f "$save_dir/$latest_savefile_name" ]; then
-    warn "Latest save file not found - aborting backup"
-    return
-  fi
+  local backup_file_name
+  info "Beginning backup routine for $save_dir"
 
   backupPreHook
 
-  # create new index file
-  cat > /tmp/$savefile_name-index <<EOF
-  {
-    "latest": 0,
-    "time": $(jq -r '.time' "$save_dir/$savefile_name-index"),
-    "deleted": false
-  }
-EOF
+  # Add context to backup-file name if OpenStarbound is enabled
+  if [[ "$USE_OPENSTARBOUND" == "true" ]]; then
+    openstarbound_backup_suffix="_openstarbound"
+  else
+    openstarbound_backup_suffix=""
+  fi
 
-  backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-$savefile_name.zip"
-  info "Backing up save file to $backup_dir/$backup_file_name"
-  debug "zip -j \"$backup_dir/$backup_file_name\" \"$save_dir/$latest_savefile_name\" \"/tmp/$savefile_name-index\""
-  zip -j "$backup_dir/$backup_file_name" "$save_dir/$latest_savefile_name" /tmp/$savefile_name-index
-  debug "echo -ne \"@ $latest_savefile_name\n@=$savefile_name\n\" | zipnote -w \"$backup_dir/$backup_file_name\""
-  echo -ne "@ $latest_savefile_name\n@=$savefile_name\n" | zipnote -w "$backup_dir/$backup_file_name"
+  backup_file_name="$(date +%Y-%m-%d_%H-%M-%S)-$(basename "$save_dir")${openstarbound_backup_suffix}.zip"
+  info "Backing up $save_dir to $backup_dir/$backup_file_name"
+  zip -r "$backup_dir/$backup_file_name" "$save_dir"
 }
 
 cleanup() {
-  debug "run cleanup"
+  info "Beginning cleanup routine for $backup_dir"
 
-  # skip if BACKUP_MAX_COUNT is not set or is 0
+  # skip if BACKUP_MAX_COUNT is "0" or undefined
   if [ -z "$BACKUP_MAX_COUNT" ] || [ "$BACKUP_MAX_COUNT" -eq 0 ]; then
     warn "Skipping cleanup - BACKUP_MAX_COUNT is not set or is 0 (infinite)"
     return
   fi
 
-  info "Removing old backups with number of backups set to $BACKUP_MAX_COUNT"
+  info "Removing old backups - only keeping $BACKUP_MAX_COUNT most recent backups"
   find "$backup_dir" -type f -printf '%T@ %p\n' | sort -n | cut -d' ' -f 2- | head -n -$BACKUP_MAX_COUNT | xargs rm -fv
 }
 
 getSaveDir() {
-  if [ -z "$SERVER_SAVE_DIR" ]; then
-    SERVER_SAVE_DIR=$(jq -r '.saveDirectory' ${install_path}/starbound_server.json) # TODO: Determine if this should be 'starbound_server.config'
-  fi
-  if [[ "$SERVER_SAVE_DIR" == /* ]]; then
-    save_dir="$SERVER_SAVE_DIR"
+  # If 'savefile_path' starts with '/' then consider it an absolute path and use it verbatim
+  if [[ "$savefile_path" == /* ]]; then
+    save_dir="$savefile_path"
   else
-    save_dir="$install_path/$SERVER_SAVE_DIR"
+    save_dir="$install_path/$savefile_path"
   fi
 }
 
@@ -115,14 +91,14 @@ getBackupDir() {
 
 backupPreHook() {
   if [ -n "$BACKUP_PRE_HOOK" ]; then
-    info "Running update post hook: $BACKUP_PRE_HOOK"
+    info "Running backup pre hook: $BACKUP_PRE_HOOK"
     eval "$BACKUP_PRE_HOOK"
   fi
 }
 
 backupPostHook() {
   if [ -n "$BACKUP_POST_HOOK" ]; then
-    info "Running update post hook: $BACKUP_POST_HOOK"
+    info "Running backup post hook: $BACKUP_POST_HOOK"
     eval "$BACKUP_POST_HOOK"
   fi
 }

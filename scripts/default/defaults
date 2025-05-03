@@ -35,13 +35,13 @@ else
 fi
 
 # Update
-UPDATE_CRON=${UPDATE_CRON:-"0 3 * * 0"} # defaults to every Sunday at 3AM (server host time)
+UPDATE_CRON=${UPDATE_CRON:-0 3 * * 0} # defaults to every Sunday at 3AM (server host time)
 UPDATE_CHECK_PLAYERS=${UPDATE_CHECK_PLAYERS:-true}
 
 # Backup
-BACKUP_CRON=${BACKUP_CRON:-}
+BACKUP_CRON=${BACKUP_CRON:-0 4 * * *} # defaults to every day at 4AM (server host time)
 BACKUP_DIR=${BACKUP_DIR:-backups}
-BACKUP_MAX_COUNT=${BACKUP_MAX_COUNT:-0}
+BACKUP_MAX_COUNT=${BACKUP_MAX_COUNT:-7}
 
 # Hooks
 BOOTSTRAP_HOOK=${BOOTSTRAP_HOOK:-}
