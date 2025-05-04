@@ -116,3 +116,108 @@ checkRunning() {
     return 1
   fi
 }
+
+# steamGuardAuth() {
+#   if [ "$USE_STEAMGUARD" == "true" ]; then
+#     info "Steam Guard authentication enabled - beginning interactive SteamCMD login..."
+
+#     if [ ! -t 0 ]; then
+#       # warn "stdin is not a TTY; interactive input may not work! Did you forget to run with -it or tty: true?"
+#       error "stdin is not a TTY; cannot proceed with interactive Steam Guard login. Exiting."
+#       exit 1
+#     fi
+
+#     # Check if Steam credentials from Docker secrets are available
+#     if [ ! -f "/run/secrets/steam_username" ] || [ ! -f "/run/secrets/steam_password" ]; then
+#       error "Missing Docker secrets: 'steam_username' and/or 'steam_password'"
+#       exit 1
+#     fi
+
+#     # Read Steam credentials from Docker secrets
+#     STEAM_USERNAME=$(cat /run/secrets/steam_username)
+#     STEAM_PASSWORD=$(cat /run/secrets/steam_password)
+
+#     # Set maximum number of attempts for SteamCMD login before failing
+#     ATTEMPT=1
+#     MAX_ATTEMPTS=${STEAMGUARD_MAX_RETRIES:-3}
+#     LOGIN_SUCCESS=false
+
+#     # Loop to attempt SteamCMD login while Steam Guard is enabled
+#     while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+#       info "SteamCMD login attempt $ATTEMPT of $MAX_ATTEMPTS..."
+#       if steamcmd +login "$STEAM_USERNAME" "$STEAM_PASSWORD" +quit; then
+#         info "SteamCMD authentication with Steam Guard successful - proceeding with install/update of game server..."
+#         LOGIN_SUCCESS=true
+#         break
+#       else
+#         warn "SteamCMD login failed."
+#         warn "If Steam Guard requested, enter code interactively at prompt"
+#       fi
+#       ATTEMPT=$((ATTEMPT + 1))
+#     done
+
+#     if [ "$LOGIN_SUCCESS" = false ]; then
+#       error "SteamCMD login failed after $MAX_ATTEMPTS attempts - exiting"
+#       exit 2
+#     fi
+#   else
+#     info "Steam Guard authentication is disabled - skipping..."
+#   fi
+# }
+
+steamGuardAuth() {
+  if [ "$USE_STEAMGUARD" == "true" ]; then
+    info "Steam Guard authentication enabled - beginning interactive SteamCMD login..."
+
+    if [ ! -t 0 ]; then
+      # warn "stdin is not a TTY; interactive input may not work! Did you forget to run with -it or tty: true?"
+      error "stdin is not a TTY; cannot proceed with interactive Steam Guard login. Exiting."
+      exit 1
+    fi
+
+    # Check if Steam credentials from Docker secrets are available
+    if [ ! -f "/run/secrets/steam_username" ] || [ ! -f "/run/secrets/steam_password" ]; then
+      error "Missing Docker secrets: 'steam_username' and/or 'steam_password'"
+      exit 1
+    fi
+
+    # Read Steam credentials from Docker secrets
+    STEAM_USERNAME=$(cat /run/secrets/steam_username)
+    STEAM_PASSWORD=$(cat /run/secrets/steam_password)
+
+    # Switch to 'starbound' user and run SteamCMD login logic under that user
+    su starbound -c "
+      export HOME=/home/starbound
+      ATTEMPT=1
+      MAX_ATTEMPTS=\${STEAMGUARD_MAX_RETRIES:-3}
+      LOGIN_SUCCESS=false
+
+      # Loop to attempt SteamCMD login while Steam Guard is enabled
+      while [ \$ATTEMPT -le \$MAX_ATTEMPTS ]; do
+        echo \"INFO - SteamCMD login attempt \$ATTEMPT of \$MAX_ATTEMPTS...\"
+        if steamcmd +login \"$STEAM_USERNAME\" \"$STEAM_PASSWORD\" +quit; then
+          echo \"INFO - SteamCMD authentication with Steam Guard successful - proceeding with install/update of game server...\"
+          LOGIN_SUCCESS=true
+          break
+        else
+          echo \"WARN - SteamCMD login failed.\"
+          echo \"WARN - If Steam Guard requested, enter code interactively at prompt.\"
+        fi
+        ATTEMPT=\$((ATTEMPT + 1))
+      done
+
+      if [ \"\$LOGIN_SUCCESS\" = false ]; then
+        echo \"ERROR - SteamCMD login failed after \$MAX_ATTEMPTS attempts - exiting.\"
+        exit 2
+      fi
+    "
+
+    if [ $? -ne 0 ]; then
+      error "SteamCMD login (as starbound) failed or exited with error."
+      exit 2
+    fi
+
+  else
+    info "Steam Guard authentication is disabled - skipping..."
+  fi
+}
