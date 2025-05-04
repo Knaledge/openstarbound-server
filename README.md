@@ -10,10 +10,10 @@ Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) 
 - Optional checks for player presence ahead of all ***core functions***
 - [Hooks](#hooks) before and after ***core functions*** which allow for additional execution of custom commands/scripts
 - [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) for Steam and game-server credentials (*eliminating* the use of container-accessible repo-tracked files for sensitive data)
+- Optional [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) support (via initial interactive shell session prior to executing ***core functions***)
 - Headless runner of game server (i.e. no unnecessary use of xvfb, xterm, etc.)
 
 #### Coming Soon
-- Optional [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) support (via initial interactive shell session ahead of ***core functions***)
 - Mod support via Steam workshop API/CDN (i.e. no need to subscrib to mods via Steam client)
 
 ### Thanks & Credits
@@ -53,10 +53,12 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 | `PUID`                            |          | `4711`              | integer               | User ID to run the game server processes under (file permission)                                                           |
 | `PGID`                            |          | `4711`              | integer               | Group ID to run the game server processes under (file permission)                                                          |
 | `LOG_LEVEL`                       |          | `50`                | integer (0-50)        | Filter the logging from Supervisor in container (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)       |
+| `USE_STEAMGUARD`                  |          | `false`             | boolean (true, false) | Enable Steam Guard authentication for Steam accounts                                                                       |
+| `STEAMGUARD_MAX_ATTEMPTS`         |          | `3`                 | integer               | Number of attempts to enter a valid Steam Guard code before terminating the game server deployment                         |
 | `GAME_BRANCH`                     |          | `public`            | string                | Steam branch (eg. testing) to utilize for the game server                                                                  |
 | `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional SteamCMD arguments to be used when installing/updating the game server                                          |
 | `UPDATE_CRON`                     |          | `0 3 * * 0`         | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
-| `UPDATE_CHECK_PLAYERS`            |          | `true`              | boolean (true, false) | Check if any players are connected to the game server prior to updating the game server                                    |
+| `UPDATE_CHECK_PLAYERS`            |          | `true`              | boolean               | Check if any players are connected to the game server prior to updating the game server                                    |
 | `BACKUP_CRON`                     |          | `0 4 * * *`         | string                | Back up game server files on a schedule via cron (e.g., `0 4 * * *` triggers backup every day at 4:00 AM)                  |
 | `BACKUP_MAX_COUNT`                |          | `7`                 | integer               | Number of backups retained before oldest backup is overwritten                                                             |
 | `SERVER_NAME`                     |          | `Starbound Server`  | string                | Name of the game server                                                                                                    |
@@ -77,8 +79,12 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 
 #### Steam Credentials
 
-> [!WARNING]
-> At the moment, [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) must be ***DISABLED*** to allow Starbound game server deployment
+> [!IMPORTANT]
+> If [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) is enabled on the Steam account used for deployment, `USE_STEAMGUARD` ***must*** be set to "true" (default is "false") and the container service ***must*** allow for interactive shell access (e.g., `stdin_open: true` and `tty: true` in [docker-compose](#docker-compose))
+
+For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid code, with the number of permitted attempts defined by `STEAMGUARD_MAX_ATTEMPTS` (default is "3"). If the maximum attempts are reached without a valid entry of a Steam Guard code, the game server deployment process will terminate.
+
+Successful entry of the Steam Guard code will be cached in the 'steam-data' volume defined in the [docker-compose](#docker-compose) and the game server will be able to update for a duration before needing to enter the Steam Guard code again.
 
 ### Secrets Storage
 
@@ -121,6 +127,8 @@ Current [docker-compose.yml](./docker-compose.yml)
 ```yml
 services:
   starbound:
+    tty: true
+    stdin_open: true
     image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
@@ -132,7 +140,8 @@ services:
       - "21025:21025/tcp"                # Match with 'SERVER_PORT' value
       - "21026:21026/tcp"                # Match with 'SERVER_RCON_PORT' value
     volumes:
-      - /path/to/volume:/opt/starbound
+      - /path/to/volume/for/game-data:/opt/starbound
+      - /path/to/volume/for/steam-data:/home/starbound/Steam
     secrets:
       - steam_username
       - steam_password
@@ -144,6 +153,8 @@ services:
       - BACKUP_CRON=0 4 * * *            # Default is backup every day at 4 AM (server host time)
       - BACKUP_MAX_COUNT=7               # Default is retain a max of 7 backups before overwriting the oldest
       - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
+      - USE_STEAMGUARD=false             # Default is "false"; set to "true" if the Steam account is protected by Steam Guard
+      - STEAMGUARD_MAX_ATTEMPTS=3        # Default is "3"; max attempts to enter valid Steam Guard code before terminating game server deployment
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
       - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
