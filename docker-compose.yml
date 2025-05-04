@@ -1,7 +1,7 @@
 services:
   starbound:
-    tty: true
-    stdin_open: true
+    tty: true                            # Required for Steam Guard support (able to be removed if Steam Guard is disabled on the Steam account)
+    stdin_open: true                     # Required for Steam Guard support (able to be removed if Steam Guard is disabled on the Steam account)
     image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
