@@ -141,7 +141,7 @@ steamGuardAuth() {
     su starbound -c "
       export HOME=/home/starbound
       ATTEMPT=1
-      MAX_ATTEMPTS=\${STEAMGUARD_MAX_RETRIES:-3}
+      MAX_ATTEMPTS=\${STEAMGUARD_MAX_ATTEMPTS:-3}
       LOGIN_SUCCESS=false
 
       # Loop to attempt SteamCMD login while Steam Guard is enabled
