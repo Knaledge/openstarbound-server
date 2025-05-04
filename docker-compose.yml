@@ -1,5 +1,7 @@
 services:
   starbound:
+    tty: true
+    stdin_open: true
     image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
@@ -11,7 +13,8 @@ services:
       - "21025:21025/tcp"                # Match with 'SERVER_PORT' value
       - "21026:21026/tcp"                # Match with 'SERVER_RCON_PORT' value
     volumes:
-      - /path/to/volume:/opt/starbound
+      - /path/to/volume/for/game-data:/opt/starbound
+      - /path/to/volume/for/steam-data:/home/starbound/Steam
     secrets:
       - steam_username
       - steam_password
