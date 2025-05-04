@@ -82,7 +82,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 > [!IMPORTANT]
 > If [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) is enabled on the Steam account used for deployment, `USE_STEAMGUARD` ***must*** be set to "true" (default is "false") and the container service ***must*** allow for interactive shell access (e.g., `stdin_open: true` and `tty: true` in [docker-compose](#docker-compose))
 
-For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid code, with the number of permitted attempts defined by `STEAMGUARD_MAX_ATTEMPTS` (default is "3"). If the maximum attempts are reached without a valid entry of a Steam Guard code, the game server deployment process will terminate.
+For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid Steam Guard code, with the number of permitted attempts defined by `STEAMGUARD_MAX_ATTEMPTS` (default is "3"). If the maximum attempts are reached without a valid entry of a Steam Guard code, the game server deployment process will terminate.
 
 Successful entry of the Steam Guard code will be cached in the 'steam-data' volume defined in the [docker-compose](#docker-compose) and the game server will be able to update for a duration before needing to enter the Steam Guard code again.
 
@@ -127,8 +127,8 @@ Current [docker-compose.yml](./docker-compose.yml)
 ```yml
 services:
   starbound:
-    tty: true
-    stdin_open: true
+    tty: true                           # Required for Steam Guard support (able to be removed if Steam Guard is disabled on the Steam account)
+    stdin_open: true                    # Required for Steam Guard support (able to be removed if Steam Guard is disabled on the Steam account)
     image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
