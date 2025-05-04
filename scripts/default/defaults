@@ -5,6 +5,8 @@ PUID=${PUID:-4711}
 PGID=${PGID:-4711}
 
 # Steam Settings
+USE_STEAMGUARD=${USE_STEAMGUARD:-false} # defaults to false; set to "true" if Steam account has Steam Guard enabled
+STEAMGUARD_MAX_ATTEMPTS=${STEAMGUARD_MAX_ATTEMPTS:-3} # defaults to 3 attempts at successful login with Steam Guard before terminating game server deployment
 GAME_BRANCH=${GAME_BRANCH:-public}
 STEAMCMD_ARGS=${STEAMCMD_ARGS:-"$GAME_BRANCH" validate}
 
