@@ -119,11 +119,10 @@ checkRunning() {
 
 steamGuardAuth() {
   if [ "$USE_STEAMGUARD" == "true" ]; then
-    info "Steam Guard authentication enabled - beginning interactive SteamCMD login..."
+    info "Environment variable 'USE_STEAMGUARD' is set to 'true' - beginning interactive SteamCMD login..."
 
     if [ ! -t 0 ]; then
-      # warn "stdin is not a TTY; interactive input may not work! Did you forget to run with -it or tty: true?"
-      error "stdin is not a TTY; cannot proceed with interactive Steam Guard login. Exiting."
+      error "stdin is not interactive/TTY; cannot proceed with interactive Steam Guard login - exiting..."
       exit 1
     fi
 
@@ -132,44 +131,30 @@ steamGuardAuth() {
       error "Missing Docker secrets: 'steam_username' and/or 'steam_password'"
       exit 1
     fi
-
-    # Read Steam credentials from Docker secrets
+    
+    # Set environment variable values for SteamCMD authentication and Steam credentials using Docker secrets
     STEAM_USERNAME=$(cat /run/secrets/steam_username)
     STEAM_PASSWORD=$(cat /run/secrets/steam_password)
+    STEAMGUARD_TIMEOUT=${STEAMGUARD_TIMEOUT:-300} # Default timeout for Steam Guard authentication before exiting routine
 
-    # Switch to 'starbound' user and run SteamCMD login logic under that user
     su starbound -c "
       export HOME=/home/starbound
-      ATTEMPT=1
-      MAX_ATTEMPTS=\${STEAMGUARD_MAX_ATTEMPTS:-3}
-      LOGIN_SUCCESS=false
-
-      # Loop to attempt SteamCMD login while Steam Guard is enabled
-      while [ \$ATTEMPT -le \$MAX_ATTEMPTS ]; do
-        echo \"INFO - SteamCMD login attempt \$ATTEMPT of \$MAX_ATTEMPTS...\"
-        if steamcmd +login \"$STEAM_USERNAME\" \"$STEAM_PASSWORD\" +quit; then
-          echo \"INFO - SteamCMD authentication with Steam Guard successful - proceeding with install/update of game server...\"
-          LOGIN_SUCCESS=true
-          break
-        else
-          echo \"WARN - SteamCMD login failed.\"
-          echo \"WARN - If Steam Guard requested, enter code interactively at prompt.\"
-        fi
-        ATTEMPT=\$((ATTEMPT + 1))
-      done
-
-      if [ \"\$LOGIN_SUCCESS\" = false ]; then
-        echo \"ERROR - SteamCMD login failed after \$MAX_ATTEMPTS attempts - exiting.\"
+      echo \"INFO - SteamCMD login...\"
+      if timeout \${STEAMGUARD_TIMEOUT} steamcmd +login \"$STEAM_USERNAME\" \"$STEAM_PASSWORD\" +quit; then
+        echo \"INFO - SteamCMD authentication successful - proceeding with install/update of game server...\"
+        exit 0
+      else
+        echo \"ERROR - SteamCMD authentication failed or timed out - exiting...\"
         exit 2
       fi
     "
 
     if [ $? -ne 0 ]; then
-      error "SteamCMD login (as starbound) failed or exited with error."
+      error "SteamCMD authentication (as 'starbound' user) failed - exiting..."
       exit 2
     fi
 
   else
-    info "Steam Guard authentication is disabled - skipping..."
+    info "Environment variable 'USE_STEAMGUARD' is set to 'false' - skipping..."
   fi
 }
