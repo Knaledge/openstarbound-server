@@ -27,7 +27,7 @@ services:
       - BACKUP_MAX_COUNT=7               # Default is retain a max of 7 backups before overwriting the oldest
       - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
       - USE_STEAMGUARD=false             # Default is "false"; set to "true" if the Steam account is protected by Steam Guard
-      - STEAMGUARD_MAX_ATTEMPTS=3        # Default is "3"; max attempts to enter valid Steam Guard code before terminating game server deployment
+      - STEAMGUARD_TIMEOUT=300           # Default is "300" (seconds); amount of time to wait for a valid Steam Guard code before exiting (and failing the deployment)
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
       - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
