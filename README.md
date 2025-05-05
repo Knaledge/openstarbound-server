@@ -84,7 +84,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 
 For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid Steam Guard code, with the number of seconds to wait defined by `STEAMGUARD_TIMEOUT` (default is "300"). If the timeout is reached without a valid entry of a Steam Guard code, the authentication routine will exit and the game server deployment process will terminate.
 
-Successful entry of the Steam Guard code will be cached in the 'steam-data' volume defined in the [docker-compose](#docker-compose) and the game server will be able to update for a duration before needing to enter the Steam Guard code again.
+Successful entry of the Steam Guard code will be cached in the 'steam-data' volume defined in [docker-compose](#docker-compose) and the game server will be able to install/update for a duration before needing to enter the Steam Guard code again (provided that the volume's content remains intact).
 
 ### Secrets Storage
 
