@@ -7,7 +7,7 @@ main() {
   createFolders
   applyPermissions
   setupSyslog
-  steamGuardAuth
+  steamGuardAuth # Function allowing for Steam Guard code entry in a pre-Supervisor interactive shell; traversed if 'USE_STEAMGUARD' is set to "true"
   exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 }
 
