@@ -114,9 +114,10 @@ Simply create a directory on the game server's host itself to store the "Host Se
 
 By default the volumes are created with the **PUID** and **PGID** "4711" and may be overridden by defining the environment variables `PUID` and `PGID` via `docker-compose` ([example](#docker-compose))
 
-| Volume             | Description                                   |
-|--------------------|-----------------------------------------------|
-| `/opt/starbound`   | Game server files (including Steam content)   |
+| Volume                  | Description                                 |
+|-------------------------|---------------------------------------------|
+| `/opt/starbound`        | Game server files                           |
+| `/home/starbound/Steam` | Steam content ('starbound' user directory)  |
 
 ## Usage
 
