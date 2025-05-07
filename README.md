@@ -82,7 +82,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 > [!IMPORTANT]
 > If [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) is enabled on the Steam account used for deployment, `USE_STEAMGUARD` ***must*** be set to "true" (default is "false") and the container service ***must*** allow for interactive shell access (e.g., `stdin_open: true` and `tty: true` in [docker-compose](#docker-compose))
 
-For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid Steam Guard code, with the number of seconds to wait defined by `STEAMGUARD_TIMEOUT` (default is "300"). If the timeout is reached without a valid entry of a Steam Guard code, the authentication routine will exit and the game server deployment process will terminate.
+For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid Steam Guard code, with the number of seconds to wait defined by `STEAMGUARD_TIMEOUT` (default is "300"). If the timeout is reached without a valid entry of a Steam Guard code, the authentication routine will exit and the game server deployment process will terminate after 3 cycles of this timeout (controlled by the container service's `restart` policy).
 
 Successful entry of the Steam Guard code will be cached in the 'steam-data' volume defined in [docker-compose](#docker-compose) and the game server will be able to install/update for a duration before needing to enter the Steam Guard code again (provided that the volume's content remains intact).
 
@@ -133,7 +133,7 @@ services:
     image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
-    restart: unless-stopped
+    restart: on-failure:3                # Restart the container up to 3 times on failure - preventing infinite loop if Steam Guard auth fails
     stop_grace_period: 2m
     cap_add:
       - sys_nice
