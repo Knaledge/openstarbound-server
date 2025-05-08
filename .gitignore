@@ -1,6 +1,8 @@
 /.idea
-/.vs/*
+/.vs/
 /game
+/secrets/
+/staging/
 steam_username.txt
 steam_password.txt
 starbound_rcon_password.txt
