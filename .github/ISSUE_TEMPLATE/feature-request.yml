@@ -1,18 +1,18 @@
-name: 🚀 Feature request
-description: Suggest an idea for plainsofpain-server
-labels: [ "feature-request 🚀" ]
+name: Feature Request
+description: Suggest an idea for a new feature or improvement
+labels: [ "feature-request" ]
 body:
   - type: checkboxes
     attributes:
-      label: Is there an existing issue for this?
-      description: Please search existing issues to avoid creating duplicates.
+      label: Is there an existing GitHub issue for this?
+      description: Please search existing GitHub issues to avoid creating duplicates
       options:
-        - label: I have searched the existing issues
+        - label: I have searched the existing GitHub issues
           required: true
 
   - type: textarea
     attributes:
       label: Feature description
-      description: Describe the feature you'd like.
+      description: Describe the feature, suggestion, or improvement; please provide as much detail as possible - including any relevant use cases or examples
     validations:
       required: true
