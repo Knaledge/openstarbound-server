@@ -1,9 +1,11 @@
 services:
   starbound:
+    tty: true                            # Required for Steam Guard support (able to be removed if Steam Guard is disabled on the Steam account)
+    stdin_open: true                     # Required for Steam Guard support (able to be removed if Steam Guard is disabled on the Steam account)
     image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
-    restart: unless-stopped
+    restart: on-failure:3                # Restart the container up to 3 times on failure - preventing infinite loop if Steam Guard auth fails
     stop_grace_period: 2m
     cap_add:
       - sys_nice
@@ -11,7 +13,8 @@ services:
       - "21025:21025/tcp"                # Match with 'SERVER_PORT' value
       - "21026:21026/tcp"                # Match with 'SERVER_RCON_PORT' value
     volumes:
-      - /path/to/volume:/opt/starbound
+      - /path/to/volume/for/game-data:/opt/starbound
+      - /path/to/volume/for/steam-data:/home/starbound/Steam
     secrets:
       - steam_username
       - steam_password
@@ -23,6 +26,8 @@ services:
       - BACKUP_CRON=0 4 * * *            # Default is backup every day at 4 AM (server host time)
       - BACKUP_MAX_COUNT=7               # Default is retain a max of 7 backups before overwriting the oldest
       - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
+      - STEAMGUARD_REQUIRED=false        # Default is "false"; set to "true" if the Steam account is protected by Steam Guard
+      - STEAMGUARD_TIMEOUT=300           # Default is "300" (seconds); amount of time to wait for a valid Steam Guard code before exiting (and failing the deployment)
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
       - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"

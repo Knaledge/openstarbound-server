@@ -116,3 +116,47 @@ checkRunning() {
     return 1
   fi
 }
+
+steamGuardAuth() {
+  if [ "$STEAMGUARD_REQUIRED" == "true" ]; then
+    info "Environment variable 'STEAMGUARD_REQUIRED' is set to 'true' - beginning interactive SteamCMD login..."
+
+    if [ ! -t 0 ]; then
+      error "stdin is not interactive/TTY; cannot proceed with interactive Steam Guard login - returning..."
+      return 42
+    fi
+
+    # Check if Steam credentials from Docker secrets are available
+    if [ ! -f "/run/secrets/steam_username" ] || [ ! -f "/run/secrets/steam_password" ]; then
+      error "Missing Docker secrets: 'steam_username' and/or 'steam_password'"
+      return 42
+    fi
+    
+    # Set environment variable values for SteamCMD authentication and Steam credentials using Docker secrets
+    STEAM_USERNAME=$(cat /run/secrets/steam_username)
+    STEAM_PASSWORD=$(cat /run/secrets/steam_password)
+    STEAMGUARD_TIMEOUT=${STEAMGUARD_TIMEOUT:-300} # Default timeout for Steam Guard authentication before exiting routine
+
+    su starbound -c "
+      export HOME=/home/starbound
+      echo \"INFO - SteamCMD login...\"
+      if timeout \${STEAMGUARD_TIMEOUT} steamcmd +login \"$STEAM_USERNAME\" \"$STEAM_PASSWORD\" +quit; then
+        echo \"INFO - SteamCMD authentication successful - proceeding with install/update of game server...\"
+        exit 0
+      else
+        echo \"ERROR - SteamCMD authentication failed or timed out - exiting...\"
+        exit 42
+      fi
+    "
+
+    if [ $? -ne 0 ]; then
+      error "SteamCMD authentication (as 'starbound' user) failed or timed out - returning..."
+      return 42
+    fi
+
+  else
+    info "Environment variable 'STEAMGUARD_REQUIRED' is set to 'false' - skipping bootstrap SteamCMD + Steam Guard authentication routine..."
+  fi
+
+  return 0
+}
