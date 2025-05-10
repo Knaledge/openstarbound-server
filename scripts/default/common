@@ -118,8 +118,8 @@ checkRunning() {
 }
 
 steamGuardAuth() {
-  if [ "$USE_STEAMGUARD" == "true" ]; then
-    info "Environment variable 'USE_STEAMGUARD' is set to 'true' - beginning interactive SteamCMD login..."
+  if [ "$STEAMGUARD_REQUIRED" == "true" ]; then
+    info "Environment variable 'STEAMGUARD_REQUIRED' is set to 'true' - beginning interactive SteamCMD login..."
 
     if [ ! -t 0 ]; then
       error "stdin is not interactive/TTY; cannot proceed with interactive Steam Guard login - returning..."
@@ -155,7 +155,7 @@ steamGuardAuth() {
     fi
 
   else
-    info "Environment variable 'USE_STEAMGUARD' is set to 'false' - skipping..."
+    info "Environment variable 'STEAMGUARD_REQUIRED' is set to 'false' - skipping..."
   fi
 
   return 0

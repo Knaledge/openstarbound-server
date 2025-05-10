@@ -5,7 +5,7 @@ PUID=${PUID:-4711}
 PGID=${PGID:-4711}
 
 # Steam Settings
-USE_STEAMGUARD=${USE_STEAMGUARD:-false} # defaults to false; set to "true" if Steam account has Steam Guard enabled
+STEAMGUARD_REQUIRED=${STEAMGUARD_REQUIRED:-false} # defaults to false; set to "true" if Steam account has Steam Guard enabled
 STEAMGUARD_TIMEOUT=${STEAMGUARD_TIMEOUT:-300} # defaults to "300" seconds (i.e. 5 minutes)
 GAME_BRANCH=${GAME_BRANCH:-public}
 STEAMCMD_ARGS=${STEAMCMD_ARGS:-"$GAME_BRANCH" validate}

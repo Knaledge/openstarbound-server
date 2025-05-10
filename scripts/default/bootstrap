@@ -7,7 +7,7 @@ main() {
   createFolders
   applyPermissions
   setupSyslog
-  steamGuardAuth # Allows for Steam Guard code entry in a pre-Supervisor interactive shell; traversed if 'USE_STEAMGUARD' is set to "true"
+  steamGuardAuth # Allows for Steam Guard code entry in a pre-Supervisor interactive shell; traversed if 'STEAMGUARD_REQUIRED' is set to "true"
     exit_code=$?
 
     if [ "$exit_code" -eq 42 ]; then

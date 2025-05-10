@@ -1,7 +1,7 @@
 # Starbound + OpenStarbound Dedicated Server (Linux)
 
 ## Overview
-Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) game server (Linux), weaving in the option to also deploy [OpenStarbound](https://github.com/OpenStarbound/OpenStarbound) - an unaffiliated fan-maintained project that extends the life of Starbound through bug fixes, engine optimizations, and new features introduced to the core experience.
+Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) game server (Linux), weaving in the option to also deploy [OpenStarbound](https://github.com/OpenStarbound/OpenStarbound) - an unaffiliated fan-maintained project that extends the life of Starbound through bug fixes, engine optimizations, and new features introduced to the core Starbound experience.
 
 ### Features
 - **Core functions** include: game server installation/updates, startup, shutdown, maintenance, and backups
@@ -53,9 +53,9 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 | `PUID`                            |          | `4711`              | integer               | User ID to run the game server processes under (file permission)                                                           |
 | `PGID`                            |          | `4711`              | integer               | Group ID to run the game server processes under (file permission)                                                          |
 | `LOG_LEVEL`                       |          | `50`                | integer (0-50)        | Filter the logging from Supervisor in container (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)       |
-| `USE_STEAMGUARD`                  |          | `false`             | boolean (true, false) | Enable Steam Guard authentication for Steam accounts                                                                       |
+| `STEAMGUARD_REQUIRED`             |          | `false`             | boolean (true, false) | Enable if Steam Guard authentication is required for the Steam account being used for game server deployment               |
 | `STEAMGUARD_TIMEOUT`              |          | `300`               | integer               | Number of seconds to wait for a valid Steam Guard code before exiting (and failing the deployment)                         |
-| `GAME_BRANCH`                     |          | `public`            | string                | Steam branch (eg. testing) to utilize for the game server                                                                  |
+| `GAME_BRANCH`                     |          | `public`            | string                | Steam branch to utilize for the game server                                                                                |
 | `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional SteamCMD arguments to be used when installing/updating the game server                                          |
 | `UPDATE_CRON`                     |          | `0 3 * * 0`         | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
 | `UPDATE_CHECK_PLAYERS`            |          | `true`              | boolean               | Check if any players are connected to the game server prior to updating the game server                                    |
@@ -80,11 +80,11 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 #### Steam Credentials
 
 > [!IMPORTANT]
-> If [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) is enabled on the Steam account used for deployment, `USE_STEAMGUARD` ***must*** be set to "true" (default is "false") and the container service ***must*** allow for interactive shell access (e.g., `stdin_open: true` and `tty: true` in [docker-compose](#docker-compose))
+> If [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) is enabled on the Steam account used for game server deployment, `STEAMGUARD_REQUIRED` ***must*** be set to "true" (default is "false") and the container service ***must*** allow for interactive shell access (e.g., `stdin_open: true` and `tty: true` in [docker-compose](#docker-compose))
 
-For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid Steam Guard code, with the number of seconds to wait defined by `STEAMGUARD_TIMEOUT` (default is "300"). If the timeout is reached without a valid entry of a Steam Guard code, the authentication routine will exit and the game server deployment process will terminate after 3 cycles of this timeout (controlled by the container service's `restart` policy).
+For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid Steam Guard code for a configurable period of time, with the number of seconds to wait defined by `STEAMGUARD_TIMEOUT` (default is "300" - i.e. 5 minutes). If the timeout is reached before valid entry of a Steam Guard code, the authentication routine will exit, the game server deployment process will terminate, and the container itself will stop (regardless of the container service's `restart` policy).
 
-Successful entry of the Steam Guard code will be cached in the 'steam-data' volume defined in [docker-compose](#docker-compose) and the game server will be able to install/update for a duration before needing to enter the Steam Guard code again (provided that the volume's content remains intact).
+Successful entry of a valid Steam Guard code will be cached in the 'steam-data' [volume](#volumes) defined in [docker-compose](#docker-compose). Provided that the volume's content remains intact, the game server will be able to install/update for a duration before needing to enter the Steam Guard code again.
 
 ### Secrets Storage
 
@@ -128,8 +128,8 @@ Current [docker-compose.yml](./docker-compose.yml)
 ```yml
 services:
   starbound:
-    tty: true                           # Required for Steam Guard support (able to be removed if Steam Guard is disabled on the Steam account)
-    stdin_open: true                    # Required for Steam Guard support (able to be removed if Steam Guard is disabled on the Steam account)
+    tty: true                            # Required for Steam Guard support (able to be removed if Steam Guard is disabled on the Steam account)
+    stdin_open: true                     # Required for Steam Guard support (able to be removed if Steam Guard is disabled on the Steam account)
     image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
@@ -154,7 +154,7 @@ services:
       - BACKUP_CRON=0 4 * * *            # Default is backup every day at 4 AM (server host time)
       - BACKUP_MAX_COUNT=7               # Default is retain a max of 7 backups before overwriting the oldest
       - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
-      - USE_STEAMGUARD=false             # Default is "false"; set to "true" if the Steam account is protected by Steam Guard
+      - STEAMGUARD_REQUIRED=false        # Default is "false"; set to "true" if the Steam account is protected by Steam Guard
       - STEAMGUARD_TIMEOUT=300           # Default is "300" (seconds); amount of time to wait for a valid Steam Guard code before exiting (and failing the deployment)
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
