@@ -82,9 +82,12 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 > [!IMPORTANT]
 > If [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) is enabled on the Steam account used for game server deployment, `STEAMGUARD_REQUIRED` ***must*** be set to "true" (default is "false") and the container service ***must*** allow for interactive shell access (e.g., `stdin_open: true` and `tty: true` in [docker-compose](#docker-compose))
 
-For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid Steam Guard code for a configurable period of time, with the number of seconds to wait defined by `STEAMGUARD_TIMEOUT` (default is "300" - i.e. 5 minutes). If the timeout is reached before valid entry of a Steam Guard code, the authentication routine will exit, the game server deployment process will terminate, and the container itself will stop (regardless of the container service's `restart` policy).
+For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid Steam Guard code for a configurable period of time, with the number of seconds to wait defined by `STEAMGUARD_TIMEOUT` (default is "300" - i.e. 5 minutes).
 
-Successful entry of a valid Steam Guard code will be cached in the 'steam-data' [volume](#volumes) defined in [docker-compose](#docker-compose). Provided that the volume's content remains intact, the game server will be able to install/update for a duration before needing to enter the Steam Guard code again.
+> [!WARNING]
+> If the `STEAMGUARD_TIMEOUT` period expires before valid entry of a Steam Guard code, the authentication routine will exit, the game server deployment process will terminate, **and the container itself will stop** - *regardless of the container service's `restart` policy*
+
+Successful entry of a valid Steam Guard code will result in the game server installation/update proceeding as usual and the Steam Guard session data being cached in the 'steam-data' [volume](#volumes) defined in [docker-compose](#docker-compose). Provided that the 'steam-data' volume's content remains intact, the game server will be able to install/update for a duration before a new valid Steam Guard code needs to be provided again.
 
 ### Secrets Storage
 
