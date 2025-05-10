@@ -10,23 +10,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@0.30.0
+      uses: aquasecurity/trivy-action
       with:
         image-ref: 'ghcr.io/${{ github.repository }}:latest'
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
         vuln-type: 'os,library'
-        severity: 'CRITICAL,HIGH'
+        severity: 'CRITICAL,HIGH,MEDIUM'
   trivy-scan-dev:
     runs-on: ubuntu-latest
     steps:
     - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@0.30.0
+      uses: aquasecurity/trivy-action
       with:
-        image-ref: 'ghcr.io/${{ github.repository }}:dev'
+        image-ref: 'ghcr.io/${{ github.repository }}:dev-osb'
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
         vuln-type: 'os,library'
-        severity: 'CRITICAL,HIGH'
+        severity: 'CRITICAL,HIGH,MEDIUM'

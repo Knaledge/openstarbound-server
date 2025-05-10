@@ -1,40 +1,39 @@
-name: 🐛 Bug report
-description: Report a bug in plainsofpain-server to help us fix it
-labels: [ "bug 🐞" ]
+name: Bug Report
+description: Report a bug to give it a chance of being addressed
+labels: [ "bug" ]
 body:
   - type: checkboxes
     attributes:
-      label: Is there an existing issue for this?
-      description: Please search existing issues to avoid creating duplicates.
+      label: Is there an existing GitHub issue for this?
+      description: Please search existing GitHub issues to avoid creating duplicates
       options:
-        - label: I have searched the existing issues
+        - label: I have searched the existing GitHub issues
           required: true
 
   - type: input
     attributes:
-      label: Used image version
-      description: What version of the image, are you currently using? If you use latest tag, pls provide also the sha256 hash.
+      label: Container image version
+      description: Which version of the container image is currently being used? Consider providing the SHA256 of the container image
     validations:
       required: true
 
   - type: textarea
     attributes:
-      label: Used docker compose file or docker command
-      description: |
-        Pls remove any sensitive information from the file or command.
+      label: Docker Compose / Docker command-line
+      description: Please remove any sensitive information
     validations:
       required: false
 
   - type: textarea
     attributes:
-      label: What you expected to see, versus what you actually saw
-      description: A clear and concise description of what you expected to happen.
+      label: What did you notice/experience? What did you expect instead?
+      description: Please provide a clear and concise description of the issue
     validations:
       required: true
 
   - type: textarea
     attributes:
-      label: Logs from the container
-      description: If possible, include logs from the container. You can get these with `docker compose logs` or `docker logs`.
+      label: Container log
+      description: If possible, please include logs from the container (from `docker compose logs` or `docker logs`)
     validations:
       required: false

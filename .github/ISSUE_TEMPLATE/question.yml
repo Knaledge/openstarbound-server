@@ -1,18 +1,18 @@
-name: ❓ Questions
+name: Questions
 description: Ask a question about the project
-labels: [ "question❓" ]
+labels: [ "question" ]
 body:
   - type: checkboxes
     attributes:
-      label: Is there an existing issue for this?
-      description: Please search existing issues to avoid creating duplicates.
+      label: Is there an existing GitHub issue for this?
+      description: Please search existing GitHub issues to avoid creating duplicates
       options:
-        - label: I have searched the existing issues
+        - label: I have searched the existing GitHub issues
           required: true
 
   - type: textarea
     attributes:
       label: Question
-      description: Describe your question in detail.
+      description: Please ask a clear and concise question
     validations:
       required: true
