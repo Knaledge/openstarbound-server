@@ -150,12 +150,12 @@ steamGuardAuth() {
     "
 
     if [ $? -ne 0 ]; then
-      error "SteamCMD authentication (as 'starbound' user) failed - returning..."
+      error "SteamCMD authentication (as 'starbound' user) failed or timed out - returning..."
       return 42
     fi
 
   else
-    info "Environment variable 'STEAMGUARD_REQUIRED' is set to 'false' - skipping..."
+    info "Environment variable 'STEAMGUARD_REQUIRED' is set to 'false' - skipping bootstrap SteamCMD + Steam Guard authentication routine..."
   fi
 
   return 0
