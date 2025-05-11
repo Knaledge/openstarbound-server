@@ -23,12 +23,12 @@ update() {
   fi
   
   # Check for OpenStarbound updates if enabled
-  if [ "$USE_OPENSTARBOUND" == "true" ] && checkForOpenStarboundUpdates; then
+  if [ "${USE_OPENSTARBOUND,,}" == "true" ] && checkForOpenStarboundUpdates; then
     openstarbound_update_needed=true
   fi
   
   # If no updates needed, exit
-  if [ "$starbound_update_needed" == "false" ] && [ "$openstarbound_update_needed" == "false" ]; then
+  if [ "${starbound_update_needed,,}" == "false" ] && [ "${openstarbound_update_needed,,}" == "false" ]; then
     if ! checkRunning "starbound-server"; then
       info "Starbound server is not running - starting"
       supervisorctl start starbound-server
@@ -61,7 +61,7 @@ doUpdate() {
   fi
 
   # Update Starbound if needed
-  if [ "$starbound_update_needed" == "true" ]; then
+  if [ "${starbound_update_needed,,}" == "true" ]; then
     info "Updating Starbound..."
     verifyCpuMhz
     if ! downloadStarbound; then
@@ -74,7 +74,7 @@ doUpdate() {
   fi
 
   # Install/update OpenStarbound as needed - especially if Starbound was just installed/updated
-  if [ "$USE_OPENSTARBOUND" == "true" ] && ([ "$openstarbound_update_needed" == "true" ] || [ "$starbound_update_needed" == "true" ]); then
+  if [ "${USE_OPENSTARBOUND,,}" == "true" ] && ([ "${openstarbound_update_needed,,}" == "true" ] || [ "${starbound_update_needed,,}" == "true" ]); then
     info "OpenStarbound is enabled - beginning install/update..."
     if ! updateOpenStarbound; then
       warn "OpenStarbound update failed - aborting..."
@@ -107,7 +107,7 @@ verifyCpuMhz() {
 
 checkServerEmpty() {
   local connected_players
-  if [ "$UPDATE_CHECK_PLAYERS" == "false" ]; then
+  if [ "${UPDATE_CHECK_PLAYERS,,}" == "false" ]; then
     return 0
   fi
 

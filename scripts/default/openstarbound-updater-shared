@@ -5,9 +5,9 @@
 openstarbound_latest_version=-1
 
 checkForOpenStarboundUpdates() {
-  if [ "$USE_OPENSTARBOUND" != "true" ]; then
+  if [ "${USE_OPENSTARBOUND,,}" != "true" ]; then
     debug "OpenStarbound is disabled, skipping check"
-    return 1
+    return 0
   fi
 
   local openstarbound_current_version
@@ -145,7 +145,7 @@ installOpenStarbound() {
 }
 
 updateOpenStarbound() {
-  if [ "$USE_OPENSTARBOUND" != "true" ]; then
+  if [ "${USE_OPENSTARBOUND,,}" != "true" ]; then
     debug "OpenStarbound is disabled, skipping update"
     return 0
   fi

@@ -85,7 +85,7 @@ EOF
     info "Starbound RCON password set from Docker secret"
   fi
 
-  if [[ "$SERVER_RCON_ENABLED" == "true" ]]; then
+  if [[ "${SERVER_RCON_ENABLED,,}" == "true" ]]; then
     if [[ -z "$SERVER_RCON_PASSWORD" ]]; then
       info "Starbound RCON server disabled: No Starbound RCON password defined via Docker secret"
       echo "$(jq --argjson runRconServer false '.runRconServer = $runRconServer' ${starbound_server_config})" > ${starbound_server_config}
@@ -103,14 +103,14 @@ EOF
   fi
 
   # Set 'checkAssetsDigest' based on OpenStarbound status
-  if [[ "$USE_OPENSTARBOUND" == "true" ]]; then
+  if [[ "${USE_OPENSTARBOUND,,}" == "true" ]]; then
     # Force asset digest checking when OpenStarbound is enabled
     echo "$(jq --argjson checkAssetsDigest true '.checkAssetsDigest = $checkAssetsDigest' ${starbound_server_config})" > ${starbound_server_config}
     info "OpenStarbound is enabled - asset digest checking is enforced"
   else
     # Otherwise retain defined value when OpenStarbound is not enabled
     echo "$(jq --argjson checkAssetsDigest ${SERVER_CHECK_ASSETS} '.checkAssetsDigest = $checkAssetsDigest' ${starbound_server_config})" > ${starbound_server_config}
-    if [[ "$SERVER_CHECK_ASSETS" == "true" ]]; then
+    if [[ "${SERVER_CHECK_ASSETS,,}" == "true" ]]; then
       info "Asset digest checking enabled by user configuration"
     fi
   fi
