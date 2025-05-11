@@ -16,6 +16,7 @@ RUN apt-get update \
         python3-pip \
         rsyslog \
         supervisor \
+        tzdata \
         winbind \
         zip \
     && apt autoremove --purge && apt clean \

@@ -20,6 +20,7 @@ services:
       - steam_password
       - starbound_rcon_password
     environment:
+      - TZ=Etc/UTC                       # Default timezone for container is "Etc/UTC"; set to preferred timezone (e.g., "America/New_York")
       - PUID=4711                        # Docker Process User ID; default is "4711"
       - PGID=4711                        # Docker Process Group ID; default is "4711"
       - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)

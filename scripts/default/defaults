@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Container environment
+TZ=${TZ:-Etc/UTC} # defaults to Etc/UTC; consult list of valid timezones at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
 # Docker process user/group IDs
 PUID=${PUID:-4711}
 PGID=${PGID:-4711}
