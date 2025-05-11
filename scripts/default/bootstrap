@@ -146,8 +146,8 @@ validateCron() {
     exit 1
   fi
 
-  # Check allowed characters (digits, *, /, -, , and spaces)
-  if ! [[ "$value" =~ ^[0-9\*\-/,\ ]+$ ]]; then
+  # Check allowed characters (digits, *, /, -, ,, space, A-Z, a-z, ?, #, @)
+  if ! [[ "$value" =~ ^[0-9A-Za-z\*\-/,\ ?#@]+$ ]]; then
     error "$var_name contains invalid characters for a cron expression (actual: $value)"
     exit 1
   fi
