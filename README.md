@@ -40,7 +40,7 @@ Special thanks to the members of the [OpenStarbound Discord community](https://d
 | `dev-osb`          | Development/preview build (bugs likely)  |
 
 ## Environment Variables
-
+<!-- TODO: Revise the table and notices to convey the validation of several env vars and what that validation resolves to (e.g., container-stop) -->
 > [!NOTE]
 > ["Default" values](./scripts/default/defaults) are passed in automatically as outlined below 
 > 
