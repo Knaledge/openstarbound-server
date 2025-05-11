@@ -22,6 +22,8 @@ RUN apt-get update \
     && apt autoremove --purge && apt clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN PIP_BREAK_SYSTEM_PACKAGES=1 python3 -m pip install --no-cache-dir cron-validator
+
 # MISC
 RUN mkdir -p /usr/local/etc /var/log/supervisor /var/run/starbound /usr/local/etc/supervisor/conf.d/ /opt/starbound /home/starbound/.steam \
     && groupadd -g "${PGID:-4711}" -o starbound \
