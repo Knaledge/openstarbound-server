@@ -14,7 +14,7 @@ Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) 
 - Headless runner of game server (i.e. no unnecessary use of xvfb, xterm, etc.)
 
 #### Coming Soon
-- Mod support via Steam workshop API/CDN (i.e. no need to subscribe to mods via Steam client)
+- Mod support via Steam Workshop API/CDN (i.e. no need to subscribe to mods via Steam client)
 
 ### Thanks & Credits
 The code and scripts featured in this repo are iterations of original content from [enshrouded-server](https://github.com/mornedhels/enshrouded-server) (by [@mornedhels](https://github.com/mornedhels)) and inspired by its fork [plainsofpain-server](https://github.com/traxo-xx/plainsofpain-server) (by [@traxo-xx](https://github.com/traxo-xx))
@@ -37,7 +37,7 @@ Special thanks to the members of the [OpenStarbound Discord community](https://d
 |--------------------|------------------------------------------|
 | `latest`           | Latest image                             |
 | `<version>`        | Pinned image                 (>= 1.x.x)  |
-| `dev`              | Dev build                                |
+| `dev-osb`          | Development/preview build (bugs likely)  |
 
 ## Environment Variables
 
@@ -73,7 +73,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 ## Docker Secrets
 
 > [!IMPORTANT]
-> [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords). Unless otherwise specified, each of the "***Host Secret Files***" for each secret ***must*** be created prior to deployment of the game server (even if the secret is empty/undefined)
+> [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords). Unless otherwise [specified](#secrets-storage), each "***Host Secret File***" for each secret ***must*** be created and populated with a value prior to deployment of the game server
 > 
 > **[Docker Compose](#docker-compose) ***must*** be used to deploy the game server**
 
@@ -156,7 +156,7 @@ services:
       - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
       - BACKUP_CRON=0 4 * * *            # Default is backup every day at 4 AM (server host time)
       - BACKUP_MAX_COUNT=7               # Default is retain a max of 7 backups before overwriting the oldest
-      - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
+      - LOG_LEVEL=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
       - STEAMGUARD_REQUIRED=false        # Default is "false"; set to "true" if the Steam account is protected by Steam Guard
       - STEAMGUARD_TIMEOUT=300           # Default is "300" (seconds); amount of time to wait for a valid Steam Guard code before exiting (and failing the deployment)
       - SERVER_NAME=Starbound Server

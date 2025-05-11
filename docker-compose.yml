@@ -25,7 +25,7 @@ services:
       - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
       - BACKUP_CRON=0 4 * * *            # Default is backup every day at 4 AM (server host time)
       - BACKUP_MAX_COUNT=7               # Default is retain a max of 7 backups before overwriting the oldest
-      - log_level=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
+      - LOG_LEVEL=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
       - STEAMGUARD_REQUIRED=false        # Default is "false"; set to "true" if the Steam account is protected by Steam Guard
       - STEAMGUARD_TIMEOUT=300           # Default is "300" (seconds); amount of time to wait for a valid Steam Guard code before exiting (and failing the deployment)
       - SERVER_NAME=Starbound Server
