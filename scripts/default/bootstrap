@@ -117,6 +117,31 @@ validateBoolean() {
   fi
 }
 
+validateCron() {
+  # Validate that the value is a basic cron expression (five space-separated fields)
+  # Usage: validateCron <var_name> <value>
+  local var_name="$1"
+  local value="$2"
+  if [[ -z "$value" ]]; then
+    error "$var_name must not be empty"
+    exit 1
+  fi
+  
+  # Check for five fields
+  local field_count
+  field_count=$(echo "$value" | awk '{print NF}')
+  if [[ "$field_count" -ne 5 ]]; then
+    error "$var_name must be a valid cron expression with 5 fields (actual: $value)"
+    exit 1
+  fi
+
+  # Check allowed characters (digits, *, /, -, , and spaces)
+  if ! [[ "$value" =~ ^[0-9\*\-/,\ ]+$ ]]; then
+    error "$var_name contains invalid characters for a cron expression (actual: $value)"
+    exit 1
+  fi
+}
+
 validateEnvironmentVariables() {
   if [[ -n "$PUID" ]]; then
     validateNumericRange "PUID" "$PUID"
@@ -128,6 +153,14 @@ validateEnvironmentVariables() {
 
   if [[ -n "$BACKUP_MAX_COUNT" ]]; then
     validateNumericRange "BACKUP_MAX_COUNT" "$BACKUP_MAX_COUNT" 
+  fi
+
+  if [[ -n "$UPDATE_CRON" ]]; then
+    validateCron "UPDATE_CRON" "$UPDATE_CRON"
+  fi
+
+  if [[ -n "$BACKUP_CRON" ]]; then
+    validateCron "BACKUP_CRON" "$BACKUP_CRON"
   fi
 
   if [[ -n "$UPDATE_CHECK_PLAYERS" ]]; then
