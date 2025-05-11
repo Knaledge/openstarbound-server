@@ -172,7 +172,7 @@ validateEnvironmentVariables() {
   fi
 
   if [[ -n "$STEAMGUARD_TIMEOUT" ]]; then
-    validateNumericRange "STEAMGUARD_TIMEOUT" "$STEAMGUARD_TIMEOUT" 0 3600
+    validateNumericRange "STEAMGUARD_TIMEOUT" "$STEAMGUARD_TIMEOUT" 30 3600
   fi
 
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
