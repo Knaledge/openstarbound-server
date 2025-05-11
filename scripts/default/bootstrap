@@ -85,6 +85,21 @@ priority=10
 EOF
 }
 
+validateNumericRange() {
+  local var_name="$1"
+  local value="$2"
+  local min="$3"
+  local max="$4"
+  if ! [[ "$value" =~ ^[0-9]+$ ]]; then
+    error "$var_name must be a valid number (actual: $value)"
+    exit 1
+  fi
+  if (( value < min || value > max )); then
+    error "$var_name must be between $min and $max (actual: $value)"
+    exit 1
+  fi
+}
+
 verifyVariables() {
   if [[ -n "$PUID" ]]; then
     if ! [[ "$PUID" =~ ^[0-9]+$ ]]; then
@@ -115,45 +130,23 @@ verifyVariables() {
   fi
 
   if [[ -n "$STEAMGUARD_TIMEOUT" ]]; then
-    # must be a non-negative integer
-    if ! [[ "$STEAMGUARD_TIMEOUT" =~ ^[0-9]+$ ]]; then
-      error "STEAMGUARD_TIMEOUT must be a valid number (actual: $STEAMGUARD_TIMEOUT)"
-      exit 1
-    fi
-
-    # cannot exceed 3600 seconds (1 hour)
-    if (( STEAMGUARD_TIMEOUT > 3600 )); then
-      error "STEAMGUARD_TIMEOUT cannot exceed 3600 seconds (1 hour) (actual: $STEAMGUARD_TIMEOUT)"
-      exit 1
-    fi
+    validateNumericRange "STEAMGUARD_TIMEOUT" "$STEAMGUARD_TIMEOUT" 0 3600
   fi
 
   if [[ -n "$SERVER_SLOT_COUNT" ]]; then
-    if [[ "$SERVER_SLOT_COUNT" -lt 1 ]] || [[ "$SERVER_SLOT_COUNT" -gt 200 ]]; then
-      error "SERVER_SLOT_COUNT must be between 1 and 200 (actual: $SERVER_SLOT_COUNT)"
-      exit 1
-    fi
+    validateNumericRange "SERVER_SLOT_COUNT" "$SERVER_SLOT_COUNT" 1 200
   fi
 
   if [[ -n "$SERVER_PORT" ]]; then
-    if [[ "$SERVER_PORT" -lt 1 ]] || [[ "$SERVER_PORT" -gt 65535 ]]; then
-      error "SERVER_PORT must be between 1 and 65535 (actual: $SERVER_PORT)"
-      exit 1
-    fi
+    validateNumericRange "SERVER_PORT" "$SERVER_PORT" 1 65535
   fi
 
   if [[ -n "$SERVER_QUERYPORT" ]]; then
-    if [[ "$SERVER_QUERYPORT" -lt 1 ]] || [[ "$SERVER_QUERYPORT" -gt 65535 ]]; then
-      error "SERVER_QUERYPORT must be between 1 and 65535 (actual: $SERVER_QUERYPORT)"
-      exit 1
-    fi
+    validateNumericRange "SERVER_QUERYPORT" "$SERVER_QUERYPORT" 1 65535
   fi
 
   if [[ -n "$SERVER_RCON_PORT" ]]; then
-    if [[ "$SERVER_RCON_PORT" -lt 1 ]] || [[ "$SERVER_RCON_PORT" -gt 65535 ]]; then
-      error "SERVER_RCON_PORT must be between 1 and 65535 (actual: $SERVER_RCON_PORT)"
-      exit 1
-    fi
+    validateNumericRange "SERVER_RCON_PORT" "$SERVER_RCON_PORT" 1 65535
   fi
 
   if [[ -n "$SERVER_CHECK_ASSETS" ]]; then
