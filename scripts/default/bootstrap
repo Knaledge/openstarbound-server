@@ -86,6 +86,8 @@ EOF
 }
 
 validateNumericRange() {
+  # Validate that the value is a number and within the specified range
+  # Usage: validateNumericRange <var_name> <value> <min> <max>
   local var_name="$1"
   local value="$2"
   local min="$3"
@@ -101,6 +103,8 @@ validateNumericRange() {
 }
 
 validateBoolean() {
+  # Validate that the value is a boolean (true/false)
+  # Usage: validateBoolean <var_name> <value>
   local var_name="$1"
   local value="$(echo "$2" | tr '[:upper:]' '[:lower:]' | xargs)"
   if [[ "$value" != "true" && "$value" != "false" ]]; then
@@ -110,6 +114,7 @@ validateBoolean() {
 }
 
 validateEnvironmentVariables() {
+  # PUID must simply be positive integer
   if [[ -n "$PUID" ]]; then
     if ! [[ "$PUID" =~ ^[0-9]+$ ]]; then
       error "PUID must be a valid uid (actual: $PUID)"
@@ -117,6 +122,7 @@ validateEnvironmentVariables() {
     fi
   fi
 
+  # PGID must simply be positive integer
   if [[ -n "$PGID" ]]; then
     if ! [[ "$PGID" =~ ^[0-9]+$ ]]; then
       error "PGID must be a valid gid (actual: $PGID)"
