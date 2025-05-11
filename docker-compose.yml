@@ -5,7 +5,7 @@ services:
     image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
-    restart: on-failure:3                # Restart the container up to 3 times on failure - preventing infinite loop if Steam Guard auth fails
+    restart: on-failure:3                # Restart the container up to 3 times on failure
     stop_grace_period: 2m
     cap_add:
       - sys_nice

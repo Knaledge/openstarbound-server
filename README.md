@@ -14,7 +14,7 @@ Docker-centric method of deploying a [Starbound](https://www.playstarbound.com) 
 - Headless runner of game server (i.e. no unnecessary use of xvfb, xterm, etc.)
 
 #### Coming Soon
-- Mod support via Steam workshop API/CDN (i.e. no need to subscrib to mods via Steam client)
+- Mod support via Steam workshop API/CDN (i.e. no need to subscribe to mods via Steam client)
 
 ### Thanks & Credits
 The code and scripts featured in this repo are iterations of original content from [enshrouded-server](https://github.com/mornedhels/enshrouded-server) (by [@mornedhels](https://github.com/mornedhels)) and inspired by its fork [plainsofpain-server](https://github.com/traxo-xx/plainsofpain-server) (by [@traxo-xx](https://github.com/traxo-xx))
@@ -136,7 +136,7 @@ services:
     image: ghcr.io/knaledge/openstarbound-server:latest
     container_name: starbound-server
     hostname: starbound
-    restart: on-failure:3                # Restart the container up to 3 times on failure - preventing infinite loop if Steam Guard auth fails
+    restart: on-failure:3                # Restart the container up to 3 times on failure
     stop_grace_period: 2m
     cap_add:
       - sys_nice
