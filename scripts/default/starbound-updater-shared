@@ -90,7 +90,7 @@ doUpdate() {
   clearLock "$pidfile"
 }
 
-# This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` steamcmd issue.
+# This works around the `Unable to determine CPU Frequency. Try defining CPU_MHZ.` SteamCMD issue.
 verifyCpuMhz() {
   local float_regex
   local cpu_mhz
@@ -100,7 +100,7 @@ verifyCpuMhz() {
     debug "Found CPU with $cpu_mhz MHz"
     unset CPU_MHZ
   else
-    debug "Unable to determine CPU Frequency - setting a default of 1.5 GHz so steamcmd won't complain"
+    debug "Unable to determine CPU Frequency - setting a default of 1.5 GHz so SteamCMD won't complain"
     export CPU_MHZ="1500.000"
   fi
 }
