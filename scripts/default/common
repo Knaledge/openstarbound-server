@@ -31,7 +31,7 @@ warn=30
 error=20
 critical=10
 fatal=5
-log_level=${log_level:-$info}
+log_level=${LOG_LEVEL:-$info}
 
 debug() { logstd $debug "DEBUG - [$$] - $*"; }
 info() { logstd $info "INFO - $*"; }
