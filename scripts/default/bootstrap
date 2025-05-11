@@ -12,7 +12,7 @@ main() {
 
     if [ "$exit_code" -eq 42 ]; then
       error "SteamCMD authentication failed or timed out - terminating deployment and stopping container"
-      exit 0  # exit cleanly so that the container 'restart' policy does not count it as a "failure" and stops the container
+      exit 0  # exit cleanly so that the container 'restart' policy does not count it as a "failure"; stops the container
     elif [ "$exit_code" -ne 0 ]; then
       error "Unexpected error during 'bootstrap' routine (exit code: $exit_code) - restarting container..."
       exit $exit_code  # defer to the container restart policy for all other failures/exit codes
