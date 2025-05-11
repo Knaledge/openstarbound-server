@@ -100,6 +100,15 @@ validateNumericRange() {
   fi
 }
 
+validateBoolean() {
+  local var_name="$1"
+  local value="$(echo "$2" | tr '[:upper:]' '[:lower:]' | xargs)"
+  if [[ "$value" != "true" && "$value" != "false" ]]; then
+    error "$var_name must be true or false (actual: $2)"
+    exit 1
+  fi
+}
+
 verifyVariables() {
   if [[ -n "$PUID" ]]; then
     if ! [[ "$PUID" =~ ^[0-9]+$ ]]; then
@@ -116,17 +125,11 @@ verifyVariables() {
   fi
 
   if [[ -n "$UPDATE_CHECK_PLAYERS" ]]; then
-    if [[ "$UPDATE_CHECK_PLAYERS" != "true" ]] && [[ "$UPDATE_CHECK_PLAYERS" != "false" ]]; then
-      error "UPDATE_CHECK_PLAYERS must be true or false (actual: $UPDATE_CHECK_PLAYERS)"
-      exit 1
-    fi
+    validateBoolean "UPDATE_CHECK_PLAYERS" "$UPDATE_CHECK_PLAYERS"
   fi
 
   if [[ -n "$STEAMGUARD_REQUIRED" ]]; then
-    if [[ "$STEAMGUARD_REQUIRED" != "true" ]] && [[ "$STEAMGUARD_REQUIRED" != "false" ]]; then
-      error "STEAMGUARD_REQUIRED must be true or false (actual: $STEAMGUARD_REQUIRED)"
-      exit 1
-    fi
+    validateBoolean "STEAMGUARD_REQUIRED" "$STEAMGUARD_REQUIRED"
   fi
 
   if [[ -n "$STEAMGUARD_TIMEOUT" ]]; then
@@ -150,17 +153,11 @@ verifyVariables() {
   fi
 
   if [[ -n "$SERVER_CHECK_ASSETS" ]]; then
-    if [[ "$SERVER_CHECK_ASSETS" != "true" ]] && [[ "$SERVER_CHECK_ASSETS" != "false" ]]; then
-      error "SERVER_CHECK_ASSETS must be true or false (actual: $SERVER_CHECK_ASSETS)"
-      exit 1
-    fi
+    validateBoolean "SERVER_CHECK_ASSETS" "$SERVER_CHECK_ASSETS"
   fi
 
   if [[ -n "$USE_OPENSTARBOUND" ]]; then
-    if [[ "$USE_OPENSTARBOUND" != "true" ]] && [[ "$USE_OPENSTARBOUND" != "false" ]]; then
-      error "USE_OPENSTARBOUND must be true or false (actual: $USE_OPENSTARBOUND)"
-      exit 1
-    fi
+    validateBoolean "USE_OPENSTARBOUND" "$USE_OPENSTARBOUND"
   fi
 }
 
