@@ -92,13 +92,13 @@ validateNumericRange() {
   local value="$(echo "$2" | xargs)" # trim whitespace
   local min="$3"
   local max="$4"
-
+  
   # Reject empty, non-numeric, or leading-zero (except "0")
   if ! [[ "$value" =~ ^[0-9]+$ ]]; then
     error "$var_name must be a valid number (actual: '$value')"
     exit 1
   fi
-  
+
   if [[ "$value" =~ ^0[0-9]+$ ]]; then
     error "$var_name must not have leading zeros (actual: '$value')"
     exit 1
@@ -108,7 +108,7 @@ validateNumericRange() {
     error "$var_name must be >= $min (actual: '$value')"
     exit 1
   fi
-
+  
   if [ -n "$max" ] && [ "$value" -gt "$max" ]; then
     error "$var_name must be <= $max (actual: '$value')"
     exit 1
