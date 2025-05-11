@@ -54,7 +54,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 | `PGID`                            |          | `4711`              | integer               | Group ID to run the game server processes under (file permission)                                                          |
 | `LOG_LEVEL`                       |          | `50`                | integer (0-50)        | Filter the logging from Supervisor in container (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)       |
 | `STEAMGUARD_REQUIRED`             |          | `false`             | boolean (true, false) | Enable if Steam Guard authentication is required for the Steam account being used for game server deployment               |
-| `STEAMGUARD_TIMEOUT`              |          | `300`               | integer               | Number of seconds to wait for a valid Steam Guard code before exiting (and failing the deployment)                         |
+| `STEAMGUARD_TIMEOUT`              |          | `300`               | integer               | Number of seconds (min "30") to wait for a valid Steam Guard code before exiting deployment (and stopping the container)   |
 | `GAME_BRANCH`                     |          | `public`            | string                | Steam branch to utilize for the game server                                                                                |
 | `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional SteamCMD arguments to be used when installing/updating the game server                                          |
 | `UPDATE_CRON`                     |          | `0 3 * * 0`         | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
@@ -62,7 +62,7 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 | `BACKUP_CRON`                     |          | `0 4 * * *`         | string                | Back up game server files on a schedule via cron (e.g., `0 4 * * *` triggers backup every day at 4:00 AM)                  |
 | `BACKUP_MAX_COUNT`                |          | `7`                 | integer               | Number of backups retained before oldest backup is overwritten                                                             |
 | `SERVER_NAME`                     |          | `Starbound Server`  | string                | Name of the game server                                                                                                    |
-| `SERVER_SLOT_COUNT`               |          | `8`                 | integer               | Max allowed concurrent players                                                                                             |
+| `SERVER_SLOT_COUNT`               |          | `8`                 | integer               | Max allowed concurrent players (default "8"; min "1", max "200")                                                           |
 | `SERVER_PORT`                     |          | `21025`             | integer               | Primary networking port used when connecting to the game server                                                            |
 | `SERVER_QUERYPORT`                |          | `21025`             | integer               | Networking port used when utilizing the "query port" of the game server                                                    |
 | `SERVER_RCON_PORT`                |          | `21026`             | integer               | Networking port used when utilizing the "remote control" functionality of the game server                                  |
@@ -75,14 +75,14 @@ All environment variables prefixed with `SERVER_` are the available Starbound/Op
 > [!IMPORTANT]
 > [Docker-native secrets](https://docs.docker.com/compose/how-tos/use-secrets/) are utilized to securely handle Steam credentials and sensitive data for the game server config (e.g., passwords). Unless otherwise [specified](#secrets-storage), each "***Host Secret File***" for each secret ***must*** be created and populated with a value prior to deployment of the game server
 > 
-> **[Docker Compose](#docker-compose) ***must*** be used to deploy the game server**
+> **[Docker Compose](#docker-compose) *must* be used to deploy the game server**
 
 #### Steam Credentials
 
 > [!IMPORTANT]
 > If [Steam Guard](https://help.steampowered.com/en/faqs/view/06B0-26E6-2CF8-254C) is enabled on the Steam account used for game server deployment, `STEAMGUARD_REQUIRED` ***must*** be set to "true" (default is "false") and the container service ***must*** allow for interactive shell access (e.g., `stdin_open: true` and `tty: true` in [docker-compose](#docker-compose))
 
-For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid Steam Guard code for a configurable period of time, with the number of seconds to wait defined by `STEAMGUARD_TIMEOUT` (default is "300" - i.e. 5 minutes).
+For Steam accounts that have Steam Guard enabled, connect to the container's interactive shell to provide a valid Steam Guard code when prompted. The container will wait for a valid Steam Guard code for a configurable period of time, with the number of seconds to wait defined by `STEAMGUARD_TIMEOUT` (default is "300" - i.e. 5 minutes) (minimum is "30" to allow for basic SteamCMD execution).
 
 > [!WARNING]
 > If the `STEAMGUARD_TIMEOUT` period expires before valid entry of a Steam Guard code, the authentication routine will exit, the game server deployment process will terminate, **and the container itself will stop** - *regardless of the container service's `restart` policy*
@@ -102,7 +102,7 @@ Simply create a directory on the game server's host itself to store the "Host Se
 ## Ports
 
 > [!IMPORTANT]
-> Network port values defined in the Docker `ports` section/key usually align with the network ports for the game server
+> Network port values defined in the [Docker Compose](#docker-compose) `ports` section/key usually align with the network ports for the game server
 
 | Port        | Description                        |
 |-------------|------------------------------------|
@@ -115,7 +115,7 @@ Simply create a directory on the game server's host itself to store the "Host Se
 > [!NOTE]
 > SteamCMD typically requires approximately 2x the size of the game server in order to update the game server itself
 
-By default the volumes are created with the **PUID** and **PGID** "4711" and may be overridden by defining the environment variables `PUID` and `PGID` via `docker-compose` ([example](#docker-compose))
+By default the volumes are created with the **PUID** and **PGID** "4711" and may be overridden by defining the environment variables `PUID` and `PGID` via [Docker Compose](#docker-compose)
 
 | Volume                  | Description                                 |
 |-------------------------|---------------------------------------------|
@@ -158,12 +158,12 @@ services:
       - BACKUP_MAX_COUNT=7               # Default is retain a max of 7 backups before overwriting the oldest
       - LOG_LEVEL=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
       - STEAMGUARD_REQUIRED=false        # Default is "false"; set to "true" if the Steam account is protected by Steam Guard
-      - STEAMGUARD_TIMEOUT=300           # Default is "300" (seconds); amount of time to wait for a valid Steam Guard code before exiting (and failing the deployment)
+      - STEAMGUARD_TIMEOUT=300           # Default is "300" (seconds) (min "30"); amount of time to wait for a valid Steam Guard code before exiting (and failing the deployment)
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
       - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
       - SERVER_RCON_ENABLED=false        # Forced to "false" if 'starbound_rcon_password' secret is undefined
-      - SERVER_SLOT_COUNT=8
+      - SERVER_SLOT_COUNT=8              # Default is "8" (min "1", max "200")
       - SERVER_CHECK_ASSETS=false        # Forced to "true" when 'USE_OPENSTARBOUND' is "true"
       - USE_OPENSTARBOUND=false          # Enable deployment of OpenStarbound on top of the Starbound game server
 
@@ -186,7 +186,9 @@ secrets:
 ## Hooks
 
 > [!NOTE]
-> Utilize hooks to perform tasks before/after the primary purpose of each install/update script is finished; use of hooks will cause the related install/update scripts to wait for each hook to resolve/return before continuing
+> Utilize hooks to perform tasks before/after the primary purpose of most [***core functions***](#features) finish
+> 
+> Use of hooks will cause the related ***core function*** script(s) to wait for each hook to resolve/return before continuing
 
 | Variable           | Description                            |
 |--------------------|----------------------------------------|
