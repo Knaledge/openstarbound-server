@@ -151,16 +151,16 @@ validateEnvironmentVariables() {
     validateNumericRange "PGID" "$PGID"
   fi
 
+  if [[ -n "$BACKUP_CRON" ]]; then
+    validateCron "BACKUP_CRON" "$BACKUP_CRON"
+  fi
+
   if [[ -n "$BACKUP_MAX_COUNT" ]]; then
     validateNumericRange "BACKUP_MAX_COUNT" "$BACKUP_MAX_COUNT" 
   fi
 
   if [[ -n "$UPDATE_CRON" ]]; then
     validateCron "UPDATE_CRON" "$UPDATE_CRON"
-  fi
-
-  if [[ -n "$BACKUP_CRON" ]]; then
-    validateCron "BACKUP_CRON" "$BACKUP_CRON"
   fi
 
   if [[ -n "$UPDATE_CHECK_PLAYERS" ]]; then
@@ -185,6 +185,10 @@ validateEnvironmentVariables() {
 
   if [[ -n "$SERVER_QUERYPORT" ]]; then
     validateNumericRange "SERVER_QUERYPORT" "$SERVER_QUERYPORT" 1 65535
+  fi
+
+  if [[ -n "$SERVER_RCON_ENABLED" ]]; then
+    validateBoolean "SERVER_RCON_ENABLED" "$SERVER_RCON_ENABLED"
   fi
 
   if [[ -n "$SERVER_RCON_PORT" ]]; then
