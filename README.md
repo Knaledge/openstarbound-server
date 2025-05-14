@@ -53,6 +53,7 @@ Special thanks to the members of the [OpenStarbound Discord community](https://d
 
 | Variable                          | Validated | Default             | Type                  | Description                                                                                                                |
 |-----------------------------------|:---------:|---------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
+| `TZ`                              |           | `Etc/UTC`           | string                | Timezone of container (timestamps, cron schedule, etc.); see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones  |
 | `PUID`                            |    Yes    | `4711`              | integer               | User ID to run the game server processes under (file permission)                                                           |
 | `PGID`                            |    Yes    | `4711`              | integer               | Group ID to run the game server processes under (file permission)                                                          |
 | `LOG_LEVEL`                       |           | `50`                | integer (0-50)        | Filter the logging from Supervisor in container (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)       |
