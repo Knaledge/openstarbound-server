@@ -20,19 +20,20 @@ services:
       - steam_password
       - starbound_rcon_password
     environment:
+      - TZ=Etc/UTC                       # Default timezone for container is "Etc/UTC"; set to preferred timezone (e.g., "America/New_York")
       - PUID=4711                        # Docker Process User ID; default is "4711"
       - PGID=4711                        # Docker Process Group ID; default is "4711"
       - UPDATE_CRON=0 3 * * 0            # Default is update every Sunday at 3 AM (server host time)
       - BACKUP_CRON=0 4 * * *            # Default is backup every day at 4 AM (server host time)
       - BACKUP_MAX_COUNT=7               # Default is retain a max of 7 backups before overwriting the oldest
-      - LOG_LEVEL=50                     # Default is "50" (debug); 0-100 (0=none, 100=all)  
+      - LOG_LEVEL=50                     # Default is "50" (debug); 0-50 (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)
       - STEAMGUARD_REQUIRED=false        # Default is "false"; set to "true" if the Steam account is protected by Steam Guard
-      - STEAMGUARD_TIMEOUT=300           # Default is "300" (seconds); amount of time to wait for a valid Steam Guard code before exiting (and failing the deployment)
+      - STEAMGUARD_TIMEOUT=300           # Default is "300" (seconds) (min: "30"); wait time for entry of a valid Steam Guard code before exiting deployment (and stopping container)
       - SERVER_NAME=Starbound Server
       - SERVER_PORT=21025                # Match with 'ports' definition; default is "21025"
       - SERVER_RCON_PORT=21026           # Match with 'ports' definition; default is "21026"
       - SERVER_RCON_ENABLED=false        # Forced to "false" if 'starbound_rcon_password' secret is undefined
-      - SERVER_SLOT_COUNT=8
+      - SERVER_SLOT_COUNT=8              # Default is "8" (min "1", max "200")
       - SERVER_CHECK_ASSETS=false        # Forced to "true" when 'USE_OPENSTARBOUND' is "true"
       - USE_OPENSTARBOUND=false          # Enable deployment of OpenStarbound on top of the Starbound game server
 

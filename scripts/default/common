@@ -31,7 +31,7 @@ warn=30
 error=20
 critical=10
 fatal=5
-log_level=${log_level:-$info}
+log_level=${LOG_LEVEL:-$info}
 
 debug() { logstd $debug "DEBUG - [$$] - $*"; }
 info() { logstd $info "INFO - $*"; }
@@ -118,7 +118,7 @@ checkRunning() {
 }
 
 steamGuardAuth() {
-  if [ "$STEAMGUARD_REQUIRED" == "true" ]; then
+  if [ "${STEAMGUARD_REQUIRED,,}" == "true" ]; then
     info "Environment variable 'STEAMGUARD_REQUIRED' is set to 'true' - beginning interactive SteamCMD login..."
 
     if [ ! -t 0 ]; then

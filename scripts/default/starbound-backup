@@ -48,7 +48,7 @@ backup() {
   backupPreHook
 
   # Add context to backup-file name if OpenStarbound is enabled
-  if [[ "$USE_OPENSTARBOUND" == "true" ]]; then
+  if [[ "${USE_OPENSTARBOUND,,}" == "true" ]]; then
     openstarbound_backup_suffix="_openstarbound"
   else
     openstarbound_backup_suffix=""

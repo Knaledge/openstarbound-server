@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Container environment
+TZ=${TZ:-Etc/UTC} # defaults to Etc/UTC; consult list of valid timezones at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
 # Docker process user/group IDs
 PUID=${PUID:-4711}
 PGID=${PGID:-4711}
@@ -37,11 +40,11 @@ else
 fi
 
 # Update
-UPDATE_CRON=${UPDATE_CRON:-0 3 * * 0} # defaults to every Sunday at 3AM (server host time)
+UPDATE_CRON=${UPDATE_CRON:-0 3 * * 0} # defaults to every Sunday at 3:00AM (container time from "TZ")
 UPDATE_CHECK_PLAYERS=${UPDATE_CHECK_PLAYERS:-true}
 
 # Backup
-BACKUP_CRON=${BACKUP_CRON:-0 4 * * *} # defaults to every day at 4AM (server host time)
+BACKUP_CRON=${BACKUP_CRON:-0 4 * * *} # defaults to every day at 4:00AM (container time from "TZ")
 BACKUP_DIR=${BACKUP_DIR:-backups}
 BACKUP_MAX_COUNT=${BACKUP_MAX_COUNT:-7}
 
