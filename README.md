@@ -40,35 +40,38 @@ Special thanks to the members of the [OpenStarbound Discord community](https://d
 | `dev-osb`          | Development/preview build (bugs likely)  |
 
 ## Environment Variables
-<!-- TODO: Revise the table and notices to convey the validation of several env vars and what that validation resolves to (e.g., container-stop) -->
+
 > [!NOTE]
-> ["Default" values](./scripts/default/defaults) are passed in automatically as outlined below 
+> ["Default" values](./scripts/default/defaults) are passed in automatically as outlined below and may be overridden
 > 
-> "Required" environment variables will also require a value to be defined
+> All environment variables prefixed with `SERVER_` are the available Starbound/OpenStarbound server-configuration values
 
-All environment variables prefixed with `SERVER_` are the available Starbound/OpenStarbound server-configuration values
 
-| Variable                          | Required | Default             | Type                  | Description                                                                                                                |
-|-----------------------------------|:--------:|---------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
-| `PUID`                            |          | `4711`              | integer               | User ID to run the game server processes under (file permission)                                                           |
-| `PGID`                            |          | `4711`              | integer               | Group ID to run the game server processes under (file permission)                                                          |
-| `LOG_LEVEL`                       |          | `50`                | integer (0-50)        | Filter the logging from Supervisor in container (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)       |
-| `STEAMGUARD_REQUIRED`             |          | `false`             | boolean (true, false) | Enable if Steam Guard authentication is required for the Steam account being used for game server deployment               |
-| `STEAMGUARD_TIMEOUT`              |          | `300`               | integer               | Number of seconds (min "30") to wait for a valid Steam Guard code before exiting deployment (and stopping the container)   |
-| `GAME_BRANCH`                     |          | `public`            | string                | Steam branch to utilize for the game server                                                                                |
-| `STEAMCMD_ARGS`                   |          | `validate`          | string                | Additional SteamCMD arguments to be used when installing/updating the game server                                          |
-| `UPDATE_CRON`                     |          | `0 3 * * 0`         | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
-| `UPDATE_CHECK_PLAYERS`            |          | `true`              | boolean               | Check if any players are connected to the game server prior to updating the game server                                    |
-| `BACKUP_CRON`                     |          | `0 4 * * *`         | string                | Back up game server files on a schedule via cron (e.g., `0 4 * * *` triggers backup every day at 4:00 AM)                  |
-| `BACKUP_MAX_COUNT`                |          | `7`                 | integer               | Number of backups retained before oldest backup is overwritten                                                             |
-| `SERVER_NAME`                     |          | `Starbound Server`  | string                | Name of the game server                                                                                                    |
-| `SERVER_SLOT_COUNT`               |          | `8`                 | integer               | Max allowed concurrent players (default "8"; min "1", max "200")                                                           |
-| `SERVER_PORT`                     |          | `21025`             | integer               | Primary networking port used when connecting to the game server                                                            |
-| `SERVER_QUERYPORT`                |          | `21025`             | integer               | Networking port used when utilizing the "query port" of the game server                                                    |
-| `SERVER_RCON_PORT`                |          | `21026`             | integer               | Networking port used when utilizing the "remote control" functionality of the game server                                  |
-| `SERVER_RCON_ENABLED`             |          | `false`             | boolean               | Remote control of the game server available; forced to "false" if `starbound_rcon_password` Docker secret is undefined     |
-| `SERVER_CHECK_ASSETS`             |          | `false`             | boolean               | Enable asset checking (not mods); forced to "true" when `USE_OPENSTARBOUND` is "true"                                      |
-| `USE_OPENSTARBOUND`               |          | `false`             | boolean               | Enable deployment of OpenStarbound on top of the Starbound game server (updated per `UPDATE_CRON` schedule)                |
+> [!WARNING]
+> **"Validated" values found to be invalid will terminate the bootstrap process and stop the container** (see [validation rules](./scripts/default/bootstrap))
+
+
+| Variable                          | Validated | Default             | Type                  | Description                                                                                                                |
+|-----------------------------------|:---------:|---------------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------|
+| `PUID`                            |    Yes    | `4711`              | integer               | User ID to run the game server processes under (file permission)                                                           |
+| `PGID`                            |    Yes    | `4711`              | integer               | Group ID to run the game server processes under (file permission)                                                          |
+| `LOG_LEVEL`                       |           | `50`                | integer (0-50)        | Filter the logging from Supervisor in container (0=none, 5=fatal, 10=critical, 20=error, 30=warn, 40=info, 50=debug)       |
+| `STEAMGUARD_REQUIRED`             |    Yes    | `false`             | boolean (true, false) | Enable if Steam Guard authentication is required for the Steam account being used for game server deployment               |
+| `STEAMGUARD_TIMEOUT`              |    Yes    | `300`               | integer               | Number of seconds (min "30") to wait for a valid Steam Guard code before exiting deployment (and stopping the container)   |
+| `GAME_BRANCH`                     |           | `public`            | string                | Steam branch to utilize for the game server                                                                                |
+| `STEAMCMD_ARGS`                   |           | `validate`          | string                | Additional SteamCMD arguments to be used when installing/updating the game server                                          |
+| `UPDATE_CRON`                     |    Yes    | `0 3 * * 0`         | string (cron format)  | Update game server files on a schedule via cron (e.g., `*/30 * * * *` checks for updates every 30 minutes)                 |
+| `UPDATE_CHECK_PLAYERS`            |    Yes    | `true`              | boolean               | Check if any players are connected to the game server prior to updating the game server                                    |
+| `BACKUP_CRON`                     |    Yes    | `0 4 * * *`         | string                | Back up game server files on a schedule via cron (e.g., `0 4 * * *` triggers backup every day at 4:00 AM)                  |
+| `BACKUP_MAX_COUNT`                |           | `7`                 | integer               | Number of backups retained before oldest backup is overwritten                                                             |
+| `SERVER_NAME`                     |           | `Starbound Server`  | string                | Name of the game server                                                                                                    |
+| `SERVER_SLOT_COUNT`               |    Yes    | `8`                 | integer               | Max allowed concurrent players (default "8"; min "1", max "200")                                                           |
+| `SERVER_PORT`                     |    Yes    | `21025`             | integer               | Primary networking port used when connecting to the game server                                                            |
+| `SERVER_QUERYPORT`                |    Yes    | `21025`             | integer               | Networking port used when utilizing the "query port" of the game server                                                    |
+| `SERVER_RCON_PORT`                |    Yes    | `21026`             | integer               | Networking port used when utilizing the "remote control" functionality of the game server                                  |
+| `SERVER_RCON_ENABLED`             |    Yes    | `false`             | boolean               | Remote control of the game server available; forced to "false" if `starbound_rcon_password` Docker secret is undefined     |
+| `SERVER_CHECK_ASSETS`             |    Yes    | `false`             | boolean               | Enable asset checking (not mods); forced to "true" when `USE_OPENSTARBOUND` is "true"                                      |
+| `USE_OPENSTARBOUND`               |    Yes    | `false`             | boolean               | Enable deployment of OpenStarbound on top of the Starbound game server (updated per `UPDATE_CRON` schedule)                |
 
 ## Docker Secrets
 
