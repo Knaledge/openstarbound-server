@@ -48,7 +48,7 @@ Special thanks to the members of the [OpenStarbound Discord community](https://d
 
 
 > [!WARNING]
-> **"Validated" values found to be invalid will terminate the bootstrap process and stop the container** (see [validation rules](./scripts/default/bootstrap))
+> **"Validated" values found to be invalid will terminate the bootstrap process and stop the container** (see [validation rules](./scripts/default/bootstrap-validator))
 
 
 | Variable                          | Validated | Default             | Type                  | Description                                                                                                                |
