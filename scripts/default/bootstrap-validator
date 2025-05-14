@@ -1,0 +1,137 @@
+#!/bin/bash
+
+# Validates environment variables and their values
+#
+# This script is sourced by the main "bootstrap" script to validate environment variables
+# and their values before proceeding with the rest of the bootstrap process.
+#
+# It checks for the presence of required variables, validates their format, and ensures
+# that they are within acceptable range (min/max - if defined).
+#
+# If any validation fails, an error message is displayed and the script exits with a non-zero status.
+
+validateNumericRange() {
+  # Validate that the value is a number and optionally within the specified range
+  # Usage: validateNumericRange <var_name> <value> [min] [max]
+  local var_name="$1"
+  local value="$(echo "$2" | xargs)" # trim whitespace
+  local min="$3"
+  local max="$4"
+  
+  # Reject empty, non-numeric, or leading-zero (except "0")
+  if ! [[ "$value" =~ ^[0-9]+$ ]]; then
+    error "$var_name must be a valid number (actual: '$value') - exiting bootstrap and stopping container"
+    exit 0
+  fi
+
+  if [[ "$value" =~ ^0[0-9]+$ ]]; then
+    error "$var_name must not have leading zeros (actual: '$value') - exiting bootstrap and stopping container"
+    exit 0
+  fi
+  
+  if [ -n "$min" ] && [ "$value" -lt "$min" ]; then
+    error "$var_name must be >= $min (actual: '$value') - exiting bootstrap and stopping container"
+    exit 0
+  fi
+  
+  if [ -n "$max" ] && [ "$value" -gt "$max" ]; then
+    error "$var_name must be <= $max (actual: '$value') - exiting bootstrap and stopping container"
+    exit 0
+  fi
+}
+
+validateBoolean() {
+  # Validate that the value is a boolean (true/false)
+  # Usage: validateBoolean <var_name> <value>
+  local var_name="$1"
+  local value="$(echo "$2" | tr '[:upper:]' '[:lower:]' | xargs)"
+  
+  # Reject empty or non-boolean values
+  if [[ "$value" != "true" && "$value" != "false" ]]; then
+    error "$var_name must be true or false (actual: '$value') - exiting bootstrap and stopping container"
+    exit 0
+  fi
+}
+
+validateCron() {
+  # Validate that the value is a cron expression using 'cron-validator' Python package
+  # Usage: validateCron <var_name> <value>
+  local var_name="$1"
+  local value="$2"
+  if [[ -z "$value" ]]; then
+    error "$var_name must not be empty - exiting bootstrap and stopping container"
+    exit 0
+  fi
+
+  info "Validating cron expression: '$value'"
+  output=$(/usr/local/etc/starbound/cron-validate.py "$value" 2>&1)
+  exit_code=$?
+
+  if [ "$exit_code" -ne 0 ]; then
+    debug "cron-validate output: $output"
+    error "$var_name is not a valid cron expression (actual: $value) - exiting bootstrap and stopping container"
+    exit 0
+  fi
+}
+
+validateEnvironmentVariables() {
+  if [[ -n "$PUID" ]]; then
+    validateNumericRange "PUID" "$PUID"
+  fi
+
+  if [[ -n "$PGID" ]]; then
+    validateNumericRange "PGID" "$PGID"
+  fi
+
+  if [[ -n "$BACKUP_CRON" ]]; then
+    validateCron "BACKUP_CRON" "$BACKUP_CRON"
+  fi
+
+  if [[ -n "$BACKUP_MAX_COUNT" ]]; then
+    validateNumericRange "BACKUP_MAX_COUNT" "$BACKUP_MAX_COUNT" 
+  fi
+
+  if [[ -n "$UPDATE_CRON" ]]; then
+    validateCron "UPDATE_CRON" "$UPDATE_CRON"
+  fi
+
+  if [[ -n "$UPDATE_CHECK_PLAYERS" ]]; then
+    validateBoolean "UPDATE_CHECK_PLAYERS" "$UPDATE_CHECK_PLAYERS"
+  fi
+
+  if [[ -n "$STEAMGUARD_REQUIRED" ]]; then
+    validateBoolean "STEAMGUARD_REQUIRED" "$STEAMGUARD_REQUIRED"
+  fi
+
+  if [[ -n "$STEAMGUARD_TIMEOUT" ]]; then
+    validateNumericRange "STEAMGUARD_TIMEOUT" "$STEAMGUARD_TIMEOUT" 30 3600
+  fi
+
+  if [[ -n "$SERVER_SLOT_COUNT" ]]; then
+    validateNumericRange "SERVER_SLOT_COUNT" "$SERVER_SLOT_COUNT" 1 200
+  fi
+
+  if [[ -n "$SERVER_PORT" ]]; then
+    validateNumericRange "SERVER_PORT" "$SERVER_PORT" 1 65535
+  fi
+
+  if [[ -n "$SERVER_QUERYPORT" ]]; then
+    validateNumericRange "SERVER_QUERYPORT" "$SERVER_QUERYPORT" 1 65535
+  fi
+
+  if [[ -n "$SERVER_RCON_ENABLED" ]]; then
+    validateBoolean "SERVER_RCON_ENABLED" "$SERVER_RCON_ENABLED"
+  fi
+
+  if [[ -n "$SERVER_RCON_PORT" ]]; then
+    validateNumericRange "SERVER_RCON_PORT" "$SERVER_RCON_PORT" 1 65535
+  fi
+
+  if [[ -n "$SERVER_CHECK_ASSETS" ]]; then
+    validateBoolean "SERVER_CHECK_ASSETS" "$SERVER_CHECK_ASSETS"
+  fi
+
+  if [[ -n "$USE_OPENSTARBOUND" ]]; then
+    validateBoolean "USE_OPENSTARBOUND" "$USE_OPENSTARBOUND"
+  fi
+}
