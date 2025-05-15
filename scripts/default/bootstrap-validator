@@ -88,7 +88,7 @@ validateEnvironmentVariables() {
   fi
 
   if [[ -n "$BACKUP_MAX_COUNT" ]]; then
-    validateNumericRange "BACKUP_MAX_COUNT" "$BACKUP_MAX_COUNT" 
+    validateNumericRange "BACKUP_MAX_COUNT" "$BACKUP_MAX_COUNT" 1 365
   fi
 
   if [[ -n "$UPDATE_CRON" ]]; then
