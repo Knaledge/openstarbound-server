@@ -40,7 +40,7 @@ else
 fi
 
 # Mod Settings
-MODLIST_FILE=${MODLIST_FILE:-modlist.txt} # defaults to modlist.json
+MODLIST_FILE=${MODLIST_FILE:-modlist.txt} # defaults to modlist.txt
 
 # Update
 UPDATE_CRON=${UPDATE_CRON:-0 3 * * 0} # defaults to every Sunday at 3:00AM (container time from "TZ")
