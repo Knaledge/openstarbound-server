@@ -39,6 +39,9 @@ else
   info "No Starbound RCON password secret found"
 fi
 
+# Mod Settings
+MODLIST_FILE=${MODLIST_FILE:-modlist.txt} # defaults to modlist.json
+
 # Update
 UPDATE_CRON=${UPDATE_CRON:-0 3 * * 0} # defaults to every Sunday at 3:00AM (container time from "TZ")
 UPDATE_CHECK_PLAYERS=${UPDATE_CHECK_PLAYERS:-true}
