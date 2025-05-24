@@ -8,6 +8,7 @@ main() {
   createFolders
   applyPermissions
   setupSyslog
+  setupModlist
   steamGuardAuth # Allows for Steam Guard code entry in a pre-Supervisor interactive shell; traversed if 'STEAMGUARD_REQUIRED' is set to "true"
     exit_code=$?
 

@@ -9,6 +9,7 @@ openstarbound_staging_path=/tmp/openstarbound/staging
 openstarbound_download_path=/tmp/openstarbound/download
 openstarbound_version_file_path=/opt/starbound/openstarbound/current_version
 openstarbound_github_api=https://api.github.com/repos/OpenStarbound/OpenStarbound/releases/latest
+mod_directory=/opt/starbound/mods
 modlist_directory=/opt/starbound/modlists
 modlist_file=${MODLIST_FILE}
 mod_version_file_path=/opt/starbound/modlists/current_versions
@@ -22,6 +23,7 @@ trap ':' USR1
 starbound_server_pidfile=/var/run/starbound/starbound-server.pid
 starbound_updater_pidfile=/var/run/starbound/starbound-updater.pid
 starbound_backup_pidfile=/var/run/starbound/starbound-backup.pid
+starbound_mod_updater_pidfile=/var/run/starbound/starbound-mod-updater.pid
 
 # Syslog supervisor config file
 supervisor_syslog_conf=/usr/local/etc/supervisor/conf.d/syslog.conf
@@ -162,4 +164,37 @@ steamGuardAuth() {
   fi
 
   return 0
+}
+
+setupModlist() {
+    local modlist_file="/opt/starbound/modlists/modlist.txt"
+    
+    info "Setting up mod configuration..."
+    
+    # Check if modlist.txt exists
+    if [ -f "$modlist_file" ]; then
+        info "Found modlist.txt file"
+        
+        # Validate the file is readable
+        if [ ! -r "$modlist_file" ]; then
+            warn "modlist.txt exists but is not readable"
+            return 1
+        fi
+        
+        # Count non-comment, non-empty lines
+        local mod_count=$(grep -v '^#' "$modlist_file" | grep -v '^[[:space:]]*$' | wc -l)
+        
+        if [ "$mod_count" -gt 0 ]; then
+            info "Found $mod_count mod(s) configured in modlist.txt"
+            return 0
+        else
+            info "modlist.txt exists but contains no mod IDs"
+            return 0
+        fi
+    else
+        info "No modlist.txt found - server will run without mods"
+        info "To add mods, create a modlist.txt file in the config directory"
+        info "See modlist.txt.example for reference"
+        return 0
+    fi
 }
