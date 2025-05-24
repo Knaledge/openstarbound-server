@@ -31,8 +31,11 @@ update() {
   
   # Check for mod updates - load mod list and check if any need updates
   local mod_ids
-  if mod_ids=$(loadModList) && checkForModUpdates $(echo "$mod_ids" | tr '\n' ' ') >/dev/null; then
-    mod_update_needed=true
+  if mod_ids=$(loadModList); then
+    readarray -t mod_array <<< "$mod_ids"
+    if checkForModUpdates "${mod_array[@]}" >/dev/null; then
+      mod_update_needed=true
+    fi
   fi
   
   # If no updates needed, exit
