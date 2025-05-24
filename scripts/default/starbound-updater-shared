@@ -2,6 +2,7 @@
 . "$(dirname "$0")/common"
 . "$(dirname "$0")/defaults"
 . "$(dirname "$0")/openstarbound-updater-shared"
+. "$(dirname "$0")/starbound-mod-updater-shared"
 
 pidfile=$starbound_updater_pidfile
 latest_version=-1
@@ -9,6 +10,7 @@ latest_version=-1
 update() {
   local starbound_update_needed=false
   local openstarbound_update_needed=false
+  local mod_update_needed=false
 
   # PID lock check
   if [ -f "$pidfile" ]; then
@@ -27,8 +29,14 @@ update() {
     openstarbound_update_needed=true
   fi
   
+  # Check for mod updates - load mod list and check if any need updates
+  local mod_ids
+  if mod_ids=$(loadModList) && checkForModUpdates $(echo "$mod_ids" | tr '\n' ' ') >/dev/null; then
+    mod_update_needed=true
+  fi
+  
   # If no updates needed, exit
-  if [ "${starbound_update_needed,,}" == "false" ] && [ "${openstarbound_update_needed,,}" == "false" ]; then
+  if [ "${starbound_update_needed,,}" == "false" ] && [ "${openstarbound_update_needed,,}" == "false" ] && [ "${mod_update_needed,,}" == "false" ]; then
     if ! checkRunning "starbound-server"; then
       info "Starbound server is not running - starting"
       supervisorctl start starbound-server
@@ -42,8 +50,8 @@ update() {
     return
   fi
 
-# Start update process
-  doUpdate "$starbound_update_needed" "$openstarbound_update_needed" &
+  # Start update process
+  doUpdate "$starbound_update_needed" "$openstarbound_update_needed" "$mod_update_needed" &
   starbound_updater_pid=$!
   echo $starbound_updater_pid >"$pidfile"
   wait $starbound_updater_pid
@@ -52,10 +60,11 @@ update() {
 doUpdate() {
   local starbound_update_needed=$1
   local openstarbound_update_needed=$2
+  local mod_update_needed=$3
 
   updatePreHook
   
-  # Check if the server is running and stop it
+  # Check if the server is running and stop it if any updates are needed
   if checkRunning "starbound-server"; then
     supervisorctl stop starbound-server
   fi
@@ -81,6 +90,12 @@ doUpdate() {
       clearLock "$pidfile"
       return
     fi
+  fi
+
+  # Update mods before restarting server (only if mod updates are needed)
+  if [ "${mod_update_needed,,}" == "true" ]; then
+    info "Updating mods..."
+    doModUpdate
   fi
 
   # Restart the server and run post-update hooks
