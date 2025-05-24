@@ -1,0 +1,326 @@
+#!/bin/bash
+. "$(dirname "$0")/common"
+. "$(dirname "$0")/defaults"
+
+pidfile=$starbound_mod_updater_pidfile
+
+loadModList() {
+  local modlist_file="/opt/starbound/modlists/modlist.txt"
+  local mod_ids=()
+  
+  if [ ! -f "$modlist_file" ]; then
+    debug "Modlist file not found: $modlist_file"
+    return 1
+  fi
+  
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Skip comments and empty lines
+    if [[ "$line" =~ ^[[:space:]]*# ]] || [[ "$line" =~ ^[[:space:]]*$ ]]; then
+      continue
+    fi
+    
+    # Extract mod ID (first word/number)
+    local mod_id=$(echo "$line" | awk '{print $1}')
+    
+    # Validate mod ID is numeric
+    if [[ "$mod_id" =~ ^[0-9]+$ ]]; then
+      mod_ids+=("$mod_id")
+    else
+      warn "Invalid mod ID format: $line"
+    fi
+  done < "$modlist_file"
+  
+  if [ ${#mod_ids[@]} -eq 0 ]; then
+    debug "No valid mod IDs found in modlist"
+    return 1
+  fi
+  
+  printf '%s\n' "${mod_ids[@]}"
+  return 0
+}
+
+loadCurrentVersions() {
+  local current_versions=()
+  
+  if [ ! -f "$mod_version_file_path" ]; then
+    debug "Mod version file not found: $mod_version_file_path"
+    return 1
+  fi
+  
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ -n "$line" ]; then
+      current_versions+=("$line")
+    fi
+  done < "$mod_version_file_path"
+  
+  printf '%s\n' "${current_versions[@]}"
+  return 0
+}
+
+saveCurrentVersions() {
+  local versions=("$@")
+  mkdir -p "$(dirname "$mod_version_file_path")"
+  printf '%s\n' "${versions[@]}" > "$mod_version_file_path"
+}
+
+pruneRemovedMods() {
+  local mod_ids=("$@")
+  local current_versions
+  local new_versions=()
+  
+  if ! current_versions=$(loadCurrentVersions); then
+    return 0
+  fi
+  
+  while IFS= read -r version_line; do
+    local mod_id=$(echo "$version_line" | cut -d' ' -f1)
+    local keep_mod=false
+    
+    for active_mod in "${mod_ids[@]}"; do
+      if [ "$mod_id" == "$active_mod" ]; then
+        keep_mod=true
+        break
+      fi
+    done
+    
+    if [ "$keep_mod" == "true" ]; then
+      new_versions+=("$version_line")
+    else
+      info "Removing version entry for mod $mod_id (no longer in mod list)"
+      # Remove mod directory if it exists
+      if [ -d "$mod_directory/$mod_id" ]; then
+        info "Removing mod directory: $mod_directory/$mod_id"
+        rm -rf "$mod_directory/$mod_id"
+      fi
+    fi
+  done <<< "$current_versions"
+  
+  saveCurrentVersions "${new_versions[@]}"
+}
+
+getModTimestamp() {
+  local mod_id=$1
+  local response
+  local steam_web_api=https://api.steampowered.com/IPublishedFileService/GetDetails/v1
+  
+  response=$(curl -s "$steam_web_api?itemcount=1&publishedfileids[0]=$mod_id")
+  
+  if [ $? -ne 0 ] || [ -z "$response" ]; then
+    debug "Failed to fetch mod info for $mod_id"
+    return 1
+  fi
+  
+  # Extract time_updated from JSON response
+  local timestamp=$(echo "$response" | grep -o '"time_updated":[0-9]*' | cut -d':' -f2)
+  
+  if [ -n "$timestamp" ] && [ "$timestamp" -gt 0 ]; then
+    echo "$timestamp"
+    return 0
+  fi
+  
+  debug "Could not extract timestamp for mod $mod_id"
+  return 1
+}
+
+getCurrentModTimestamp() {
+  local mod_id=$1
+  local current_versions
+  
+  if ! current_versions=$(loadCurrentVersions); then
+    return 1
+  fi
+  
+  while IFS= read -r version_line; do
+    local stored_mod_id=$(echo "$version_line" | cut -d' ' -f1)
+    local stored_timestamp=$(echo "$version_line" | cut -d' ' -f2)
+    
+    if [ "$stored_mod_id" == "$mod_id" ]; then
+      echo "$stored_timestamp"
+      return 0
+    fi
+  done <<< "$current_versions"
+  
+  return 1
+}
+
+checkForModUpdates() {
+  local mod_ids=("$@")
+  local updates_needed=()
+  
+  for mod_id in "${mod_ids[@]}"; do
+    local current_timestamp
+    local latest_timestamp
+    
+    if ! latest_timestamp=$(getModTimestamp "$mod_id"); then
+      warn "Could not check update for mod $mod_id - skipping"
+      continue
+    fi
+    
+    if current_timestamp=$(getCurrentModTimestamp "$mod_id"); then
+      if [ "$latest_timestamp" -gt "$current_timestamp" ]; then
+        info "Update available for mod $mod_id (current: $current_timestamp, latest: $latest_timestamp)"
+        updates_needed+=("$mod_id")
+      else
+        debug "Mod $mod_id is up to date"
+      fi
+    else
+      info "New mod detected: $mod_id"
+      updates_needed+=("$mod_id")
+    fi
+  done
+  
+  printf '%s\n' "${updates_needed[@]}"
+  [ ${#updates_needed[@]} -gt 0 ]
+}
+
+downloadMods() {
+  local mod_ids=("$@")
+  local download_args=""
+  
+  mkdir -p "$mod_directory"
+  
+  # Build SteamCMD workshop download arguments
+  for mod_id in "${mod_ids[@]}"; do
+    download_args="$download_args +workshop_download_item $steam_app_id $mod_id"
+  done
+  
+  info "Downloading ${#mod_ids[@]} mods via SteamCMD..."
+  
+  su starbound -c "
+    export HOME=/home/starbound
+    $steamcmd_path +force_install_dir \"$install_path\" +login anonymous $download_args +quit
+  "
+  
+  if [ $? -ne 0 ]; then
+    error "SteamCMD mod download failed"
+    return 1
+  fi
+  
+  # Move downloaded mods to mod directory
+  local workshop_content_path="$install_path/steamapps/workshop/content/$steam_app_id"
+  
+  if [ -d "$workshop_content_path" ]; then
+    for mod_id in "${mod_ids[@]}"; do
+      local mod_source="$workshop_content_path/$mod_id"
+      local mod_dest="$mod_directory/$mod_id"
+      
+      if [ -d "$mod_source" ]; then
+        rm -rf "$mod_dest"
+        mv "$mod_source" "$mod_dest"
+        info "Installed mod $mod_id"
+      else
+        warn "Downloaded mod $mod_id not found in expected location"
+      fi
+    done
+    
+    # Clean up workshop directory
+    rm -rf "$workshop_content_path"
+  fi
+  
+  return 0
+}
+
+updateModVersions() {
+  local mod_ids=("$@")
+  local current_versions
+  local new_versions=()
+  
+  # Load existing versions
+  if current_versions=$(loadCurrentVersions); then
+    while IFS= read -r version_line; do
+      local stored_mod_id=$(echo "$version_line" | cut -d' ' -f1)
+      local found=false
+      
+      # Check if this mod is in our update list
+      for mod_id in "${mod_ids[@]}"; do
+        if [ "$stored_mod_id" == "$mod_id" ]; then
+          found=true
+          break
+        fi
+      done
+      
+      # Keep existing version if not being updated
+      if [ "$found" == "false" ]; then
+        new_versions+=("$version_line")
+      fi
+    done <<< "$current_versions"
+  fi
+  
+  # Add updated mod versions
+  for mod_id in "${mod_ids[@]}"; do
+    local timestamp
+    if timestamp=$(getModTimestamp "$mod_id"); then
+      new_versions+=("$mod_id $timestamp")
+      debug "Updated version for mod $mod_id: $timestamp"
+    else
+      warn "Could not update version for mod $mod_id"
+    fi
+  done
+  
+  saveCurrentVersions "${new_versions[@]}"
+}
+
+updateMods() {
+  local mod_ids
+  local updates_needed
+  
+  # PID lock check
+  if [ -f "$pidfile" ]; then
+    info "Found existing mod updater PID file - checking process"
+    checkLock $pidfile
+  fi
+  trap shutdownModUpdater SIGINT SIGTERM
+  
+  # Start update process
+  doModUpdate &
+  starbound_mod_updater_pid=$!
+  echo $starbound_mod_updater_pid >"$pidfile"
+  wait $starbound_mod_updater_pid
+}
+
+doModUpdate() {
+  info "Starting mod update check..."
+  
+  # Load mod list
+  if ! mod_ids=$(loadModList); then
+    info "No mods configured - skipping mod update"
+    clearLock "$pidfile"
+    return 0
+  fi
+  
+  readarray -t mod_array <<< "$mod_ids"
+  info "Found ${#mod_array[@]} mods in mod list"
+  
+  # Prune removed mods
+  pruneRemovedMods "${mod_array[@]}"
+  
+  # Check for updates
+  if updates_needed=$(checkForModUpdates "${mod_array[@]}"); then
+    readarray -t update_array <<< "$updates_needed"
+    
+    if [ ${#update_array[@]} -gt 0 ]; then
+      info "Found ${#update_array[@]} mod updates needed"
+      
+      # Download updated mods
+      if downloadMods "${update_array[@]}"; then
+        updateModVersions "${update_array[@]}"
+        info "Mod updates completed successfully"
+      else
+        error "Mod download failed"
+        clearLock "$pidfile"
+        return 1
+      fi
+    else
+      info "All mods are up to date"
+    fi
+  else
+    info "All mods are up to date"
+  fi
+  
+  clearLock "$pidfile"
+}
+
+shutdownModUpdater() {
+  debug "Received signal to shut down mod updater"
+  clearLock "$pidfile"
+}
