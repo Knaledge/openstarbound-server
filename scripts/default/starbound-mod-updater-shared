@@ -215,6 +215,8 @@ downloadMods() {
     
     # Clean up workshop directory
     rm -rf "$workshop_content_path"
+  else
+    warn "Workshop content directory not found after download"
   fi
   
   return 0
