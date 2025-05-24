@@ -15,6 +15,7 @@ services:
     volumes:
       - /path/to/volume/for/game-data:/opt/starbound
       - /path/to/volume/for/steam-data:/home/starbound/Steam
+      - /path/to/file/for/modlist.txt:/opt/starbound/modlists/modlist.txt:ro
     secrets:
       - steam_username
       - steam_password
