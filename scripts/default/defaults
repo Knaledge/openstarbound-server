@@ -41,6 +41,7 @@ fi
 
 # Mod Settings
 MODLIST_FILE=${MODLIST_FILE:-modlist.txt} # defaults to modlist.txt
+MOD_UPDATE_CRON=${MOD_UPDATE_CRON:-0 2 * * *} # defaults to every day at 2:00AM (container time from "TZ")
 
 # Update
 UPDATE_CRON=${UPDATE_CRON:-0 3 * * 0} # defaults to every Sunday at 3:00AM (container time from "TZ")
