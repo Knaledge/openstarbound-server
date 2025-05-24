@@ -1,0 +1,20 @@
+# Starbound Mod List
+# Add Steam Workshop mod IDs, one per line
+# Lines starting with # are comments and will be ignored
+#
+# Example popular mods:
+# 729427606  # Frackin' Universe
+# 1123849814 # Enhanced Storage
+# 734859848  # XS Mechs
+# 1128679756 # Improved Containers
+# 738968523  # Improved Food Descriptions
+#
+# To use this file:
+# 1. Copy this file to modlist.txt in the same directory
+# 2. Add your desired Steam Workshop mod IDs
+# 3. Uncomment or add mod IDs as needed
+# 4. Mount the file in your Docker Compose configuration
+# 5. Deploy your server
+
+# Add your mod IDs below (remove the # to uncomment):
+# 729427606
