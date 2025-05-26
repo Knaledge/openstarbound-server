@@ -40,27 +40,27 @@ loadModList() {
 }
 
 loadCurrentVersions() {
-  local current_versions=()
-  
+  # Initialize JSON file if missing
   if [ ! -f "$mod_version_file_path" ]; then
-    debug "Mod version file not found: $mod_version_file_path"
-    return 1
+    debug "Mod version file not found: $mod_version_file_path — initializing JSON"
+    mkdir -p "$(dirname "$mod_version_file_path")"
+    echo '{"mods":[]}' > "$mod_version_file_path"
   fi
-  
-  while IFS= read -r line || [ -n "$line" ]; do
-    if [ -n "$line" ]; then
-      current_versions+=("$line")
-    fi
-  done < "$mod_version_file_path"
-  
-  printf '%s\n' "${current_versions[@]}"
-  return 0
+  # Output each mod id and timestamp as "id timestamp"
+  jq -r '.mods[] | "\(.id) \(.timestamp)"' "$mod_version_file_path"
 }
 
 saveCurrentVersions() {
   local versions=("$@")
   mkdir -p "$(dirname "$mod_version_file_path")"
-  printf '%s\n' "${versions[@]}" > "$mod_version_file_path"
+  # Build JSON with jq from input lines "id timestamp"
+  printf '%s\n' "${versions[@]}" | jq -Rn '
+    [inputs
+      | split(" ")
+      | {id:(.[0]|tonumber), timestamp:(.[1]|tonumber)}
+    ] as $mods
+    | {mods: $mods}
+  ' > "$mod_version_file_path"
 }
 
 pruneRemovedMods() {
@@ -124,23 +124,12 @@ getModTimestamp() {
 
 getCurrentModTimestamp() {
   local mod_id=$1
-  local current_versions
-  
-  if ! current_versions=$(loadCurrentVersions); then
+  local timestamp
+  timestamp=$(jq -r --arg id "$mod_id" '.mods[] | select(.id == ($id|tonumber)) | .timestamp' "$mod_version_file_path")
+  if [ -z "$timestamp" ] || [ "$timestamp" = "null" ]; then
     return 1
   fi
-  
-  while IFS= read -r version_line; do
-    local stored_mod_id=$(echo "$version_line" | cut -d' ' -f1)
-    local stored_timestamp=$(echo "$version_line" | cut -d' ' -f2)
-    
-    if [ "$stored_mod_id" == "$mod_id" ]; then
-      echo "$stored_timestamp"
-      return 0
-    fi
-  done <<< "$current_versions"
-  
-  return 1
+  echo "$timestamp"
 }
 
 checkForModUpdates() {
