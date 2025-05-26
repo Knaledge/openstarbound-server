@@ -5,11 +5,12 @@
 pidfile=$starbound_mod_updater_pidfile
 
 loadModList() {
-  local modlist_file="/opt/starbound/modlists/modlist.txt"
+  # Resolve the modlist file path without shadowing global var
+  local modlist_path="$modlist_directory/$modlist_file"
   local mod_ids_temp=()
   
-  if [ ! -f "$modlist_file" ]; then
-    debug "Modlist file not found: $modlist_file"
+  if [ ! -f "$modlist_path" ]; then
+    debug "Modlist file not found: $modlist_path"
     return 1
   fi
   
@@ -28,9 +29,9 @@ loadModList() {
     else
       warn "Invalid mod ID format: $line"
     fi
-  done < "$modlist_file"
+  done < "$modlist_path"
   
-  if [ ${#mod_ids[@]} -eq 0 ]; then
+  if [ ${#mod_ids_temp[@]} -eq 0 ]; then
     debug "No valid mod IDs found in modlist"
     return 1
   fi
@@ -65,14 +66,10 @@ saveCurrentVersions() {
 
 pruneRemovedMods() {
   local mod_ids=("$@")
-  local current_versions
+  loadCurrentVersions
   local new_versions=()
   
-  if ! current_versions=$(loadCurrentVersions); then
-    return 0
-  fi
-  
-  while IFS= read -r version_line; do
+  for version_line in "${current_versions[@]}"; do
     local mod_id=$(echo "$version_line" | cut -d' ' -f1)
     local keep_mod=false
     
@@ -93,7 +90,7 @@ pruneRemovedMods() {
         rm -rf "$mod_directory/$mod_id"
       fi
     fi
-  done <<< "$current_versions"
+  done
   
   saveCurrentVersions "${new_versions[@]}"
 }
@@ -154,7 +151,7 @@ checkForModUpdates() {
       fi
     else
       info "New mod detected: $mod_id"
-      updates_needed+=("$mod_id")
+      updates_tmp+=("$mod_id")
     fi
   done
   
@@ -213,12 +210,9 @@ downloadMods() {
 
 updateModVersions() {
   local mod_ids=("$@")
-  local current_versions
   local new_versions=()
-  
-  # Load existing versions
-  if current_versions=$(loadCurrentVersions); then
-    while IFS= read -r version_line; do
+  loadCurrentVersions
+  for version_line in "${current_versions[@]}"; do
       local stored_mod_id=$(echo "$version_line" | cut -d' ' -f1)
       local found=false
       
@@ -234,8 +228,7 @@ updateModVersions() {
       if [ "$found" == "false" ]; then
         new_versions+=("$version_line")
       fi
-    done <<< "$current_versions"
-  fi
+    done
   
   # Add updated mod versions
   for mod_id in "${mod_ids[@]}"; do
