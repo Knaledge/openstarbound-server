@@ -12,7 +12,7 @@ openstarbound_github_api=https://api.github.com/repos/OpenStarbound/OpenStarboun
 mod_directory=/opt/starbound/mods
 modlist_directory=/opt/starbound/modlists
 modlist_file=${MODLIST_FILE}
-mod_version_file_path=/opt/starbound/modlists/current_versions
+mod_version_file_path=/opt/starbound/modlists/mod_versions.json
 
 # trap SIGUSR1 as it is being used to check
 # for process aliveness when an existing
