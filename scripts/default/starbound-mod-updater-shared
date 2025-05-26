@@ -6,7 +6,7 @@ pidfile=$starbound_mod_updater_pidfile
 
 loadModList() {
   local modlist_file="/opt/starbound/modlists/modlist.txt"
-  local mod_ids=()
+  local mod_ids_temp=()
   
   if [ ! -f "$modlist_file" ]; then
     debug "Modlist file not found: $modlist_file"
@@ -24,7 +24,7 @@ loadModList() {
     
     # Validate mod ID is numeric
     if [[ "$mod_id" =~ ^[0-9]+$ ]]; then
-      mod_ids+=("$mod_id")
+      mod_ids_temp+=("$mod_id")
     else
       warn "Invalid mod ID format: $line"
     fi
@@ -35,7 +35,7 @@ loadModList() {
     return 1
   fi
   
-  printf '%s\n' "${mod_ids[@]}"
+  mod_ids=("${mod_ids_temp[@]}")
   return 0
 }
 
@@ -46,8 +46,8 @@ loadCurrentVersions() {
     mkdir -p "$(dirname "$mod_version_file_path")"
     echo '{"mods":[]}' > "$mod_version_file_path"
   fi
-  # Output each mod id and timestamp as "id timestamp"
-  jq -r '.mods[] | "\(.id) \(.timestamp)"' "$mod_version_file_path"
+  # Load each mod id and timestamp into array current_versions
+  mapfile -t current_versions < <(jq -r '.mods[] | "\(.id) \(.timestamp)"' "$mod_version_file_path")
 }
 
 saveCurrentVersions() {
@@ -134,7 +134,7 @@ getCurrentModTimestamp() {
 
 checkForModUpdates() {
   local mod_ids=("$@")
-  local updates_needed=()
+  local updates_tmp=()
   
   for mod_id in "${mod_ids[@]}"; do
     local current_timestamp
@@ -148,7 +148,7 @@ checkForModUpdates() {
     if current_timestamp=$(getCurrentModTimestamp "$mod_id"); then
       if [ "$latest_timestamp" -gt "$current_timestamp" ]; then
         info "Update available for mod $mod_id (current: $current_timestamp, latest: $latest_timestamp)"
-        updates_needed+=("$mod_id")
+        updates_tmp+=("$mod_id")
       else
         debug "Mod $mod_id is up to date"
       fi
@@ -158,8 +158,8 @@ checkForModUpdates() {
     fi
   done
   
-  printf '%s\n' "${updates_needed[@]}"
-  [ ${#updates_needed[@]} -gt 0 ]
+  update_list=( "${updates_tmp[@]}" )
+  [ ${#update_list[@]} -gt 0 ]
 }
 
 downloadMods() {
@@ -273,21 +273,20 @@ doModUpdate() {
   info "Starting mod update check..."
   
   # Load mod list
-  if ! mod_ids=$(loadModList); then
+  if ! loadModList; then
     info "No mods configured - skipping mod update"
     clearLock "$pidfile"
     return 0
   fi
-  
-  readarray -t mod_array <<< "$mod_ids"
+  mod_array=( "${mod_ids[@]}" )
   info "Found ${#mod_array[@]} mods in mod list"
   
   # Prune removed mods
   pruneRemovedMods "${mod_array[@]}"
   
   # Check for updates
-  if updates_needed=$(checkForModUpdates "${mod_array[@]}"); then
-    readarray -t update_array <<< "$updates_needed"
+  if checkForModUpdates "${mod_array[@]}"; then
+    update_array=( "${update_list[@]}" )
     
     if [ ${#update_array[@]} -gt 0 ]; then
       info "Found ${#update_array[@]} mod updates needed"
