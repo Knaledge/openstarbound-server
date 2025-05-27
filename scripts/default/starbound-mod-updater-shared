@@ -21,7 +21,8 @@ loadModList() {
     fi
     
     # Extract mod ID (first word/number)
-    local mod_id=$(echo "$line" | awk '{print $1}')
+      # Extract mod ID (first word/number) without forking awk
+      local mod_id=${line%% *}
     
     # Validate mod ID is numeric
     if [[ "$mod_id" =~ ^[0-9]+$ ]]; then
@@ -65,34 +66,25 @@ saveCurrentVersions() {
 }
 
 pruneRemovedMods() {
-  local mod_ids=("$@")
-  loadCurrentVersions
-  local new_versions=()
-  
-  for version_line in "${current_versions[@]}"; do
-    local mod_id=$(echo "$version_line" | cut -d' ' -f1)
-    local keep_mod=false
-    
-    for active_mod in "${mod_ids[@]}"; do
-      if [ "$mod_id" == "$active_mod" ]; then
-        keep_mod=true
-        break
-      fi
-    done
-    
-    if [ "$keep_mod" == "true" ]; then
-      new_versions+=("$version_line")
-    else
-      info "Removing version entry for mod $mod_id (no longer in mod list)"
-      # Remove mod directory if it exists
-      if [ -d "$mod_directory/$mod_id" ]; then
-        info "Removing mod directory: $mod_directory/$mod_id"
-        rm -rf "$mod_directory/$mod_id"
-      fi
-    fi
-  done
-  
-  saveCurrentVersions "${new_versions[@]}"
+  # Batch-filter JSON to keep only active mods
+  local ids_json
+  ids_json=$(printf '%s\n' "$@" | jq -R . | jq -s 'map(tonumber)')
+  jq --argjson actives "$ids_json" '
+    # Log removals and remove directories via side effects
+    ( .mods
+      | to_entries
+      | map(
+          if (.value.id as $i | $actives | index($i)) then .value
+          else (
+            .value | @sh "info Removing version entry for mod \(.id) (no longer in mod list)" | wall; 
+            @sh "rm -rf \($ENV.mod_directory)/\(.id)" | wall;
+            empty
+          )
+        )
+    ) as $filtered
+    | { mods: $filtered }
+  ' "$mod_version_file_path" > "${mod_version_file_path}.tmp" \
+    && mv "${mod_version_file_path}.tmp" "$mod_version_file_path"
 }
 
 getModTimestamp() {
@@ -132,16 +124,36 @@ getCurrentModTimestamp() {
 checkForModUpdates() {
   local mod_ids=("$@")
   local updates_tmp=()
-  
-  for mod_id in "${mod_ids[@]}"; do
-    local current_timestamp
-    local latest_timestamp
-    
-    if ! latest_timestamp=$(getModTimestamp "$mod_id"); then
+  local MAX_PARALLEL=10
+
+  # Write IDs to temp file for resilience & parallel execution
+  local id_file
+  id_file="$(mktemp)"
+  printf '%s\n' "${mod_ids[@]}" > "$id_file"
+
+  # Fetch timestamps in parallel; produce lines "id timestamp" (empty ts on failure)
+  mapfile -t _results < <(
+    xargs -a "$id_file" -n1 -P "$MAX_PARALLEL" bash -c ' \
+      id="$0"; \
+      if ts=$(getModTimestamp "$id"); then \
+        echo "$id $ts"; \
+      else \
+        echo "$id "; \
+      fi' _
+  )
+
+  # Clean up
+  rm -f "$id_file"
+
+  # Compare against cache and build update list
+  for entry in "${_results[@]}"; do
+    local mod_id=${entry%% *}
+    local latest_timestamp=${entry#* }
+    if [ -z "$latest_timestamp" ]; then
       warn "Could not check update for mod $mod_id - skipping"
       continue
     fi
-    
+
     if current_timestamp=$(getCurrentModTimestamp "$mod_id"); then
       if [ "$latest_timestamp" -gt "$current_timestamp" ]; then
         info "Update available for mod $mod_id (current: $current_timestamp, latest: $latest_timestamp)"
@@ -154,7 +166,7 @@ checkForModUpdates() {
       updates_tmp+=("$mod_id")
     fi
   done
-  
+
   update_list=( "${updates_tmp[@]}" )
   [ ${#update_list[@]} -gt 0 ]
 }
@@ -210,38 +222,24 @@ downloadMods() {
 
 updateModVersions() {
   local mod_ids=("$@")
-  local new_versions=()
-  loadCurrentVersions
-  for version_line in "${current_versions[@]}"; do
-      local stored_mod_id=$(echo "$version_line" | cut -d' ' -f1)
-      local found=false
-      
-      # Check if this mod is in our update list
-      for mod_id in "${mod_ids[@]}"; do
-        if [ "$stored_mod_id" == "$mod_id" ]; then
-          found=true
-          break
-        fi
-      done
-      
-      # Keep existing version if not being updated
-      if [ "$found" == "false" ]; then
-        new_versions+=("$version_line")
-      fi
-    done
-  
-  # Add updated mod versions
-  for mod_id in "${mod_ids[@]}"; do
-    local timestamp
+  # Build updates JSON from new timestamps
+  local updates_json
+  updates_json=$(for mod_id in "${mod_ids[@]}"; do
     if timestamp=$(getModTimestamp "$mod_id"); then
-      new_versions+=("$mod_id $timestamp")
-      debug "Updated version for mod $mod_id: $timestamp"
-    else
-      warn "Could not update version for mod $mod_id"
+      printf '{"id":%s,"timestamp":%s}\n' "$mod_id" "$timestamp"
     fi
-  done
-  
-  saveCurrentVersions "${new_versions[@]}"
+  done | jq -s '.')
+  # Merge updates into the version file in one jq call
+  jq --argjson updates "$updates_json" '
+    .mods |= map(
+      if (.id as $i | ($updates | map(.id) | index($i))) then
+        (. as $m | ($updates[] | select(.id == $m.id) | .timestamp) as $t | $m | .timestamp = $t)
+      else
+        .
+      end
+    )
+  ' "$mod_version_file_path" > "${mod_version_file_path}.tmp" \
+    && mv "${mod_version_file_path}.tmp" "$mod_version_file_path"
 }
 
 updateMods() {
